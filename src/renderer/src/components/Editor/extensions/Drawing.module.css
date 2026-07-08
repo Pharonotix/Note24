@@ -1,0 +1,46 @@
+.wrap {
+  display: block;
+  margin: 0.9em 0;
+}
+
+.frame {
+  position: relative;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: #ffffff;
+  max-width: 100%;
+  user-select: none;
+}
+.sel {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px var(--selection);
+}
+
+.loading {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--text-muted);
+  background: var(--surface);
+  font-size: 14px;
+}
+
+.resizeHandle {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 18px;
+  height: 18px;
+  cursor: nwse-resize;
+  z-index: 6;
+  background: linear-gradient(
+    135deg,
+    transparent 0 50%,
+    var(--border-strong) 50% 60%,
+    transparent 60% 70%,
+    var(--border-strong) 70% 80%,
+    transparent 80%
+  );
+}

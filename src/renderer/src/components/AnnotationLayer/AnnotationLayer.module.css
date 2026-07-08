@@ -1,0 +1,41 @@
+.layerActive,
+.layerView {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+}
+
+/* Interactive: captures drawing input; the canvas is transparent. */
+.layerActive {
+  pointer-events: auto;
+}
+
+/* Passive: strokes visible, but clicks fall through to the note. */
+.layerView {
+  pointer-events: none;
+}
+
+.layerActive :global(.excalidraw),
+.layerView :global(.excalidraw) {
+  background: transparent !important;
+  --island-bg-color: var(--surface);
+}
+
+.done {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 30;
+  padding: 6px 16px;
+  border-radius: 999px;
+  background: var(--primary);
+  color: var(--primary-contrast);
+  font-weight: 600;
+  font-size: 13px;
+  box-shadow: 0 4px 14px var(--shadow);
+  pointer-events: auto;
+}
+.done:hover {
+  background: var(--primary-hover);
+}

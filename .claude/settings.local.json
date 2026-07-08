@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm --version)",
+      "Bash(git --version)",
+      "PowerShell($node = \\(Get-Command node -ErrorAction SilentlyContinue\\); if \\($node\\) { \"node: $\\($node.Source\\) $\\(node --version\\)\" } else { \"node: NOT FOUND\" }; $npm = \\(Get-Command npm -ErrorAction SilentlyContinue\\); if \\($npm\\) { \"npm: $\\(npm --version\\)\" } else { \"npm: NOT FOUND\" }; $py = \\(Get-Command python -ErrorAction SilentlyContinue\\); if \\($py\\) { \"python: $\\(python --version\\)\" } else { \"python: NOT FOUND\" })"
+    ]
+  }
+}

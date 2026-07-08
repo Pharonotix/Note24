@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Note24</title>
+    <!-- CSP allows the Desmos engine (loaded from *.desmos.com) plus Vite HMR
+         and blob workers (Excalidraw). 'unsafe-eval' is required by Desmos. -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self';
+        script-src 'self' 'unsafe-eval' 'unsafe-inline' https://*.desmos.com;
+        style-src 'self' 'unsafe-inline' https://*.desmos.com;
+        img-src 'self' data: blob: note24-attachment: https://*.desmos.com;
+        font-src 'self' data: https://*.desmos.com https://esm.sh;
+        connect-src 'self' ws: wss: https://*.desmos.com https://esm.sh;
+        frame-src 'self' https://*.desmos.com;
+        child-src 'self' blob: https://*.desmos.com;
+        worker-src 'self' blob:"
+    />
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

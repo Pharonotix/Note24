@@ -1,0 +1,38 @@
+.wrap {
+  display: inline;
+}
+
+.link,
+.unresolved {
+  cursor: pointer;
+  border-radius: 3px;
+  padding: 0 2px;
+  white-space: normal;
+}
+
+.link {
+  color: var(--primary);
+  border-bottom: 1px solid color-mix(in srgb, var(--primary) 45%, transparent);
+}
+.link:hover {
+  background: var(--selection);
+}
+
+.unresolved {
+  color: var(--danger);
+  border-bottom: 1px dashed color-mix(in srgb, var(--danger) 55%, transparent);
+}
+.unresolved:hover {
+  background: color-mix(in srgb, var(--danger) 14%, transparent);
+}
+
+.link::before,
+.unresolved::before {
+  content: '[[';
+  opacity: 0.45;
+}
+.link::after,
+.unresolved::after {
+  content: ']]';
+  opacity: 0.45;
+}

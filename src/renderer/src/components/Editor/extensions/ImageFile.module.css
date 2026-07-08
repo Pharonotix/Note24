@@ -1,0 +1,70 @@
+.wrap {
+  display: block;
+  margin: 0.6em 0;
+}
+
+.imgFrame {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+  border-radius: var(--radius);
+  border: 1px solid transparent;
+  line-height: 0;
+}
+.imgFrame.sel {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px var(--selection);
+}
+.img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  border-radius: var(--radius);
+}
+
+.resizeHandle {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 16px;
+  height: 16px;
+  cursor: nwse-resize;
+  background: linear-gradient(
+    135deg,
+    transparent 0 55%,
+    var(--primary) 55% 65%,
+    transparent 65% 75%,
+    var(--primary) 75% 85%,
+    transparent 85%
+  );
+  opacity: 0.85;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  cursor: pointer;
+  max-width: 100%;
+}
+.chip:hover {
+  background: var(--surface-3);
+}
+.chip.sel {
+  border-color: var(--primary);
+}
+.icon {
+  font-size: 16px;
+}
+.name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13.5px;
+}
