@@ -5,6 +5,7 @@ import { Editor } from './components/Editor/Editor'
 import { QuickSwitcher } from './components/QuickSwitcher/QuickSwitcher'
 import { EquationLibrary } from './components/EquationLibrary/EquationLibrary'
 import { AnnotationLayer } from './components/AnnotationLayer/AnnotationLayer'
+import { Settings } from './components/Settings/Settings'
 import styles from './App.module.css'
 
 function App(): React.JSX.Element {
@@ -16,9 +17,9 @@ function App(): React.JSX.Element {
   const setEquationPanel = useStore((s) => s.setEquationPanel)
   const annotationMode = useStore((s) => s.annotationMode)
   const setAnnotationMode = useStore((s) => s.setAnnotationMode)
+  const setSettingsOpen = useStore((s) => s.setSettingsOpen)
 
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', 'sage-dark')
     init()
   }, [init])
 
@@ -34,11 +35,14 @@ function App(): React.JSX.Element {
       } else if (mod && e.key.toLowerCase() === 'e') {
         e.preventDefault()
         setEquationPanel(!useStore.getState().equationPanelOpen)
+      } else if (mod && e.key === ',') {
+        e.preventDefault()
+        setSettingsOpen(true)
       }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [newNote, setQuickSwitcher, setEquationPanel])
+  }, [newNote, setQuickSwitcher, setEquationPanel, setSettingsOpen])
 
   return (
     <div className={equationPanelOpen ? `${styles.app} ${styles.withPanel}` : styles.app}>
@@ -61,6 +65,13 @@ function App(): React.JSX.Element {
               title="Equation library (Ctrl+E)"
             >
               Σ Equations
+            </button>
+            <button
+              className={styles.action}
+              onClick={() => setSettingsOpen(true)}
+              title="Settings (Ctrl+,)"
+            >
+              ⚙
             </button>
           </div>
         </div>
@@ -85,6 +96,7 @@ function App(): React.JSX.Element {
       </main>
       <EquationLibrary />
       <QuickSwitcher />
+      <Settings />
     </div>
   )
 }
