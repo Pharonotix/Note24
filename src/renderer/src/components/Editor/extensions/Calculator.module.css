@@ -97,6 +97,180 @@
   font-style: italic;
   font-size: 0.85em;
 }
+.resultWarn {
+  color: var(--danger);
+  font-size: 0.85em;
+}
+
+/* ---- Header buttons (rearrange / constants toggles) ---- */
+.hbtn {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 999px;
+  color: var(--text-muted);
+}
+.hbtn:hover {
+  background: var(--surface-3);
+  color: var(--text);
+}
+.hbtnOn {
+  background: var(--surface-3);
+  color: var(--primary);
+}
+
+/* ---- Rearrange / constants panels ---- */
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-2);
+}
+.panelTitle {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+.panelInput {
+  padding: 5px 8px;
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  outline: none;
+}
+.panelInput:focus {
+  border-color: var(--primary);
+}
+.panelRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.panelLabel {
+  font-size: 11.5px;
+  color: var(--text-muted);
+}
+.panelSelect {
+  padding: 4px 6px;
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  outline: none;
+}
+.panelBtn {
+  margin-left: auto;
+  padding: 4px 12px;
+  border-radius: var(--radius-sm);
+  background: var(--primary);
+  color: var(--primary-contrast);
+  font-size: 12px;
+  font-weight: 600;
+}
+.panelBtn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.rearrOut {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+}
+.rearrExpr {
+  flex: 1;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--primary);
+  font-weight: 600;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+.rearrInsert {
+  flex: 0 0 auto;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--surface-3);
+  color: var(--text);
+  font-size: 11.5px;
+  font-weight: 600;
+}
+.rearrInsert:hover {
+  background: var(--primary);
+  color: var(--primary-contrast);
+}
+.rearrErr {
+  font-size: 11.5px;
+  color: var(--danger);
+  font-style: italic;
+}
+.constGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px 12px;
+}
+.constItem {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 11.5px;
+}
+.constName {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--primary);
+  min-width: 44px;
+}
+.constLabel {
+  color: var(--text-faint);
+}
+
+/* ---- Variable inspector footer ---- */
+.varsFooter {
+  border-top: 1px solid var(--border);
+  background: var(--surface-2);
+  padding: 6px 10px;
+}
+.varsToggle {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  padding: 0;
+}
+.varsToggle:hover {
+  color: var(--text);
+}
+.varsList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 6px;
+}
+.varChip {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  white-space: nowrap;
+}
+.varName {
+  color: var(--primary);
+  font-weight: 700;
+}
 
 .resizeHandle {
   position: absolute;

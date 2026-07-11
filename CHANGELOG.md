@@ -2,6 +2,24 @@
 
 All notable changes to Note24. Newest first.
 
+## 0.4.0 — Calculator & CAS
+
+### Added
+- **Engineering constants.** `g`, `G`, `c`, `h`, `R`, `k`, `mu0` (μ₀), and `epsilon0` (ε₀)
+  are available in every calculator block — e.g. `F = 5 kg * g` → `49.03 N`. They reuse
+  math.js's built-in physical constants (with correct units); assigning the same name in a
+  block overrides the constant.
+- **Variable inspector.** A collapsible "Variables" footer on each calculator block lists every
+  defined variable with its current value and units.
+- **Unit consistency checker.** Genuine dimensional mismatches (e.g. `5 m + 3 s`) now show a
+  per-line "unit mismatch" warning instead of a silent blank line.
+- **Rearrangement wizard.** A "Rearrange" panel solves an equation for any variable — type
+  `P*V = n*R*T`, pick `V`, get `n*R*T/P` (via nerdamer), with an "Insert as line" button.
+
+### Notes
+- All changes are contained in the calculator block (engine + view); no schema or migration
+  changes, so existing calculator blocks and notes are untouched.
+
 ## 0.3.0 — Equation Knowledge System (foundation)
 
 ### Added
