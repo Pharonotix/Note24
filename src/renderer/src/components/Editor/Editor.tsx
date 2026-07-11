@@ -13,6 +13,7 @@ import { DesmosNode } from './extensions/DesmosNode'
 import { WikiLink } from './extensions/WikiLink'
 import { ImageFile } from './extensions/ImageFile'
 import { DrawingNode } from './extensions/DrawingNode'
+import { CalculatorNode } from './extensions/CalculatorNode'
 import { Backlinks } from '../Backlinks/Backlinks'
 import styles from './Editor.module.css'
 
@@ -70,7 +71,8 @@ export function Editor({ note }: { note: Note }): React.JSX.Element {
       DesmosNode,
       WikiLink,
       ImageFile,
-      DrawingNode
+      DrawingNode,
+      CalculatorNode
     ],
     content: parseContent(note.content),
     onUpdate: ({ editor }) => saveBody(JSON.stringify(editor.getJSON())),

@@ -4,7 +4,6 @@ import { Sidebar } from './components/Sidebar/Sidebar'
 import { Editor } from './components/Editor/Editor'
 import { QuickSwitcher } from './components/QuickSwitcher/QuickSwitcher'
 import { EquationLibrary } from './components/EquationLibrary/EquationLibrary'
-import { AnnotationLayer } from './components/AnnotationLayer/AnnotationLayer'
 import { Settings } from './components/Settings/Settings'
 import styles from './App.module.css'
 
@@ -15,8 +14,6 @@ function App(): React.JSX.Element {
   const setQuickSwitcher = useStore((s) => s.setQuickSwitcher)
   const equationPanelOpen = useStore((s) => s.equationPanelOpen)
   const setEquationPanel = useStore((s) => s.setEquationPanel)
-  const annotationMode = useStore((s) => s.annotationMode)
-  const setAnnotationMode = useStore((s) => s.setAnnotationMode)
   const setSettingsOpen = useStore((s) => s.setSettingsOpen)
 
   useEffect(() => {
@@ -50,15 +47,6 @@ function App(): React.JSX.Element {
       <main className={styles.main}>
         <div className={styles.topbar}>
           <div className={styles.actions}>
-            {currentNote && (
-              <button
-                className={annotationMode ? `${styles.action} ${styles.on}` : styles.action}
-                onClick={() => setAnnotationMode(!annotationMode)}
-                title="Draw over this note"
-              >
-                ✎ Annotate
-              </button>
-            )}
             <button
               className={equationPanelOpen ? `${styles.action} ${styles.on}` : styles.action}
               onClick={() => setEquationPanel(!equationPanelOpen)}
@@ -77,10 +65,7 @@ function App(): React.JSX.Element {
         </div>
         <div className={styles.editorArea}>
           {currentNote ? (
-            <>
-              <Editor key={currentNote.id} note={currentNote} />
-              <AnnotationLayer note={currentNote} />
-            </>
+            <Editor key={currentNote.id} note={currentNote} />
           ) : (
             <div className={styles.empty}>
               <div>

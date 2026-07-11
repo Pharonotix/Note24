@@ -3,6 +3,7 @@ import { getDb } from './database'
 
 interface EqRow {
   id: number
+  slug: string | null
   name: string
   latex: string
   description: string
@@ -25,6 +26,7 @@ function rowToEq(r: EqRow): Equation {
   }
   return {
     id: r.id,
+    slug: r.slug ?? null,
     name: r.name,
     latex: r.latex,
     description: r.description,
@@ -64,9 +66,17 @@ export function getEquation(id: number): Equation | null {
   return row ? rowToEq(row) : null
 }
 
+export function getEquationBySlug(slug: string): Equation | null {
+  const row = getDb().prepare(`SELECT * FROM equations WHERE slug = ?`).get(slug) as
+    | EqRow
+    | undefined
+  return row ? rowToEq(row) : null
+}
+
 export function createEquation(input: EquationInput): Equation {
   const ts = now()
-  const info = getDb()
+  const db = getDb()
+  const info = db
     .prepare(
       `INSERT INTO equations
          (name, latex, description, category, variables_json, tags, is_builtin, created_at, updated_at)
@@ -82,7 +92,11 @@ export function createEquation(input: EquationInput): Equation {
       ts,
       ts
     )
-  return getEquation(Number(info.lastInsertRowid))!
+  const id = Number(info.lastInsertRowid)
+  // Custom equations get a stable `custom-<id>` slug so they can carry
+  // relationships/derivations like built-ins do.
+  db.prepare(`UPDATE equations SET slug = ? WHERE id = ?`).run(`custom-${id}`, id)
+  return getEquation(id)!
 }
 
 export function updateEquation(id: number, patch: Partial<EquationInput>): void {
@@ -113,5 +127,20 @@ export function updateEquation(id: number, patch: Partial<EquationInput>): void 
 }
 
 export function deleteEquation(id: number): void {
-  getDb().prepare(`DELETE FROM equations WHERE id = ?`).run(id)
+  const db = getDb()
+  const row = db.prepare(`SELECT slug FROM equations WHERE id = ?`).get(id) as
+    | { slug: string | null }
+    | undefined
+  const tx = db.transaction(() => {
+    if (row?.slug) {
+      // Slug-keyed side tables have no SQL foreign keys — clean them up here.
+      db.prepare(`DELETE FROM equation_relationships WHERE from_slug = ? OR to_slug = ?`).run(
+        row.slug,
+        row.slug
+      )
+      db.prepare(`DELETE FROM equation_derivations WHERE slug = ?`).run(row.slug)
+    }
+    db.prepare(`DELETE FROM equations WHERE id = ?`).run(id)
+  })
+  tx()
 }

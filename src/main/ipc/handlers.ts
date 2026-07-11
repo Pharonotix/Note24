@@ -1,13 +1,21 @@
-import { dialog, ipcMain, shell } from 'electron'
+import { app, dialog, ipcMain, shell } from 'electron'
 import { IPC } from '@shared/ipc'
-import type { EquationInput, NoteCreateInput, NoteUpdateInput } from '@shared/types'
+import type {
+  DerivationStep,
+  EquationInput,
+  NoteCreateInput,
+  NoteUpdateInput,
+  RelationKind
+} from '@shared/types'
 import * as notes from '../db/notes'
 import * as folders from '../db/folders'
 import * as tags from '../db/tags'
 import * as equations from '../db/equations'
+import * as equationGraph from '../db/equationGraph'
 import * as links from '../db/links'
 import * as settings from '../db/settings'
 import * as attachments from '../attachments'
+import * as locations from '../locations'
 
 /** Registers every ipcMain.handle channel. Call once after the DB is ready. */
 export function registerIpcHandlers(): void {
@@ -22,6 +30,9 @@ export function registerIpcHandlers(): void {
   ipcMain.handle(IPC.notesSearch, (_e, query: string) => notes.searchNotes(query))
   ipcMain.handle(IPC.notesSetTags, (_e, id: number, t: string[]) => notes.setNoteTags(id, t))
   ipcMain.handle(IPC.notesBacklinks, (_e, id: number) => links.getBacklinks(id))
+  ipcMain.handle(IPC.notesReorder, (_e, folderId: number | null, orderedIds: number[]) =>
+    notes.reorderNotes(folderId, orderedIds)
+  )
 
   // Folders
   ipcMain.handle(IPC.foldersList, () => folders.listFolders())
@@ -30,6 +41,17 @@ export function registerIpcHandlers(): void {
   )
   ipcMain.handle(IPC.foldersRename, (_e, id: number, name: string) => folders.renameFolder(id, name))
   ipcMain.handle(IPC.foldersDelete, (_e, id: number) => folders.deleteFolder(id))
+  ipcMain.handle(
+    IPC.foldersUpdateStyle,
+    (_e, id: number, style: { color?: string | null; icon?: string | null }) =>
+      folders.updateFolderStyle(id, style)
+  )
+  ipcMain.handle(IPC.foldersMove, (_e, id: number, parentId: number | null) =>
+    folders.moveFolder(id, parentId)
+  )
+  ipcMain.handle(IPC.foldersReorder, (_e, parentId: number | null, orderedIds: number[]) =>
+    folders.reorderFolders(parentId, orderedIds)
+  )
 
   // Tags
   ipcMain.handle(IPC.tagsList, () => tags.listTags())
@@ -42,6 +64,23 @@ export function registerIpcHandlers(): void {
     equations.updateEquation(id, patch)
   )
   ipcMain.handle(IPC.equationsDelete, (_e, id: number) => equations.deleteEquation(id))
+  ipcMain.handle(IPC.equationsRelationshipsFor, (_e, slug: string) =>
+    equationGraph.relationshipsFor(slug)
+  )
+  ipcMain.handle(
+    IPC.equationsAddRelationship,
+    (_e, fromSlug: string, toSlug: string, kind: RelationKind) =>
+      equationGraph.addRelationship(fromSlug, toSlug, kind)
+  )
+  ipcMain.handle(IPC.equationsRemoveRelationship, (_e, id: number) =>
+    equationGraph.removeRelationship(id)
+  )
+  ipcMain.handle(IPC.equationsGetDerivation, (_e, slug: string) =>
+    equationGraph.getDerivation(slug)
+  )
+  ipcMain.handle(IPC.equationsSetDerivation, (_e, slug: string, steps: DerivationStep[]) =>
+    equationGraph.setDerivation(slug, steps)
+  )
 
   // Attachments
   ipcMain.handle(IPC.attachmentsAdd, (_e, filename: string, mime: string, data: Uint8Array) =>
@@ -66,4 +105,24 @@ export function registerIpcHandlers(): void {
   ipcMain.handle(IPC.settingsGet, (_e, key: string) => settings.getSetting(key))
   ipcMain.handle(IPC.settingsSet, (_e, key: string, value: string) => settings.setSetting(key, value))
   ipcMain.handle(IPC.settingsGetAll, () => settings.getAllSettings())
+
+  // Data storage locations
+  ipcMain.handle(IPC.locationsList, () => locations.listLocations())
+  ipcMain.handle(IPC.locationsPickFolder, async () => {
+    const res = await dialog.showOpenDialog({ properties: ['openDirectory', 'createDirectory'] })
+    if (res.canceled || !res.filePaths[0]) return null
+    return res.filePaths[0]
+  })
+  ipcMain.handle(IPC.locationsAdd, (_e, path: string, label?: string) =>
+    locations.addLocation(path, label)
+  )
+  ipcMain.handle(IPC.locationsRename, (_e, id: string, label: string) =>
+    locations.renameLocation(id, label)
+  )
+  ipcMain.handle(IPC.locationsSwitch, (_e, id: string) => {
+    locations.switchActiveLocation(id)
+    app.relaunch()
+    app.exit(0)
+  })
+  ipcMain.handle(IPC.locationsRemove, (_e, id: string) => locations.removeLocation(id))
 }

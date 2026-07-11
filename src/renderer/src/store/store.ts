@@ -16,9 +16,10 @@ interface AppState {
   quickSwitcherOpen: boolean
   equationPanelOpen: boolean
   settingsOpen: boolean
-  annotationMode: boolean
   theme: ThemeConfig
   editor: Editor | null
+  /** The note/folder currently being dragged in the sidebar, if any. */
+  dragItem: { kind: 'note' | 'folder'; id: number } | null
 
   init: () => Promise<void>
   refreshNotes: () => Promise<void>
@@ -33,16 +34,19 @@ interface AppState {
   saveContent: (id: number, content: string) => Promise<void>
   renameNote: (id: number, title: string) => Promise<void>
   moveNote: (noteId: number, folderId: number | null) => Promise<void>
+  reorderNotes: (folderId: number | null, orderedIds: number[]) => Promise<void>
   setCurrentNoteTags: (tags: string[]) => Promise<void>
-  newFolder: (name: string) => Promise<void>
+  newFolder: (name: string, parentId?: number | null) => Promise<void>
   renameFolder: (id: number, name: string) => Promise<void>
   removeFolder: (id: number) => Promise<void>
+  moveFolder: (id: number, parentId: number | null) => Promise<void>
+  reorderFolders: (parentId: number | null, orderedIds: number[]) => Promise<void>
+  updateFolderStyle: (id: number, style: { color?: string | null; icon?: string | null }) => Promise<void>
+  setDragItem: (item: { kind: 'note' | 'folder'; id: number } | null) => void
   setQuickSwitcher: (open: boolean) => void
   setEquationPanel: (open: boolean) => void
   setSettingsOpen: (open: boolean) => void
   setTheme: (cfg: ThemeConfig) => void
-  setAnnotationMode: (on: boolean) => void
-  updateAnnotations: (id: number, annotations: string) => Promise<void>
   setEditor: (editor: Editor | null) => void
 }
 
@@ -57,9 +61,9 @@ export const useStore = create<AppState>((set, get) => ({
   quickSwitcherOpen: false,
   equationPanelOpen: false,
   settingsOpen: false,
-  annotationMode: false,
   theme: DEFAULT_THEME,
   editor: null,
+  dragItem: null,
 
   init: async () => {
     const theme = await loadTheme()
@@ -91,7 +95,7 @@ export const useStore = create<AppState>((set, get) => ({
 
   selectNote: async (id) => {
     const note = await window.api.notes.get(id)
-    set({ currentNoteId: id, currentNote: note, annotationMode: false })
+    set({ currentNoteId: id, currentNote: note })
     await window.api.settings.set(LAST_NOTE_KEY, String(id))
   },
 
@@ -106,7 +110,7 @@ export const useStore = create<AppState>((set, get) => ({
   newNote: async (folderId = null) => {
     const note = await window.api.notes.create({ folderId })
     await get().refreshNotes()
-    set({ currentNoteId: note.id, currentNote: note, annotationMode: false })
+    set({ currentNoteId: note.id, currentNote: note })
     await window.api.settings.set(LAST_NOTE_KEY, String(note.id))
   },
 
@@ -143,6 +147,11 @@ export const useStore = create<AppState>((set, get) => ({
     }
   },
 
+  reorderNotes: async (folderId, orderedIds) => {
+    await window.api.notes.reorder(folderId, orderedIds)
+    await get().refreshNotes()
+  },
+
   setCurrentNoteTags: async (tags) => {
     const id = get().currentNoteId
     if (id == null) return
@@ -150,8 +159,8 @@ export const useStore = create<AppState>((set, get) => ({
     await Promise.all([get().refreshNotes(), get().refreshTags()])
   },
 
-  newFolder: async (name) => {
-    await window.api.folders.create(name)
+  newFolder: async (name, parentId = null) => {
+    await window.api.folders.create(name, parentId)
     await get().refreshFolders()
   },
 
@@ -165,6 +174,21 @@ export const useStore = create<AppState>((set, get) => ({
     await Promise.all([get().refreshFolders(), get().refreshNotes()])
   },
 
+  moveFolder: async (id, parentId) => {
+    await window.api.folders.move(id, parentId)
+    await get().refreshFolders()
+  },
+
+  reorderFolders: async (parentId, orderedIds) => {
+    await window.api.folders.reorder(parentId, orderedIds)
+    await get().refreshFolders()
+  },
+
+  updateFolderStyle: async (id, style) => {
+    await window.api.folders.updateStyle(id, style)
+    await get().refreshFolders()
+  },
+
   setQuickSwitcher: (open) => set({ quickSwitcherOpen: open }),
   setEquationPanel: (open) => set({ equationPanelOpen: open }),
   setSettingsOpen: (open) => set({ settingsOpen: open }),
@@ -173,13 +197,6 @@ export const useStore = create<AppState>((set, get) => ({
     set({ theme: cfg })
     void saveTheme(cfg)
   },
-  setAnnotationMode: (on) => set({ annotationMode: on }),
-
-  updateAnnotations: async (id, annotations) => {
-    await window.api.notes.update(id, { annotations })
-    const cur = get().currentNote
-    if (cur && cur.id === id) set({ currentNote: { ...cur, annotations } })
-  },
-
-  setEditor: (editor) => set({ editor })
+  setEditor: (editor) => set({ editor }),
+  setDragItem: (item) => set({ dragItem: item })
 }))

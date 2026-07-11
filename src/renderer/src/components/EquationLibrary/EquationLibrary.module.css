@@ -108,6 +108,18 @@
   background: var(--surface-3);
   color: var(--text-muted);
 }
+.formError {
+  font-size: 12px;
+  color: var(--danger);
+  padding: 2px 2px 0;
+}
+.symbolsToggle {
+  align-self: flex-start;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--primary);
+  padding: 3px 2px;
+}
 
 .list {
   flex: 1;
@@ -122,14 +134,33 @@
 .groupTitle {
   position: sticky;
   top: 0;
+  z-index: 1;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 6px;
   background: var(--surface);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--text-faint);
-  padding: 8px 2px 4px;
-  z-index: 1;
+  padding: 8px 2px;
+  border-radius: var(--radius-sm);
+}
+.groupTitle:hover {
+  color: var(--text);
+  background: var(--surface-2);
+}
+.groupCaret {
+  font-size: 10px;
+  width: 12px;
+  flex: 0 0 auto;
+}
+.groupCount {
+  margin-left: auto;
+  font-weight: 600;
+  color: var(--text-faint);
 }
 
 .item {
@@ -152,8 +183,15 @@
 }
 .itemName {
   font-size: 12.5px;
+  font-weight: 600;
   color: var(--text-muted);
   margin-top: 4px;
+}
+.itemDesc {
+  font-size: 11.5px;
+  color: var(--text-faint);
+  margin-top: 2px;
+  line-height: 1.4;
 }
 .vars {
   display: flex;
@@ -164,6 +202,9 @@
 .var {
   font-size: 11px;
   color: var(--text-faint);
+}
+.varSym {
+  display: inline-block;
 }
 
 .itemActions {
@@ -197,6 +238,153 @@
 .mini:hover {
   background: var(--surface-3);
   color: var(--text);
+}
+.miniOn {
+  background: var(--surface-3);
+  color: var(--primary);
+}
+
+/* ---- Knowledge-graph detail (relationships + derivation) ---- */
+.detail {
+  margin-top: 8px;
+  padding: 10px;
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.detailSection {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.detailLabel {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+.detailEmpty {
+  font-size: 11.5px;
+  color: var(--text-faint);
+  font-style: italic;
+}
+.relGroup {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+.relGroupLabel {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-right: 2px;
+}
+.relChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  padding: 2px 4px 2px 8px;
+  border-radius: 999px;
+  background: var(--surface-3);
+  color: var(--text);
+}
+.relRemove {
+  font-size: 13px;
+  line-height: 1;
+  color: var(--text-faint);
+  padding: 0 3px;
+  border-radius: 999px;
+}
+.relRemove:hover {
+  color: var(--danger);
+  background: var(--surface);
+}
+.linkRow {
+  display: flex;
+  gap: 5px;
+  margin-top: 2px;
+}
+.linkKind,
+.linkTarget {
+  padding: 4px 6px;
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 11.5px;
+  outline: none;
+}
+.linkTarget {
+  flex: 1;
+  min-width: 0;
+}
+.linkAdd {
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--primary);
+  color: var(--primary-contrast);
+  font-size: 11.5px;
+  font-weight: 600;
+}
+.linkAdd:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.derivChain {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px;
+  background: var(--bg);
+  border-radius: var(--radius-sm);
+  overflow-x: auto;
+}
+.derivStep {
+  text-align: center;
+}
+.derivStep:not(:last-child)::after {
+  content: '↓';
+  display: block;
+  color: var(--text-faint);
+  font-size: 13px;
+  line-height: 1.2;
+}
+.derivNote {
+  font-size: 10.5px;
+  color: var(--text-faint);
+}
+.derivInput {
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  outline: none;
+  resize: vertical;
+}
+.derivInput:focus {
+  border-color: var(--primary);
+}
+.derivSave {
+  align-self: flex-start;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-3);
+  color: var(--text);
+  font-size: 11.5px;
+  font-weight: 600;
+}
+.derivSave:disabled {
+  opacity: 0.5;
+  cursor: default;
 }
 
 .empty {

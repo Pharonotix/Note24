@@ -1,13 +1,18 @@
 import type {
   Attachment,
   Backlink,
+  DataLocation,
+  DerivationStep,
   Equation,
   EquationInput,
+  EquationRelationshipView,
   Folder,
+  LocationsRegistry,
   Note,
   NoteCreateInput,
   NoteSummary,
   NoteUpdateInput,
+  RelationKind,
   Tag
 } from './types'
 
@@ -25,12 +30,16 @@ export interface Note24Api {
     search(query: string): Promise<NoteSummary[]>
     setTags(id: number, tags: string[]): Promise<void>
     backlinks(id: number): Promise<Backlink[]>
+    reorder(folderId: number | null, orderedIds: number[]): Promise<void>
   }
   folders: {
     list(): Promise<Folder[]>
     create(name: string, parentId?: number | null): Promise<Folder>
     rename(id: number, name: string): Promise<void>
     delete(id: number): Promise<void>
+    updateStyle(id: number, style: { color?: string | null; icon?: string | null }): Promise<void>
+    move(id: number, parentId: number | null): Promise<void>
+    reorder(parentId: number | null, orderedIds: number[]): Promise<void>
   }
   tags: {
     list(): Promise<Tag[]>
@@ -41,6 +50,11 @@ export interface Note24Api {
     create(input: EquationInput): Promise<Equation>
     update(id: number, patch: Partial<EquationInput>): Promise<void>
     delete(id: number): Promise<void>
+    relationshipsFor(slug: string): Promise<EquationRelationshipView[]>
+    addRelationship(fromSlug: string, toSlug: string, kind: RelationKind): Promise<void>
+    removeRelationship(id: number): Promise<void>
+    getDerivation(slug: string): Promise<DerivationStep[]>
+    setDerivation(slug: string, steps: DerivationStep[]): Promise<void>
   }
   attachments: {
     add(filename: string, mime: string, data: Uint8Array): Promise<Attachment>
@@ -51,5 +65,14 @@ export interface Note24Api {
     get(key: string): Promise<string | null>
     set(key: string, value: string): Promise<void>
     getAll(): Promise<Record<string, string>>
+  }
+  locations: {
+    list(): Promise<LocationsRegistry>
+    pickFolder(): Promise<string | null>
+    add(path: string, label?: string): Promise<DataLocation>
+    rename(id: string, label: string): Promise<void>
+    /** Persists the switch, then relaunches the app — never resolves. */
+    switch(id: string): Promise<void>
+    remove(id: string): Promise<void>
   }
 }

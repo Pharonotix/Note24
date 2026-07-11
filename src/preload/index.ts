@@ -12,13 +12,17 @@ const api: Note24Api = {
     delete: (id) => ipcRenderer.invoke(IPC.notesDelete, id),
     search: (query) => ipcRenderer.invoke(IPC.notesSearch, query),
     setTags: (id, tags) => ipcRenderer.invoke(IPC.notesSetTags, id, tags),
-    backlinks: (id) => ipcRenderer.invoke(IPC.notesBacklinks, id)
+    backlinks: (id) => ipcRenderer.invoke(IPC.notesBacklinks, id),
+    reorder: (folderId, orderedIds) => ipcRenderer.invoke(IPC.notesReorder, folderId, orderedIds)
   },
   folders: {
     list: () => ipcRenderer.invoke(IPC.foldersList),
     create: (name, parentId) => ipcRenderer.invoke(IPC.foldersCreate, name, parentId ?? null),
     rename: (id, name) => ipcRenderer.invoke(IPC.foldersRename, id, name),
-    delete: (id) => ipcRenderer.invoke(IPC.foldersDelete, id)
+    delete: (id) => ipcRenderer.invoke(IPC.foldersDelete, id),
+    updateStyle: (id, style) => ipcRenderer.invoke(IPC.foldersUpdateStyle, id, style),
+    move: (id, parentId) => ipcRenderer.invoke(IPC.foldersMove, id, parentId),
+    reorder: (parentId, orderedIds) => ipcRenderer.invoke(IPC.foldersReorder, parentId, orderedIds)
   },
   tags: {
     list: () => ipcRenderer.invoke(IPC.tagsList)
@@ -28,7 +32,13 @@ const api: Note24Api = {
     search: (query) => ipcRenderer.invoke(IPC.equationsSearch, query),
     create: (input) => ipcRenderer.invoke(IPC.equationsCreate, input),
     update: (id, patch) => ipcRenderer.invoke(IPC.equationsUpdate, id, patch),
-    delete: (id) => ipcRenderer.invoke(IPC.equationsDelete, id)
+    delete: (id) => ipcRenderer.invoke(IPC.equationsDelete, id),
+    relationshipsFor: (slug) => ipcRenderer.invoke(IPC.equationsRelationshipsFor, slug),
+    addRelationship: (fromSlug, toSlug, kind) =>
+      ipcRenderer.invoke(IPC.equationsAddRelationship, fromSlug, toSlug, kind),
+    removeRelationship: (id) => ipcRenderer.invoke(IPC.equationsRemoveRelationship, id),
+    getDerivation: (slug) => ipcRenderer.invoke(IPC.equationsGetDerivation, slug),
+    setDerivation: (slug, steps) => ipcRenderer.invoke(IPC.equationsSetDerivation, slug, steps)
   },
   attachments: {
     add: (filename, mime, data) => ipcRenderer.invoke(IPC.attachmentsAdd, filename, mime, data),
@@ -39,6 +49,14 @@ const api: Note24Api = {
     get: (key) => ipcRenderer.invoke(IPC.settingsGet, key),
     set: (key, value) => ipcRenderer.invoke(IPC.settingsSet, key, value),
     getAll: () => ipcRenderer.invoke(IPC.settingsGetAll)
+  },
+  locations: {
+    list: () => ipcRenderer.invoke(IPC.locationsList),
+    pickFolder: () => ipcRenderer.invoke(IPC.locationsPickFolder),
+    add: (path, label) => ipcRenderer.invoke(IPC.locationsAdd, path, label),
+    rename: (id, label) => ipcRenderer.invoke(IPC.locationsRename, id, label),
+    switch: (id) => ipcRenderer.invoke(IPC.locationsSwitch, id),
+    remove: (id) => ipcRenderer.invoke(IPC.locationsRemove, id)
   }
 }
 

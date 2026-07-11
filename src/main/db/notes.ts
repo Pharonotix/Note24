@@ -11,6 +11,7 @@ interface NoteRow {
   folder_id: number | null
   created_at: number
   updated_at: number
+  sort_order: number
 }
 
 const EMPTY_DOC = JSON.stringify({ type: 'doc', content: [{ type: 'paragraph' }] })
@@ -36,15 +37,47 @@ function tagsFor(noteId: number): string[] {
   return rows.map((r) => r.name)
 }
 
-function summarize(r: { id: number; title: string; folder_id: number | null; updated_at: number }): NoteSummary {
-  return { id: r.id, title: r.title, folderId: r.folder_id, updatedAt: r.updated_at, tags: tagsFor(r.id) }
+interface SummaryRow {
+  id: number
+  title: string
+  folder_id: number | null
+  updated_at: number
+  sort_order: number
+}
+
+function summarize(r: SummaryRow): NoteSummary {
+  return {
+    id: r.id,
+    title: r.title,
+    folderId: r.folder_id,
+    updatedAt: r.updated_at,
+    tags: tagsFor(r.id),
+    sortOrder: r.sort_order
+  }
 }
 
 export function listNotes(): NoteSummary[] {
   const rows = getDb()
-    .prepare(`SELECT id, title, folder_id, updated_at FROM notes ORDER BY updated_at DESC`)
-    .all() as { id: number; title: string; folder_id: number | null; updated_at: number }[]
+    .prepare(`SELECT id, title, folder_id, updated_at, sort_order FROM notes ORDER BY sort_order, updated_at DESC`)
+    .all() as SummaryRow[]
   return rows.map(summarize)
+}
+
+function nextNoteSortOrder(folderId: number | null): number {
+  const row = getDb()
+    .prepare(`SELECT COALESCE(MAX(sort_order), -1) + 1 AS n FROM notes WHERE folder_id IS ?`)
+    .get(folderId) as { n: number }
+  return row.n
+}
+
+/** Persists a new sibling order for every note sharing the same folder. */
+export function reorderNotes(folderId: number | null, orderedIds: number[]): void {
+  const db = getDb()
+  const stmt = db.prepare(`UPDATE notes SET sort_order = ?, folder_id = ? WHERE id = ?`)
+  const tx = db.transaction(() => {
+    orderedIds.forEach((id, i) => stmt.run(i, folderId, id))
+  })
+  tx()
 }
 
 export function getNote(id: number): Note | null {
@@ -56,12 +89,13 @@ export function createNote(input: NoteCreateInput = {}): Note {
   const db = getDb()
   const ts = now()
   const title = input.title ?? 'Untitled'
+  const folderId = input.folderId ?? null
   const info = db
     .prepare(
-      `INSERT INTO notes (title, content, annotations, folder_id, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?)`
+      `INSERT INTO notes (title, content, annotations, folder_id, created_at, updated_at, sort_order)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`
     )
-    .run(title, EMPTY_DOC, null, input.folderId ?? null, ts, ts)
+    .run(title, EMPTY_DOC, null, folderId, ts, ts, nextNoteSortOrder(folderId))
   const id = Number(info.lastInsertRowid)
   syncFts(id, title, '')
   return getNote(id)!
@@ -75,9 +109,20 @@ export function updateNote(id: number, patch: NoteUpdateInput): void {
   const content = patch.content ?? existing.content
   const annotations = patch.annotations !== undefined ? patch.annotations : existing.annotations
   const folderId = patch.folderId !== undefined ? patch.folderId : existing.folderId
-  db.prepare(
-    `UPDATE notes SET title = ?, content = ?, annotations = ?, folder_id = ?, updated_at = ? WHERE id = ?`
-  ).run(title, content, annotations, folderId, now(), id)
+  // Moving to a different folder appends it at the end of that folder's order.
+  const sortOrder =
+    patch.folderId !== undefined && patch.folderId !== existing.folderId
+      ? nextNoteSortOrder(folderId)
+      : undefined
+  if (sortOrder !== undefined) {
+    db.prepare(
+      `UPDATE notes SET title = ?, content = ?, annotations = ?, folder_id = ?, sort_order = ?, updated_at = ? WHERE id = ?`
+    ).run(title, content, annotations, folderId, sortOrder, now(), id)
+  } else {
+    db.prepare(
+      `UPDATE notes SET title = ?, content = ?, annotations = ?, folder_id = ?, updated_at = ? WHERE id = ?`
+    ).run(title, content, annotations, folderId, now(), id)
+  }
   syncFts(id, title, extractPlaintext(content))
   if (patch.content !== undefined) syncLinks(id, content)
 }
@@ -99,12 +144,12 @@ export function searchNotes(query: string): NoteSummary[] {
   try {
     const rows = getDb()
       .prepare(
-        `SELECT n.id, n.title, n.folder_id, n.updated_at
+        `SELECT n.id, n.title, n.folder_id, n.updated_at, n.sort_order
          FROM notes_fts f JOIN notes n ON n.id = f.rowid
          WHERE notes_fts MATCH ?
          ORDER BY rank`
       )
-      .all(match) as { id: number; title: string; folder_id: number | null; updated_at: number }[]
+      .all(match) as SummaryRow[]
     return rows.map(summarize)
   } catch {
     return []

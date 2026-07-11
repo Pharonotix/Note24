@@ -1,11 +1,12 @@
 import './crash-logger'
-import { app, shell, BrowserWindow, protocol } from 'electron'
+import { app, shell, BrowserWindow, protocol, Menu, MenuItem } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { initDatabase, closeDatabase } from './db/database'
 import { registerIpcHandlers } from './ipc/handlers'
-import { readAttachmentBytes } from './attachments'
+import { readAttachmentBytes, setAttachmentsBaseDir } from './attachments'
+import { resolveActiveLocation } from './locations'
 
 // Custom scheme used to serve embedded attachment files to the renderer.
 protocol.registerSchemesAsPrivileged([
@@ -26,15 +27,43 @@ function createWindow(): void {
     autoHideMenuBar: true,
     title: 'Note24',
     backgroundColor: '#1a1c1e',
-    ...(process.platform === 'linux' ? { icon } : {}),
+    icon,
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
-      sandbox: false
+      sandbox: false,
+      spellcheck: true
     }
   })
 
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
+  })
+
+  // Spellcheck: use a predictable dictionary, and offer real corrections on
+  // right-click (Chromium underlines misspellings but has no built-in menu).
+  mainWindow.webContents.session.setSpellCheckerLanguages(['en-US'])
+  mainWindow.webContents.on('context-menu', (_event, params) => {
+    if (!params.misspelledWord) return
+    const menu = new Menu()
+    for (const suggestion of params.dictionarySuggestions) {
+      menu.append(
+        new MenuItem({
+          label: suggestion,
+          click: () => mainWindow.webContents.replaceMisspelling(suggestion)
+        })
+      )
+    }
+    if (params.dictionarySuggestions.length > 0) {
+      menu.append(new MenuItem({ type: 'separator' }))
+    }
+    menu.append(
+      new MenuItem({
+        label: 'Add to dictionary',
+        click: () =>
+          mainWindow.webContents.session.addWordToSpellCheckerDictionary(params.misspelledWord)
+      })
+    )
+    menu.popup()
   })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
@@ -77,8 +106,10 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window)
   })
 
-  // Open the database and expose the data layer to the renderer.
-  initDatabase()
+  // Resolve where this user's data currently lives, then open it.
+  const dataDir = resolveActiveLocation()
+  initDatabase(dataDir)
+  setAttachmentsBaseDir(dataDir)
   registerIpcHandlers()
 
   // Serve embedded attachments to the renderer via a safe custom scheme.

@@ -1,14 +1,9 @@
-import { Suspense, lazy, useEffect, useMemo, useRef, useState } from 'react'
+import { Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import { NodeViewWrapper, type NodeViewProps } from '@tiptap/react'
+import { useStore } from '../../../store/store'
+import { isDarkPreset } from '../../../lib/theme'
+import { ExcalidrawCanvas } from '../../ExcalidrawCanvas'
 import styles from './Drawing.module.css'
-
-// Excalidraw is large — load it (and its CSS) only when a drawing is present.
-const Excalidraw = lazy(() =>
-  Promise.all([
-    import('@excalidraw/excalidraw'),
-    import('@excalidraw/excalidraw/index.css')
-  ]).then(([m]) => ({ default: m.Excalidraw }))
-)
 
 const DEFAULT_W = 700
 const DEFAULT_H = 430
@@ -22,6 +17,7 @@ export function DrawingView({
   editor
 }: NodeViewProps): React.JSX.Element {
   const editable = editor.isEditable
+  const dark = useStore((s) => isDarkPreset(s.theme.preset))
   const attrW = (node.attrs.width as number) || DEFAULT_W
   const attrH = (node.attrs.height as number) || DEFAULT_H
   const [size, setSize] = useState({ w: attrW, h: attrH })
@@ -80,10 +76,11 @@ export function DrawingView({
         onKeyUp={(e) => e.stopPropagation()}
       >
         <Suspense fallback={<div className={styles.loading}>Loading canvas…</div>}>
-          <Excalidraw
+          <ExcalidrawCanvas
             initialData={initialData}
             onChange={onChange}
             viewModeEnabled={!editable}
+            theme={dark ? 'dark' : 'light'}
             UIOptions={{ canvasActions: { toggleTheme: false, saveToActiveFile: false, loadScene: false } }}
           />
         </Suspense>

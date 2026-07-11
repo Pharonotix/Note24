@@ -1,9 +1,15 @@
-import { app } from 'electron'
 import { join, basename, extname } from 'path'
 import { existsSync, mkdirSync, readFileSync, unlinkSync, writeFileSync } from 'fs'
 import { randomUUID } from 'crypto'
 import type { Attachment } from '@shared/types'
 import { getDb } from './db/database'
+
+let baseDir: string | null = null
+
+/** Sets the folder (the active data location) attachments are stored under. */
+export function setAttachmentsBaseDir(dir: string): void {
+  baseDir = dir
+}
 
 const MIME_BY_EXT: Record<string, string> = {
   '.png': 'image/png',
@@ -24,7 +30,8 @@ export function mimeFromName(name: string): string {
 }
 
 function attachmentsDir(): string {
-  const dir = join(app.getPath('userData'), 'attachments')
+  if (!baseDir) throw new Error('Attachments base dir not set — call setAttachmentsBaseDir() first')
+  const dir = join(baseDir, 'attachments')
   mkdirSync(dir, { recursive: true })
   return dir
 }

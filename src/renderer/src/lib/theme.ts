@@ -67,6 +67,11 @@ const OVERRIDABLE = [
 
 export const DEFAULT_THEME: ThemeConfig = { preset: 'sage-dark', overrides: {} }
 
+/** Whether the given preset id is a dark theme (used to drive Excalidraw's own `theme` prop). */
+export function isDarkPreset(presetId: string): boolean {
+  return PRESETS.find((p) => p.id === presetId)?.dark ?? true
+}
+
 /** Applies a theme config to the document (live). */
 export function applyTheme(cfg: ThemeConfig): void {
   const root = document.documentElement

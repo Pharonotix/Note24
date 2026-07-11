@@ -44,3 +44,48 @@
     transparent 80%
   );
 }
+
+/* ---- Reskin Excalidraw's own chrome to match Note24's theme ----
+   !important because Excalidraw declares these same custom properties
+   directly on .excalidraw itself; without it their rule wins on source order. */
+.frame :global(.excalidraw) {
+  --island-bg-color: var(--surface) !important;
+  --popup-bg-color: var(--surface) !important;
+  --popup-secondary-bg-color: var(--surface-2) !important;
+  --button-bg: var(--surface-2) !important;
+  --button-hover-bg: var(--surface-3) !important;
+  --button-color: var(--text) !important;
+  --button-border: var(--border) !important;
+  --default-bg-color: var(--surface) !important;
+  --default-border-color: var(--border) !important;
+  --color-primary: var(--primary) !important;
+  --color-primary-hover: var(--primary-hover) !important;
+  --color-primary-darker: var(--primary-hover) !important;
+  --color-primary-darkest: var(--primary-hover) !important;
+  --color-primary-light: var(--selection) !important;
+  --color-on-surface: var(--text) !important;
+  --color-surface-low: var(--surface) !important;
+  --color-surface-mid: var(--surface-2) !important;
+  --color-surface-high: var(--surface-3) !important;
+  --color-surface-lowest: var(--bg) !important;
+  --color-border-outline: var(--border) !important;
+  --color-selection: var(--primary) !important;
+  --border-radius-lg: var(--radius) !important;
+  --border-radius-md: var(--radius-sm) !important;
+}
+
+/* Move the help "?" trigger clear of our own bottom-right resize handle. */
+.frame :global(.excalidraw) :global(.help-icon) {
+  position: absolute !important;
+  top: 8px !important;
+  right: 8px !important;
+  bottom: auto !important;
+  left: auto !important;
+  z-index: 5;
+}
+
+.frame :global(.excalidraw) :global(.zoom-actions) {
+  background: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-sm) !important;
+}

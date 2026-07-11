@@ -76,5 +76,40 @@ export const migrations: string[] = [
 
   -- Full-text index over notes; rowid is kept equal to notes.id, synced in code.
   CREATE VIRTUAL TABLE notes_fts USING fts5(title, body);
+  `,
+
+  /* --- 2: folder customization + manual ordering --- */
+  `
+  ALTER TABLE folders ADD COLUMN color TEXT;
+  ALTER TABLE folders ADD COLUMN icon TEXT;
+  ALTER TABLE folders ADD COLUMN sort_order INTEGER NOT NULL DEFAULT 0;
+  ALTER TABLE notes ADD COLUMN sort_order INTEGER NOT NULL DEFAULT 0;
+  `,
+
+  /* --- 3: equation knowledge system (stable slug identity + relationships + derivations) ---
+     Built-in equations are re-inserted on every startup (their autoincrement ids are NOT
+     stable), so relationships/derivations are keyed on a stable `slug` instead — built-ins
+     get a deterministic slug from the seed; customs get `custom-<id>`. Relationship and
+     derivation rows are slug-keyed side tables, decoupled from the equations reseed, and
+     carry no SQL foreign keys (slug references are cleaned up in code on delete). */
+  `
+  ALTER TABLE equations ADD COLUMN slug TEXT;
+  CREATE UNIQUE INDEX idx_equations_slug ON equations(slug) WHERE slug IS NOT NULL;
+  UPDATE equations SET slug = 'custom-' || id WHERE slug IS NULL AND is_builtin = 0;
+
+  CREATE TABLE equation_relationships (
+    id        INTEGER PRIMARY KEY AUTOINCREMENT,
+    from_slug TEXT NOT NULL,
+    to_slug   TEXT NOT NULL,
+    kind      TEXT NOT NULL DEFAULT 'related',
+    UNIQUE(from_slug, to_slug, kind)
+  );
+  CREATE INDEX idx_eqrel_from ON equation_relationships(from_slug);
+  CREATE INDEX idx_eqrel_to ON equation_relationships(to_slug);
+
+  CREATE TABLE equation_derivations (
+    slug       TEXT PRIMARY KEY,
+    steps_json TEXT NOT NULL DEFAULT '[]'
+  );
   `
 ]

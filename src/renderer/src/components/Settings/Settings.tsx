@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import type { LocationsRegistry } from '@shared/types'
 import { useStore } from '../../store/store'
 import { ADVANCED_TOKENS, PRESETS, contrastOn, lighten, readToken, rgbToHex } from '../../lib/theme'
 import { DEMO_API_KEY } from '../../lib/desmos'
@@ -11,9 +12,15 @@ export function Settings(): React.JSX.Element | null {
   const setTheme = useStore((s) => s.setTheme)
   const [apiKey, setApiKey] = useState('')
   const [advanced, setAdvanced] = useState(false)
+  const [registry, setRegistry] = useState<LocationsRegistry | null>(null)
+  const [renamingLocId, setRenamingLocId] = useState<string | null>(null)
+  const [switching, setSwitching] = useState(false)
 
   useEffect(() => {
-    if (open) window.api.settings.get('desmosApiKey').then((k) => setApiKey(k || ''))
+    if (open) {
+      window.api.settings.get('desmosApiKey').then((k) => setApiKey(k || ''))
+      window.api.locations.list().then(setRegistry)
+    }
   }, [open])
 
   if (!open) return null
@@ -47,6 +54,32 @@ export function Settings(): React.JSX.Element | null {
     window.api.settings.set('desmosApiKey', v)
   }
   const tokenValue = (key: string): string => theme.overrides[key] ?? readToken(key)
+
+  const refreshLocations = async (): Promise<void> => setRegistry(await window.api.locations.list())
+
+  const addDataFolder = async (): Promise<void> => {
+    const path = await window.api.locations.pickFolder()
+    if (!path) return
+    await window.api.locations.add(path)
+    await refreshLocations()
+  }
+
+  const renameLocation = async (id: string, label: string): Promise<void> => {
+    await window.api.locations.rename(id, label)
+    await refreshLocations()
+    setRenamingLocId(null)
+  }
+
+  const switchLocation = async (id: string): Promise<void> => {
+    setSwitching(true)
+    await window.api.locations.switch(id) // relaunches the app; this call does not return
+  }
+
+  const removeLocation = async (id: string, label: string): Promise<void> => {
+    if (!window.confirm(`Remove "${label}" from the list? Its files are not deleted.`)) return
+    await window.api.locations.remove(id)
+    await refreshLocations()
+  }
 
   return (
     <div className={styles.overlay} onMouseDown={() => setOpen(false)}>
@@ -140,8 +173,70 @@ export function Settings(): React.JSX.Element | null {
               onChange={(e) => saveKey(e.target.value)}
             />
           </section>
+
+          <section className={styles.section}>
+            <h3 className={styles.h3}>Storage</h3>
+            <p className={styles.hint}>
+              Where your notes, equations, and attachments live. Switching restarts Note24.
+            </p>
+            <div className={styles.locList}>
+              {registry?.locations.map((loc) => {
+                const isActive = loc.id === registry.activeId
+                return (
+                  <div key={loc.id} className={isActive ? `${styles.locRow} ${styles.locActive}` : styles.locRow}>
+                    <div className={styles.locInfo}>
+                      {renamingLocId === loc.id ? (
+                        <input
+                          className={styles.locRenameInput}
+                          autoFocus
+                          defaultValue={loc.label}
+                          onBlur={(e) => renameLocation(loc.id, e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') (e.target as HTMLInputElement).blur()
+                            if (e.key === 'Escape') setRenamingLocId(null)
+                          }}
+                        />
+                      ) : (
+                        <span
+                          className={styles.locLabel}
+                          onDoubleClick={() => setRenamingLocId(loc.id)}
+                          title="Double-click to rename"
+                        >
+                          {loc.label}
+                          {isActive && <span className={styles.locBadge}>Active</span>}
+                        </span>
+                      )}
+                      <span className={styles.locPath}>{loc.path}</span>
+                    </div>
+                    {!isActive && (
+                      <div className={styles.locActions}>
+                        <button className={styles.locBtn} onClick={() => switchLocation(loc.id)}>
+                          Switch
+                        </button>
+                        <button
+                          className={styles.locBtn}
+                          onClick={() => removeLocation(loc.id, loc.label)}
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+            <button className={styles.reset} onClick={addDataFolder}>
+              + Add data folder…
+            </button>
+          </section>
         </div>
       </div>
+
+      {switching && (
+        <div className={styles.switchingOverlay}>
+          <span>Restarting Note24…</span>
+        </div>
+      )}
     </div>
   )
 }

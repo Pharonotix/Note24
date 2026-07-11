@@ -1,0 +1,117 @@
+.wrap {
+  display: block;
+  margin: 0.9em 0;
+}
+
+.frame {
+  position: relative;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--surface);
+  max-width: 100%;
+}
+.sel {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px var(--selection);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-2);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+.icon {
+  font-size: 13px;
+}
+.label {
+  flex: 1;
+}
+.loading {
+  color: var(--text-faint);
+  font-weight: 500;
+}
+.err {
+  color: var(--danger);
+  font-weight: 500;
+}
+
+.body {
+  display: flex;
+  align-items: stretch;
+}
+
+/* Input and results share the exact same font + line-height so results align
+   with their source line. Input never wraps (wrap="off"), so one line = one row. */
+.input,
+.results {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.65;
+  padding: 8px 10px;
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  outline: none;
+  resize: none;
+  overflow-x: auto;
+  white-space: pre;
+}
+.input::placeholder {
+  color: var(--text-faint);
+}
+
+.results {
+  flex: 0 0 auto;
+  min-width: 90px;
+  max-width: 220px;
+  text-align: right;
+  border-left: 1px solid var(--border);
+  background: var(--bg);
+  overflow: hidden;
+  pointer-events: none;
+  white-space: nowrap;
+}
+.resultLine {
+  height: calc(1.65em);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.resultVal {
+  color: var(--primary);
+  font-weight: 600;
+}
+.resultErr {
+  color: var(--text-faint);
+  font-style: italic;
+  font-size: 0.85em;
+}
+
+.resizeHandle {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 14px;
+  height: 14px;
+  cursor: ew-resize;
+  z-index: 4;
+  background: linear-gradient(
+    135deg,
+    transparent 0 55%,
+    var(--border-strong) 55% 65%,
+    transparent 65% 75%,
+    var(--border-strong) 75% 85%,
+    transparent 85%
+  );
+}

@@ -66,8 +66,149 @@
   border-color: var(--primary);
 }
 
+.symbolsToggle {
+  align-self: flex-start;
+  font-size: 13px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: var(--text-muted);
+}
+.symbolsToggle:hover {
+  background: var(--surface-3);
+  color: var(--text);
+}
+
 .previewRow {
   min-height: 20px;
   text-align: center;
   color: var(--text);
+}
+
+/* ---- Details toggle shown next to a metadata-bearing equation ---- */
+.detailsToggle {
+  vertical-align: middle;
+  margin-left: 4px;
+  font-size: 12px;
+  line-height: 1;
+  padding: 2px 5px;
+  border-radius: 4px;
+  color: var(--text-faint);
+  transition: background var(--transition), color var(--transition);
+}
+.detailsToggle:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+/* ---- Rendered (view-mode) metadata: name / description / variables ---- */
+.meta {
+  display: block;
+  max-width: 520px;
+  margin: 6px auto 0;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  text-align: left;
+}
+.metaHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+.metaCheckbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: var(--text-faint);
+  cursor: pointer;
+  user-select: none;
+}
+.metaCheckbox input {
+  cursor: pointer;
+}
+.metaEditBtn {
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: var(--text-muted);
+}
+.metaEditBtn:hover {
+  background: var(--surface-3);
+  color: var(--text);
+}
+.metaVarSym {
+  display: inline-block;
+}
+.metaName {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 650;
+  color: var(--text-muted);
+}
+.metaDesc {
+  display: block;
+  font-size: 12px;
+  color: var(--text-faint);
+  margin-top: 2px;
+  line-height: 1.4;
+}
+.metaVars {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  margin-top: 4px;
+}
+.metaVar {
+  font-size: 11px;
+  color: var(--text-faint);
+}
+
+/* ---- Edit-mode metadata fields (block math only) ---- */
+.metaEdit {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 4px;
+  padding-top: 6px;
+  border-top: 1px solid var(--border);
+}
+.metaInput {
+  padding: 5px 7px;
+  border-radius: 4px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 12.5px;
+  font-family: inherit;
+  outline: none;
+  resize: vertical;
+}
+.metaInput:focus {
+  border-color: var(--primary);
+}
+.metaActions {
+  display: flex;
+  gap: 6px;
+  margin-top: 2px;
+}
+.metaSave {
+  padding: 4px 12px;
+  border-radius: var(--radius-sm);
+  background: var(--primary);
+  color: var(--primary-contrast);
+  font-size: 12px;
+  font-weight: 600;
+}
+.metaSave:hover {
+  background: var(--primary-hover);
+}
+.metaCancel {
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-3);
+  color: var(--text-muted);
+  font-size: 12px;
 }

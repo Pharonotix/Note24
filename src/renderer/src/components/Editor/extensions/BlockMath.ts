@@ -2,13 +2,30 @@ import { Node, mergeAttributes } from '@tiptap/core'
 import { ReactNodeViewRenderer } from '@tiptap/react'
 import { MathView } from './MathView'
 
+export interface BlockMathAttrs {
+  latex?: string
+  /** Optional context carried over when inserted from the equation library. */
+  name?: string
+  description?: string
+  /** JSON-stringified EquationVariable[]. */
+  variablesJson?: string
+  /** When true, metadata is hidden and only the formula shows. Defaults collapsed. */
+  collapsed?: boolean
+}
+
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
     blockMath: {
-      insertBlockMath: (attrs?: { latex?: string }) => ReturnType
+      insertBlockMath: (attrs?: BlockMathAttrs) => ReturnType
     }
   }
 }
+
+const strAttr = (name: string) => ({
+  default: '',
+  parseHTML: (el: HTMLElement) => el.getAttribute(`data-${name}`) || '',
+  renderHTML: (attrs: Record<string, unknown>) => ({ [`data-${name}`]: attrs[name] })
+})
 
 export const BlockMath = Node.create({
   name: 'blockMath',
@@ -18,10 +35,15 @@ export const BlockMath = Node.create({
 
   addAttributes() {
     return {
-      latex: {
-        default: '',
-        parseHTML: (el) => el.getAttribute('data-latex') || '',
-        renderHTML: (attrs) => ({ 'data-latex': attrs.latex })
+      latex: strAttr('latex'),
+      name: strAttr('name'),
+      description: strAttr('description'),
+      variablesJson: strAttr('variablesJson'),
+      // Boolean; missing attribute (older notes / bare equations) reads as collapsed.
+      collapsed: {
+        default: true,
+        parseHTML: (el: HTMLElement) => el.getAttribute('data-collapsed') !== 'false',
+        renderHTML: (attrs: Record<string, unknown>) => ({ 'data-collapsed': String(attrs.collapsed) })
       }
     }
   },
@@ -43,7 +65,16 @@ export const BlockMath = Node.create({
       insertBlockMath:
         (attrs = {}) =>
         ({ commands }) =>
-          commands.insertContent({ type: this.name, attrs: { latex: attrs.latex ?? '' } })
+          commands.insertContent({
+            type: this.name,
+            attrs: {
+              latex: attrs.latex ?? '',
+              name: attrs.name ?? '',
+              description: attrs.description ?? '',
+              variablesJson: attrs.variablesJson ?? '',
+              collapsed: attrs.collapsed ?? true
+            }
+          })
     }
   }
 })

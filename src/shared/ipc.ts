@@ -8,11 +8,15 @@ export const IPC = {
   notesSearch: 'notes:search',
   notesSetTags: 'notes:setTags',
   notesBacklinks: 'notes:backlinks',
+  notesReorder: 'notes:reorder',
 
   foldersList: 'folders:list',
   foldersCreate: 'folders:create',
   foldersRename: 'folders:rename',
   foldersDelete: 'folders:delete',
+  foldersUpdateStyle: 'folders:updateStyle',
+  foldersMove: 'folders:move',
+  foldersReorder: 'folders:reorder',
 
   tagsList: 'tags:list',
 
@@ -21,6 +25,11 @@ export const IPC = {
   equationsCreate: 'equations:create',
   equationsUpdate: 'equations:update',
   equationsDelete: 'equations:delete',
+  equationsRelationshipsFor: 'equations:relationshipsFor',
+  equationsAddRelationship: 'equations:addRelationship',
+  equationsRemoveRelationship: 'equations:removeRelationship',
+  equationsGetDerivation: 'equations:getDerivation',
+  equationsSetDerivation: 'equations:setDerivation',
 
   attachmentsAdd: 'attachments:add',
   attachmentsPick: 'attachments:pick',
@@ -28,5 +37,12 @@ export const IPC = {
 
   settingsGet: 'settings:get',
   settingsSet: 'settings:set',
-  settingsGetAll: 'settings:getAll'
+  settingsGetAll: 'settings:getAll',
+
+  locationsList: 'locations:list',
+  locationsPickFolder: 'locations:pickFolder',
+  locationsAdd: 'locations:add',
+  locationsRename: 'locations:rename',
+  locationsSwitch: 'locations:switch',
+  locationsRemove: 'locations:remove'
 } as const

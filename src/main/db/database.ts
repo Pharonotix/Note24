@@ -1,8 +1,8 @@
 import Database from 'better-sqlite3'
-import { app } from 'electron'
+import { mkdirSync } from 'fs'
 import { join } from 'path'
 import { migrations } from './migrations'
-import { seedEquationsIfEmpty } from './seed-equations'
+import { syncBuiltinEquations } from './seed-equations'
 
 let db: Database.Database | null = null
 
@@ -12,14 +12,15 @@ export function getDb(): Database.Database {
   return db
 }
 
-/** Opens (creating if needed) the SQLite database and runs pending migrations. */
-export function initDatabase(): Database.Database {
-  const dbPath = join(app.getPath('userData'), 'note24.db')
+/** Opens (creating if needed) the SQLite database at `dataDir` and runs pending migrations. */
+export function initDatabase(dataDir: string): Database.Database {
+  mkdirSync(dataDir, { recursive: true })
+  const dbPath = join(dataDir, 'note24.db')
   db = new Database(dbPath)
   db.pragma('journal_mode = WAL')
   db.pragma('foreign_keys = ON')
   runMigrations(db)
-  seedEquationsIfEmpty()
+  syncBuiltinEquations()
   return db
 }
 

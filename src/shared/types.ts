@@ -23,12 +23,16 @@ export interface NoteSummary {
   folderId: number | null
   updatedAt: number
   tags: string[]
+  sortOrder: number
 }
 
 export interface Folder {
   id: number
   name: string
   parentId: number | null
+  color: string | null
+  icon: string | null
+  sortOrder: number
 }
 
 export interface Tag {
@@ -44,6 +48,8 @@ export interface EquationVariable {
 
 export interface Equation {
   id: number
+  /** Stable identity across restarts (built-ins reseed, changing their id). */
+  slug: string | null
   name: string
   latex: string
   description: string
@@ -53,6 +59,43 @@ export interface Equation {
   isBuiltin: boolean
   createdAt: number
   updatedAt: number
+}
+
+/** How one equation relates to another in the knowledge graph. */
+export type RelationKind = 'related' | 'derives-from' | 'special-case-of'
+
+export interface EquationRelationship {
+  id: number
+  fromSlug: string
+  toSlug: string
+  kind: RelationKind
+}
+
+/** A relationship resolved to the neighbouring equation, for the detail view. */
+export interface EquationRelationshipView {
+  id: number
+  kind: RelationKind
+  /** 'out' = this equation → neighbour; 'in' = neighbour → this equation. */
+  direction: 'out' | 'in'
+  equation: Equation
+}
+
+/** One step in an equation's stored derivation chain. */
+export interface DerivationStep {
+  latex: string
+  note?: string
+}
+
+/** A user-defined folder Note24's database + attachments can live in. */
+export interface DataLocation {
+  id: string
+  label: string
+  path: string
+}
+
+export interface LocationsRegistry {
+  locations: DataLocation[]
+  activeId: string
 }
 
 /** Metadata for an embedded file; bytes live on disk in userData/attachments/. */
