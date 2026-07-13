@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { NodeViewWrapper, type NodeViewProps } from '@tiptap/react'
-import { type DesmosCalculator, getDesmosApiKey, loadDesmos } from '../../../lib/desmos'
+import { applyDesmosSeed, type DesmosCalculator, getDesmosApiKey, loadDesmos } from '../../../lib/desmos'
 import styles from './DesmosGraph.module.css'
 
 const DEFAULT_W = 640
@@ -53,6 +53,16 @@ export function DesmosGraph({
             calc.setState(JSON.parse(raw))
           } catch {
             /* ignore malformed state */
+          }
+        } else {
+          const seedRaw = node.attrs.seed as string
+          if (seedRaw) {
+            try {
+              applyDesmosSeed(calc, JSON.parse(seedRaw))
+              updateAttributes({ state: JSON.stringify(calc.getState()), seed: '' })
+            } catch {
+              /* ignore malformed seed */
+            }
           }
         }
         calc.observeEvent('change', () => {

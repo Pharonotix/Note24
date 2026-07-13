@@ -1,6 +1,6 @@
 {
   "name": "note24",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Note24 — a personal physics notebook with equations, Desmos graphs, drawings, and linked notes",
   "main": "./out/main/index.js",
   "author": "aiden",

@@ -2,6 +2,34 @@
 
 All notable changes to Note24. Newest first.
 
+## 0.5.0 — Graphing & Data Analysis
+
+### Added
+- **Table block.** A new spreadsheet-style block (toolbar "▦") with editable header + data
+  cells, add/remove row and column, and a horizontal-scrolling grid for wide datasets. Data
+  is stored as JSON in the node's attrs, following the same pattern as calculator/equation
+  blocks — no new DB schema.
+- **Table → Graph.** A "Graph" button on the table block auto-detects the first two fully
+  numeric columns and inserts a new Desmos graph directly below, pre-populated as a Desmos
+  data table (points) using those columns.
+- **Calculator → Graph.** A "Graph" button on the calculator block sends every line
+  containing a variable (e.g. `y = x^2 - 4`) to a new Desmos graph as plotted expressions.
+- **CSV / TSV import.** An "Import CSV" button on the table block opens a file picker,
+  parses the file (handles quoted fields, commas or tabs, auto-detects the delimiter),
+  and replaces the table's contents — with a confirmation if the table already has data.
+- **Experimental data paste.** Pasting multi-cell tab/comma-delimited data (e.g. copied
+  from Excel or instrument software) into any table cell fills the grid from that cell,
+  auto-growing rows/columns as needed.
+- **Desmos integration improvements.** Graphs can now be pre-seeded programmatically (table
+  columns or a list of expressions) via a new `seed` attr on the Desmos node — the seed is
+  applied once via the Desmos expression API, then the resulting graph state is saved and
+  the seed cleared, so the graph persists and reloads normally afterward.
+
+### Notes
+- No new dependencies — CSV parsing and the table grid are hand-rolled to keep startup fast.
+- No schema/migration changes; new node types default to empty/sample data when absent from
+  older documents.
+
 ## 0.4.0 — Calculator & CAS
 
 ### Added

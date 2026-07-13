@@ -1,0 +1,131 @@
+.wrap {
+  display: block;
+  margin: 0.9em 0;
+}
+
+.frame {
+  position: relative;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--surface);
+  max-width: 100%;
+}
+.sel {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px var(--selection);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-2);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+.icon {
+  font-size: 13px;
+}
+.label {
+  flex: 1;
+}
+
+.hbtn {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 999px;
+  color: var(--text-muted);
+  background: var(--surface-3);
+  white-space: nowrap;
+}
+.hbtn:hover {
+  color: var(--text);
+}
+.hbtn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.hiddenFile {
+  display: none;
+}
+
+.scroll {
+  overflow-x: auto;
+}
+
+.table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.th,
+.td {
+  border: 1px solid var(--border);
+  padding: 0;
+  position: relative;
+}
+.th {
+  background: var(--surface-2);
+}
+
+.headerInput,
+.cellInput {
+  width: 100%;
+  min-width: 90px;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  padding: 6px 8px;
+  outline: none;
+  box-sizing: border-box;
+}
+.headerInput {
+  font-weight: 700;
+  color: var(--primary);
+}
+.headerInput:focus,
+.cellInput:focus {
+  background: var(--selection);
+}
+
+.colDel {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 14px;
+  height: 14px;
+  line-height: 14px;
+  border-radius: 50%;
+  font-size: 11px;
+  color: var(--text-faint);
+  background: transparent;
+}
+.colDel:hover {
+  background: var(--danger);
+  color: white;
+}
+
+.rowDelCell {
+  border: none;
+  width: 24px;
+  text-align: center;
+}
+.rowDel {
+  width: 18px;
+  height: 18px;
+  line-height: 18px;
+  border-radius: 50%;
+  font-size: 12px;
+  color: var(--text-faint);
+}
+.rowDel:hover {
+  background: var(--danger);
+  color: white;
+}

@@ -33,6 +33,11 @@ export const DesmosNode = Node.create({
         default: 380,
         parseHTML: (el) => Number(el.getAttribute('data-height')) || 380,
         renderHTML: (attrs) => ({ 'data-height': attrs.height })
+      },
+      seed: {
+        default: '',
+        parseHTML: (el) => el.getAttribute('data-seed') || '',
+        renderHTML: (attrs) => ({ 'data-seed': attrs.seed })
       }
     }
   },

@@ -12,7 +12,8 @@ Shipped versions (see `CHANGELOG.md` for details):
 - ✅ **v0.2.0** — Confirm-to-delete, sidebar note rename, annotate-tool removal, in-note equation metadata, Lucide folder icons, native spellcheck, calculator block (math.js + nerdamer).
 - ✅ **v0.3.0** — Equation Knowledge System (foundation): metadata collapse/expand, LaTeX-rendered variables, stable equation slugs, equation relationships, "Used In" references, and derivation chains.
 - ✅ **v0.4.0** — Calculator & CAS: engineering constants (g, G, c, h, R, k, μ₀, ε₀), variable inspector, unit consistency checker, and a rearrangement wizard (solve any equation for a variable).
-- ⏭️ **Next: v0.5.0** — Graphing & Data Analysis (table block, table→graph, CSV import, calculator→graph). Deferred items to fold in later: the visual equation dependency **graph** (from v0.3.0) and equation→calculator integration (from v0.4.0).
+- ✅ **v0.5.0** — Graphing & Data Analysis: table block (editable grid, CSV/TSV import, paste-to-fill), table→graph and calculator→graph (auto-seeded Desmos graphs), Desmos seed-attr integration improvement.
+- ⏭️ **Next: v0.6.0** — Attachments System (unified file manager, folder/note attachments, move/rename/delete/search, drag-and-drop). Deferred items to fold in later: the visual equation dependency **graph** (from v0.3.0) and equation→calculator integration (from v0.4.0).
 
 ---
 

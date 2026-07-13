@@ -8,6 +8,7 @@ import {
   solveFor,
   type EvalOutput
 } from '../../../lib/calcEngine'
+import type { DesmosSeed } from '../../../lib/desmos'
 import styles from './Calculator.module.css'
 
 const DEFAULT_W = 460
@@ -19,7 +20,8 @@ export function CalculatorView({
   node,
   updateAttributes,
   selected,
-  editor
+  editor,
+  getPos
 }: NodeViewProps): React.JSX.Element {
   const editable = editor.isEditable
   const attrW = (node.attrs.width as number) || DEFAULT_W
@@ -103,6 +105,22 @@ export function CalculatorView({
   const lines = text.length ? text.split('\n') : ['']
   const rows = Math.max(3, lines.length)
 
+  // Lines with a variable (letter) are treated as graphable expressions/equations.
+  const graphableLines = lines.map((l) => l.trim()).filter((l) => l && /[a-zA-Z]/.test(l))
+
+  const onGraph = (): void => {
+    if (!graphableLines.length) return
+    const from = getPos()
+    if (from == null) return
+    const seed: DesmosSeed = { kind: 'exprs', exprs: graphableLines }
+    const pos = from + node.nodeSize
+    editor
+      .chain()
+      .focus()
+      .insertContentAt(pos, { type: 'desmos', attrs: { seed: JSON.stringify(seed) } })
+      .run()
+  }
+
   return (
     <NodeViewWrapper className={styles.wrap}>
       <div
@@ -134,6 +152,19 @@ export function CalculatorView({
                 onClick={() => setShowConstants((v) => !v)}
               >
                 π Constants
+              </button>
+              <button
+                type="button"
+                className={styles.hbtn}
+                title={
+                  graphableLines.length
+                    ? 'Send these lines to a new Desmos graph'
+                    : 'Add a line with a variable (e.g. y = x^2) to graph it'
+                }
+                disabled={!graphableLines.length}
+                onClick={onGraph}
+              >
+                📈 Graph
               </button>
             </>
           )}

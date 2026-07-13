@@ -13,11 +13,34 @@ export interface DesmosCalculator {
   getState(): unknown
   setState(state: unknown, options?: { allowUndo?: boolean }): void
   setBlank(): void
+  setExpression(expr: Record<string, unknown>): void
   updateSettings(settings: Record<string, unknown>): void
   resize(): void
   observeEvent(event: string, handler: () => void): void
   unobserveEvent(event: string): void
   destroy(): void
+}
+
+/** Seed data used to pre-populate a freshly-inserted graph (table→graph, calculator→graph). */
+export type DesmosSeed =
+  | { kind: 'table'; columns: { label: string; values: string[] }[] }
+  | { kind: 'exprs'; exprs: string[] }
+
+/** Applies seed data to a calculator via the expression API, then clears the seed attr. */
+export function applyDesmosSeed(calc: DesmosCalculator, seed: DesmosSeed): void {
+  if (seed.kind === 'table') {
+    calc.setExpression({
+      id: 'table1',
+      type: 'table',
+      columns: seed.columns.map((c, i) => ({
+        latex: i === 0 ? 'x_{1}' : `y_{${i}}`,
+        values: c.values,
+        ...(i === 0 ? {} : { points: true, lines: false })
+      }))
+    })
+  } else {
+    seed.exprs.forEach((latex, i) => calc.setExpression({ id: `expr${i + 1}`, latex }))
+  }
 }
 
 interface DesmosStatic {

@@ -93,6 +93,7 @@ export function Toolbar({ editor }: { editor: Editor }): React.JSX.Element {
       {btn('🖼', () => void insertImage(), false, 'Insert image / file')}
       {btn('✎', () => chain().insertDrawing().run(), false, 'Insert drawing')}
       {btn('🧮', () => chain().insertCalculator().run(), false, 'Insert calculator')}
+      {btn('▦', () => chain().insertDataTable().run(), false, 'Insert table')}
       <span className={styles.sep} />
       {btn('↶', () => chain().undo().run(), false, 'Undo')}
       {btn('↷', () => chain().redo().run(), false, 'Redo')}

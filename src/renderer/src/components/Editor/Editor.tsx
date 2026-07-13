@@ -14,6 +14,7 @@ import { WikiLink } from './extensions/WikiLink'
 import { ImageFile } from './extensions/ImageFile'
 import { DrawingNode } from './extensions/DrawingNode'
 import { CalculatorNode } from './extensions/CalculatorNode'
+import { DataTableNode } from './extensions/DataTableNode'
 import { Backlinks } from '../Backlinks/Backlinks'
 import styles from './Editor.module.css'
 
@@ -72,7 +73,8 @@ export function Editor({ note }: { note: Note }): React.JSX.Element {
       WikiLink,
       ImageFile,
       DrawingNode,
-      CalculatorNode
+      CalculatorNode,
+      DataTableNode
     ],
     content: parseContent(note.content),
     onUpdate: ({ editor }) => saveBody(JSON.stringify(editor.getJSON())),
