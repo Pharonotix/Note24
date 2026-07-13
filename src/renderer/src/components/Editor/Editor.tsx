@@ -16,18 +16,20 @@ import { DrawingNode } from './extensions/DrawingNode'
 import { CalculatorNode } from './extensions/CalculatorNode'
 import { DataTableNode } from './extensions/DataTableNode'
 import { Backlinks } from '../Backlinks/Backlinks'
+import { NoteAttachments } from '../Attachments/NoteAttachments'
 import styles from './Editor.module.css'
 
-/** Uploads dropped/pasted files as attachments and inserts them into the editor. */
-async function insertFiles(ed: TipTapEditor, files: FileList): Promise<void> {
+/** Uploads dropped/pasted files as attachments (linked to this note) and inserts them into the editor. */
+async function insertFiles(ed: TipTapEditor, files: FileList, noteId: number): Promise<void> {
   for (const file of Array.from(files)) {
     const data = new Uint8Array(await file.arrayBuffer())
-    const att = await window.api.attachments.add(file.name, file.type || '', data)
+    const att = await window.api.attachments.add(file.name, file.type || '', data, { noteId })
     ed.chain()
       .focus()
       .insertImageFile({ attachmentId: att.id, filename: att.filename, mime: att.mime })
       .run()
   }
+  useStore.getState().bumpAttachments()
 }
 
 function parseContent(json: string): object {
@@ -82,7 +84,7 @@ export function Editor({ note }: { note: Note }): React.JSX.Element {
       handlePaste: (_view, event) => {
         const files = event.clipboardData?.files
         if (files && files.length && editorRef.current) {
-          insertFiles(editorRef.current, files)
+          insertFiles(editorRef.current, files, note.id)
           return true
         }
         return false
@@ -91,7 +93,7 @@ export function Editor({ note }: { note: Note }): React.JSX.Element {
         const files = (event as DragEvent).dataTransfer?.files
         if (files && files.length && editorRef.current) {
           event.preventDefault()
-          insertFiles(editorRef.current, files)
+          insertFiles(editorRef.current, files, note.id)
           return true
         }
         return false
@@ -116,7 +118,7 @@ export function Editor({ note }: { note: Note }): React.JSX.Element {
 
   return (
     <div className={styles.editor}>
-      {editor && <Toolbar editor={editor} />}
+      {editor && <Toolbar editor={editor} noteId={note.id} />}
       <div className={styles.scroll}>
         <input
           className={styles.title}
@@ -128,6 +130,7 @@ export function Editor({ note }: { note: Note }): React.JSX.Element {
           }}
         />
         <EditorContent editor={editor} className={styles.body} />
+        <NoteAttachments noteId={note.id} />
         <Backlinks noteId={note.id} />
       </div>
     </div>

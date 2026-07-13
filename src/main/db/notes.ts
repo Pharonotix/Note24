@@ -2,6 +2,7 @@ import type { Note, NoteCreateInput, NoteSummary, NoteUpdateInput } from '@share
 import { getDb } from './database'
 import { extractPlaintext } from './plaintext'
 import { syncLinks } from './links'
+import { deleteAttachmentsForNote } from '../attachments'
 
 interface NoteRow {
   id: number
@@ -128,6 +129,7 @@ export function updateNote(id: number, patch: NoteUpdateInput): void {
 }
 
 export function deleteNote(id: number): void {
+  deleteAttachmentsForNote(id)
   const db = getDb()
   db.prepare(`DELETE FROM notes WHERE id = ?`).run(id)
   db.prepare(`DELETE FROM notes_fts WHERE rowid = ?`).run(id)

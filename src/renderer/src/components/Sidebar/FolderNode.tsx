@@ -47,6 +47,10 @@ export function FolderNode({
         onDrop={(e) => {
           e.preventDefault()
           e.stopPropagation()
+          if (e.dataTransfer.files.length) {
+            ctx.attachFiles({ kind: 'folder', id: folder.id }, e.dataTransfer.files)
+            return
+          }
           const position = positionFromEvent(e, true)
           ctx.resolveDrop({ kind: 'folder', id: folder.id, position })
         }}
@@ -160,6 +164,7 @@ export function FolderNode({
                     const position = positionFromEvent(e, false) as 'before' | 'after'
                     ctx.resolveDrop({ kind: 'note', id: n.id, position })
                   }}
+                  onDropFiles={(files) => ctx.attachFiles({ kind: 'note', id: n.id }, files)}
                 />
               )
             })}

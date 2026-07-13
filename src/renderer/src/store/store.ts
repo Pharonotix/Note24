@@ -15,11 +15,14 @@ interface AppState {
   currentNote: Note | null
   quickSwitcherOpen: boolean
   equationPanelOpen: boolean
+  fileManagerOpen: boolean
   settingsOpen: boolean
   theme: ThemeConfig
   editor: Editor | null
   /** The note/folder currently being dragged in the sidebar, if any. */
   dragItem: { kind: 'note' | 'folder'; id: number } | null
+  /** Bumped after any attachment add/rename/move/delete, so panels know to refetch. */
+  attachmentsVersion: number
 
   init: () => Promise<void>
   refreshNotes: () => Promise<void>
@@ -45,9 +48,13 @@ interface AppState {
   setDragItem: (item: { kind: 'note' | 'folder'; id: number } | null) => void
   setQuickSwitcher: (open: boolean) => void
   setEquationPanel: (open: boolean) => void
+  setFileManagerOpen: (open: boolean) => void
   setSettingsOpen: (open: boolean) => void
   setTheme: (cfg: ThemeConfig) => void
   setEditor: (editor: Editor | null) => void
+  bumpAttachments: () => void
+  attachFilesToNote: (noteId: number, files: FileList | File[]) => Promise<void>
+  attachFilesToFolder: (folderId: number, files: FileList | File[]) => Promise<void>
 }
 
 export const useStore = create<AppState>((set, get) => ({
@@ -60,10 +67,12 @@ export const useStore = create<AppState>((set, get) => ({
   currentNote: null,
   quickSwitcherOpen: false,
   equationPanelOpen: false,
+  fileManagerOpen: false,
   settingsOpen: false,
   theme: DEFAULT_THEME,
   editor: null,
   dragItem: null,
+  attachmentsVersion: 0,
 
   init: async () => {
     const theme = await loadTheme()
@@ -191,6 +200,7 @@ export const useStore = create<AppState>((set, get) => ({
 
   setQuickSwitcher: (open) => set({ quickSwitcherOpen: open }),
   setEquationPanel: (open) => set({ equationPanelOpen: open }),
+  setFileManagerOpen: (open) => set({ fileManagerOpen: open }),
   setSettingsOpen: (open) => set({ settingsOpen: open }),
   setTheme: (cfg) => {
     applyTheme(cfg)
@@ -198,5 +208,23 @@ export const useStore = create<AppState>((set, get) => ({
     void saveTheme(cfg)
   },
   setEditor: (editor) => set({ editor }),
-  setDragItem: (item) => set({ dragItem: item })
+  setDragItem: (item) => set({ dragItem: item }),
+
+  bumpAttachments: () => set((s) => ({ attachmentsVersion: s.attachmentsVersion + 1 })),
+
+  attachFilesToNote: async (noteId, files) => {
+    for (const file of Array.from(files)) {
+      const data = new Uint8Array(await file.arrayBuffer())
+      await window.api.attachments.add(file.name, file.type || '', data, { noteId })
+    }
+    get().bumpAttachments()
+  },
+
+  attachFilesToFolder: async (folderId, files) => {
+    for (const file of Array.from(files)) {
+      const data = new Uint8Array(await file.arrayBuffer())
+      await window.api.attachments.add(file.name, file.type || '', data, { folderId })
+    }
+    get().bumpAttachments()
+  }
 }))

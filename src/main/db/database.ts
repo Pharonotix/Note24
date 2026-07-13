@@ -3,6 +3,7 @@ import { mkdirSync } from 'fs'
 import { join } from 'path'
 import { migrations } from './migrations'
 import { syncBuiltinEquations } from './seed-equations'
+import { backfillAttachmentNoteLinks } from './attachmentBackfill'
 
 let db: Database.Database | null = null
 
@@ -21,6 +22,7 @@ export function initDatabase(dataDir: string): Database.Database {
   db.pragma('foreign_keys = ON')
   runMigrations(db)
   syncBuiltinEquations()
+  backfillAttachmentNoteLinks()
   return db
 }
 

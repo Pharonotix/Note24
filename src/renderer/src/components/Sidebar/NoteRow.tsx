@@ -16,7 +16,8 @@ export function NoteRow({
   onDragEnd,
   onDragOver,
   onDragLeave,
-  onDrop
+  onDrop,
+  onDropFiles
 }: {
   note: NoteSummary
   active: boolean
@@ -32,6 +33,7 @@ export function NoteRow({
   onDragOver: (e: React.DragEvent) => void
   onDragLeave: () => void
   onDrop: (e: React.DragEvent) => void
+  onDropFiles: (files: FileList) => void
 }): React.JSX.Element {
   return (
     <li
@@ -49,6 +51,10 @@ export function NoteRow({
       onDrop={(e) => {
         e.preventDefault()
         e.stopPropagation()
+        if (e.dataTransfer.files.length) {
+          onDropFiles(e.dataTransfer.files)
+          return
+        }
         onDrop(e)
       }}
     >

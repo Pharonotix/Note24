@@ -1,5 +1,6 @@
 import type { Folder } from '@shared/types'
 import { getDb } from './database'
+import { deleteAttachmentsForFolder } from '../attachments'
 
 interface FolderRow {
   id: number
@@ -78,6 +79,26 @@ export function reorderFolders(parentId: number | null, orderedIds: number[]): v
   tx()
 }
 
+/** All folder ids nested (at any depth) under `id`, not including `id` itself. */
+function descendantFolderIds(id: number): number[] {
+  const rows = getDb()
+    .prepare(
+      `WITH RECURSIVE sub(id) AS (
+         SELECT id FROM folders WHERE parent_id = ?
+         UNION ALL
+         SELECT f.id FROM folders f JOIN sub ON f.parent_id = sub.id
+       )
+       SELECT id FROM sub`
+    )
+    .all(id) as { id: number }[]
+  return rows.map((r) => r.id)
+}
+
 export function deleteFolder(id: number): void {
+  // Subfolders cascade at the SQL level (parent_id ON DELETE CASCADE), but their
+  // directly-attached files don't — clean those up first for every folder in the subtree.
+  for (const folderId of [id, ...descendantFolderIds(id)]) {
+    deleteAttachmentsForFolder(folderId)
+  }
   getDb().prepare(`DELETE FROM folders WHERE id = ?`).run(id)
 }

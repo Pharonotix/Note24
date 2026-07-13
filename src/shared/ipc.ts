@@ -34,6 +34,10 @@ export const IPC = {
   attachmentsAdd: 'attachments:add',
   attachmentsPick: 'attachments:pick',
   attachmentsOpen: 'attachments:open',
+  attachmentsList: 'attachments:list',
+  attachmentsRename: 'attachments:rename',
+  attachmentsMove: 'attachments:move',
+  attachmentsDelete: 'attachments:delete',
 
   settingsGet: 'settings:get',
   settingsSet: 'settings:set',

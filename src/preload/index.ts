@@ -41,9 +41,14 @@ const api: Note24Api = {
     setDerivation: (slug, steps) => ipcRenderer.invoke(IPC.equationsSetDerivation, slug, steps)
   },
   attachments: {
-    add: (filename, mime, data) => ipcRenderer.invoke(IPC.attachmentsAdd, filename, mime, data),
-    pick: () => ipcRenderer.invoke(IPC.attachmentsPick),
-    open: (id) => ipcRenderer.invoke(IPC.attachmentsOpen, id)
+    add: (filename, mime, data, target) =>
+      ipcRenderer.invoke(IPC.attachmentsAdd, filename, mime, data, target),
+    pick: (target) => ipcRenderer.invoke(IPC.attachmentsPick, target),
+    open: (id) => ipcRenderer.invoke(IPC.attachmentsOpen, id),
+    list: (filter) => ipcRenderer.invoke(IPC.attachmentsList, filter),
+    rename: (id, filename) => ipcRenderer.invoke(IPC.attachmentsRename, id, filename),
+    move: (id, target) => ipcRenderer.invoke(IPC.attachmentsMove, id, target),
+    delete: (id) => ipcRenderer.invoke(IPC.attachmentsDelete, id)
   },
   settings: {
     get: (key) => ipcRenderer.invoke(IPC.settingsGet, key),

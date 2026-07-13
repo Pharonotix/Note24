@@ -111,5 +111,16 @@ export const migrations: string[] = [
     slug       TEXT PRIMARY KEY,
     steps_json TEXT NOT NULL DEFAULT '[]'
   );
+  `,
+
+  /* --- 4: attachments system (note/folder linkage) ---
+     No SQL foreign keys, same rationale as equation_relationships: cleanup on
+     note/folder delete is done in code (main/attachments.ts), which also has to
+     remove the on-disk file — something a SQL cascade could never do anyway. */
+  `
+  ALTER TABLE attachments ADD COLUMN note_id INTEGER;
+  ALTER TABLE attachments ADD COLUMN folder_id INTEGER;
+  CREATE INDEX idx_attachments_note ON attachments(note_id);
+  CREATE INDEX idx_attachments_folder ON attachments(folder_id);
   `
 ]

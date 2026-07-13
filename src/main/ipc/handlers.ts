@@ -1,6 +1,8 @@
 import { app, dialog, ipcMain, shell } from 'electron'
 import { IPC } from '@shared/ipc'
 import type {
+  AttachmentFilter,
+  AttachmentTarget,
   DerivationStep,
   EquationInput,
   NoteCreateInput,
@@ -83,23 +85,33 @@ export function registerIpcHandlers(): void {
   )
 
   // Attachments
-  ipcMain.handle(IPC.attachmentsAdd, (_e, filename: string, mime: string, data: Uint8Array) =>
-    attachments.addAttachment(filename, mime, data)
+  ipcMain.handle(
+    IPC.attachmentsAdd,
+    (_e, filename: string, mime: string, data: Uint8Array, target?: AttachmentTarget) =>
+      attachments.addAttachment(filename, mime, data, target)
   )
-  ipcMain.handle(IPC.attachmentsPick, async () => {
+  ipcMain.handle(IPC.attachmentsPick, async (_e, target?: AttachmentTarget) => {
     const res = await dialog.showOpenDialog({
       properties: ['openFile'],
-      filters: [
-        { name: 'Images & files', extensions: ['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg', 'bmp', 'pdf', 'txt', 'md', 'csv'] }
-      ]
+      filters: [{ name: 'Attachable files', extensions: attachments.PICKABLE_EXTENSIONS }]
     })
     if (res.canceled || !res.filePaths[0]) return null
-    return attachments.addAttachmentFromPath(res.filePaths[0])
+    return attachments.addAttachmentFromPath(res.filePaths[0], target)
   })
   ipcMain.handle(IPC.attachmentsOpen, (_e, id: string) => {
     const p = attachments.attachmentFsPath(id)
     if (p) shell.openPath(p)
   })
+  ipcMain.handle(IPC.attachmentsList, (_e, filter?: AttachmentFilter) =>
+    attachments.listAttachments(filter)
+  )
+  ipcMain.handle(IPC.attachmentsRename, (_e, id: string, filename: string) =>
+    attachments.renameAttachment(id, filename)
+  )
+  ipcMain.handle(IPC.attachmentsMove, (_e, id: string, target: AttachmentTarget) =>
+    attachments.moveAttachment(id, target)
+  )
+  ipcMain.handle(IPC.attachmentsDelete, (_e, id: string) => attachments.deleteAttachment(id))
 
   // Settings
   ipcMain.handle(IPC.settingsGet, (_e, key: string) => settings.getSetting(key))

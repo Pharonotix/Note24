@@ -105,6 +105,23 @@ export interface Attachment {
   mime: string
   size: number
   createdAt: number
+  /** The note this file is attached to, or null. At most one of noteId/folderId is set. */
+  noteId: number | null
+  /** The folder this file is attached to as a general resource, or null. */
+  folderId: number | null
+}
+
+/** Where a new or moved attachment should be linked. Both null = unlinked. */
+export interface AttachmentTarget {
+  noteId?: number | null
+  folderId?: number | null
+}
+
+/** Filter for listing attachments in the File Manager / note attachments panel. */
+export interface AttachmentFilter {
+  noteId?: number
+  folderId?: number
+  query?: string
 }
 
 /** A note that links to the current note (for the Backlinks panel). */

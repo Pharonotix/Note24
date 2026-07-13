@@ -1,5 +1,7 @@
 import type {
   Attachment,
+  AttachmentFilter,
+  AttachmentTarget,
   Backlink,
   DataLocation,
   DerivationStep,
@@ -57,9 +59,13 @@ export interface Note24Api {
     setDerivation(slug: string, steps: DerivationStep[]): Promise<void>
   }
   attachments: {
-    add(filename: string, mime: string, data: Uint8Array): Promise<Attachment>
-    pick(): Promise<Attachment | null>
+    add(filename: string, mime: string, data: Uint8Array, target?: AttachmentTarget): Promise<Attachment>
+    pick(target?: AttachmentTarget): Promise<Attachment | null>
     open(id: string): Promise<void>
+    list(filter?: AttachmentFilter): Promise<Attachment[]>
+    rename(id: string, filename: string): Promise<void>
+    move(id: string, target: AttachmentTarget): Promise<void>
+    delete(id: string): Promise<void>
   }
   settings: {
     get(key: string): Promise<string | null>

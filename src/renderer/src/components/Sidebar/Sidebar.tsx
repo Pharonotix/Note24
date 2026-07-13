@@ -31,6 +31,8 @@ export function Sidebar(): React.JSX.Element {
   const reorderFolders = useStore((s) => s.reorderFolders)
   const updateFolderStyle = useStore((s) => s.updateFolderStyle)
   const setDragItem = useStore((s) => s.setDragItem)
+  const attachFilesToNote = useStore((s) => s.attachFilesToNote)
+  const attachFilesToFolder = useStore((s) => s.attachFilesToFolder)
 
   const [collapsed, setCollapsed] = useState<Set<number>>(new Set())
   const [editingFolderId, setEditingFolderId] = useState<number | null>(null)
@@ -188,6 +190,10 @@ export function Sidebar(): React.JSX.Element {
     endDrag: () => {
       setDragItem(null)
       setDropTarget(null)
+    },
+    attachFiles: (target, files) => {
+      if (target.kind === 'note') void attachFilesToNote(target.id, files)
+      else void attachFilesToFolder(target.id, files)
     }
   }
 
@@ -285,6 +291,7 @@ export function Sidebar(): React.JSX.Element {
                   const position = positionFromEvent(e, false) as 'before' | 'after'
                   resolveDrop({ kind: 'note', id: n.id, position })
                 }}
+                onDropFiles={(files) => ctx.attachFiles({ kind: 'note', id: n.id }, files)}
               />
             )
           })}

@@ -28,6 +28,8 @@ export interface TreeCtx {
   startDragFolder(id: number): void
   startDragNote(id: number): void
   endDrag(): void
+  /** Attaches OS files dropped onto a note or folder row (separate from internal reorder DnD). */
+  attachFiles(target: { kind: 'note' | 'folder'; id: number }, files: FileList): void
 }
 
 /** True if `descendantId` is `ancestorId` itself or nested anywhere under it. */

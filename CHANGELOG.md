@@ -2,6 +2,38 @@
 
 All notable changes to Note24. Newest first.
 
+## 0.6.0 — Attachments System
+
+### Added
+- **Note & folder attachments.** Files can now be linked to a specific note or to a folder
+  as a general resource, not just embedded inline in a note's body. `attachments` gained
+  nullable `note_id`/`folder_id` columns (additive migration, no data loss); a one-time
+  backfill links pre-existing embedded images to the note they're embedded in.
+- **File Manager panel.** A new top-level panel (toolbar "📁 Files", `Ctrl+Shift+F`) listing
+  every attachment vault-wide with search, a type icon, file size, its current note/folder
+  link, and inline rename / move (reassign to any note or folder, or unlink) / delete / open.
+- **Note attachments list.** A new "Attachments" section under every note's editor
+  (alongside Backlinks) showing files attached to that note, with the same rename/open/delete
+  actions and its own "+ Attach" button.
+- **Drag-and-drop attach.** Dropping a real file onto a note or folder row in the sidebar
+  attaches it to that note/folder directly — previously the sidebar only handled internal
+  note/folder reordering, not OS file drops.
+- **Broader file type support.** The attachment MIME map and native file picker now cover
+  audio (mp3/wav/ogg/m4a/flac), video (mp4/webm/mov/avi), zip, and docx/doc, in addition to
+  the existing images/pdf/txt/md/csv. Non-previewable types show a type-icon chip with
+  "open externally" (in-app players are a later version's scope).
+- **Cascade cleanup.** Deleting a note now deletes every attachment linked to it (file +
+  DB row); deleting a folder deletes its own directly-attached files (including from any
+  nested subfolders) without touching notes' own attachments — previously neither case
+  cleaned up anything, permanently orphaning files on disk.
+
+### Notes
+- No SQL foreign keys on the new columns — cleanup happens in application code (same
+  precedent as the equation-relationships tables), since a SQL cascade can delete a DB row
+  but never the file on disk.
+- Deleting an attachment removes it everywhere it's referenced, including any inline
+  embedded copy in a note's body — this is called out in the delete confirmation text.
+
 ## 0.5.0 — Graphing & Data Analysis
 
 ### Added

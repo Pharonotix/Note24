@@ -4,6 +4,7 @@ import { Sidebar } from './components/Sidebar/Sidebar'
 import { Editor } from './components/Editor/Editor'
 import { QuickSwitcher } from './components/QuickSwitcher/QuickSwitcher'
 import { EquationLibrary } from './components/EquationLibrary/EquationLibrary'
+import { FileManager } from './components/FileManager/FileManager'
 import { Settings } from './components/Settings/Settings'
 import styles from './App.module.css'
 
@@ -14,7 +15,18 @@ function App(): React.JSX.Element {
   const setQuickSwitcher = useStore((s) => s.setQuickSwitcher)
   const equationPanelOpen = useStore((s) => s.equationPanelOpen)
   const setEquationPanel = useStore((s) => s.setEquationPanel)
+  const fileManagerOpen = useStore((s) => s.fileManagerOpen)
+  const setFileManagerOpen = useStore((s) => s.setFileManagerOpen)
   const setSettingsOpen = useStore((s) => s.setSettingsOpen)
+
+  const openEquations = (v: boolean): void => {
+    setEquationPanel(v)
+    if (v) setFileManagerOpen(false)
+  }
+  const openFileManager = (v: boolean): void => {
+    setFileManagerOpen(v)
+    if (v) setEquationPanel(false)
+  }
 
   useEffect(() => {
     init()
@@ -31,7 +43,10 @@ function App(): React.JSX.Element {
         newNote(null)
       } else if (mod && e.key.toLowerCase() === 'e') {
         e.preventDefault()
-        setEquationPanel(!useStore.getState().equationPanelOpen)
+        openEquations(!useStore.getState().equationPanelOpen)
+      } else if (mod && e.shiftKey && e.key.toLowerCase() === 'f') {
+        e.preventDefault()
+        openFileManager(!useStore.getState().fileManagerOpen)
       } else if (mod && e.key === ',') {
         e.preventDefault()
         setSettingsOpen(true)
@@ -39,20 +54,30 @@ function App(): React.JSX.Element {
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [newNote, setQuickSwitcher, setEquationPanel, setSettingsOpen])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [newNote, setQuickSwitcher, setSettingsOpen])
+
+  const panelOpen = equationPanelOpen || fileManagerOpen
 
   return (
-    <div className={equationPanelOpen ? `${styles.app} ${styles.withPanel}` : styles.app}>
+    <div className={panelOpen ? `${styles.app} ${styles.withPanel}` : styles.app}>
       <Sidebar />
       <main className={styles.main}>
         <div className={styles.topbar}>
           <div className={styles.actions}>
             <button
               className={equationPanelOpen ? `${styles.action} ${styles.on}` : styles.action}
-              onClick={() => setEquationPanel(!equationPanelOpen)}
+              onClick={() => openEquations(!equationPanelOpen)}
               title="Equation library (Ctrl+E)"
             >
               Σ Equations
+            </button>
+            <button
+              className={fileManagerOpen ? `${styles.action} ${styles.on}` : styles.action}
+              onClick={() => openFileManager(!fileManagerOpen)}
+              title="File manager (Ctrl+Shift+F)"
+            >
+              📁 Files
             </button>
             <button
               className={styles.action}
@@ -80,6 +105,7 @@ function App(): React.JSX.Element {
         </div>
       </main>
       <EquationLibrary />
+      <FileManager />
       <QuickSwitcher />
       <Settings />
     </div>

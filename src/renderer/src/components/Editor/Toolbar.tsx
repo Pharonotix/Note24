@@ -1,9 +1,10 @@
 import { useEffect, useReducer } from 'react'
 import type { Editor } from '@tiptap/react'
+import { useStore } from '../../store/store'
 import styles from './Toolbar.module.css'
 
 /** Formatting toolbar bound to a TipTap editor instance. */
-export function Toolbar({ editor }: { editor: Editor }): React.JSX.Element {
+export function Toolbar({ editor, noteId }: { editor: Editor; noteId: number }): React.JSX.Element {
   const [, force] = useReducer((x: number) => x + 1, 0)
 
   useEffect(() => {
@@ -59,11 +60,12 @@ export function Toolbar({ editor }: { editor: Editor }): React.JSX.Element {
   }
 
   const insertImage = async (): Promise<void> => {
-    const att = await window.api.attachments.pick()
+    const att = await window.api.attachments.pick({ noteId })
     if (att) {
       chain()
         .insertImageFile({ attachmentId: att.id, filename: att.filename, mime: att.mime })
         .run()
+      useStore.getState().bumpAttachments()
     }
   }
 
