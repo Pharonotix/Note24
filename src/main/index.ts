@@ -7,6 +7,7 @@ import { initDatabase, closeDatabase } from './db/database'
 import { registerIpcHandlers } from './ipc/handlers'
 import { readAttachmentBytes, setAttachmentsBaseDir } from './attachments'
 import { resolveActiveLocation } from './locations'
+import { setMainWindow } from './exportPdf'
 
 // Custom scheme used to serve embedded attachment files to the renderer.
 protocol.registerSchemesAsPrivileged([
@@ -38,6 +39,8 @@ function createWindow(): void {
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
   })
+
+  setMainWindow(mainWindow)
 
   // Spellcheck: use a predictable dictionary, and offer real corrections on
   // right-click (Chromium underlines misspellings but has no built-in menu).

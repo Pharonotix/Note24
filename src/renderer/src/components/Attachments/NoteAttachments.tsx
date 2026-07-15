@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import type { Attachment } from '@shared/types'
 import { useStore } from '../../store/store'
 import { iconForMime, formatFileSize } from '../../lib/fileIcons'
+import { openAttachment } from '../../lib/openAttachment'
 import { ConfirmDialog, type ConfirmRequest } from '../ConfirmDialog/ConfirmDialog'
 import styles from './Attachments.module.css'
 
@@ -87,7 +88,7 @@ export function NoteAttachments({ noteId }: { noteId: number }): React.JSX.Eleme
               ) : (
                 <span
                   className={styles.name}
-                  onClick={() => window.api.attachments.open(f.id)}
+                  onClick={() => openAttachment(f)}
                   onDoubleClick={() => setEditingId(f.id)}
                   title="Click to open, double-click to rename"
                 >

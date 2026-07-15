@@ -1,0 +1,88 @@
+.host {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  background: white;
+  overflow-y: auto;
+}
+
+.container {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 48px 40px 80px;
+  background: white;
+  color: #111;
+}
+
+.note {
+  margin-bottom: 24px;
+}
+.pageBreak {
+  page-break-after: always;
+  break-after: page;
+}
+
+.title {
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 18px;
+  color: #000;
+}
+
+.toc {
+  list-style: decimal;
+  padding-left: 22px;
+  font-size: 15px;
+  line-height: 2;
+  color: #222;
+}
+
+.hud {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: rgba(20, 20, 20, 0.85);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  z-index: 2;
+}
+@media print {
+  .hud {
+    display: none;
+  }
+}
+
+.errHost {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  background: rgba(0, 0, 0, 0.55);
+  display: grid;
+  place-items: center;
+}
+.errBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 24px 28px;
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  color: var(--danger);
+  font-size: 14px;
+}
+.errClose {
+  padding: 6px 16px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+}
+.errClose:hover {
+  background: var(--surface-3);
+}

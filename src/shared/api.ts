@@ -66,6 +66,11 @@ export interface Note24Api {
     rename(id: string, filename: string): Promise<void>
     move(id: string, target: AttachmentTarget): Promise<void>
     delete(id: string): Promise<void>
+    readBytes(id: string): Promise<{ data: Uint8Array; mime: string } | null>
+  }
+  export: {
+    toPdf(suggestedName: string): Promise<{ canceled: boolean; path?: string }>
+    print(): Promise<void>
   }
   settings: {
     get(key: string): Promise<string | null>

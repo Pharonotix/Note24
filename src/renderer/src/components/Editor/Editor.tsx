@@ -1,20 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { EditorContent, useEditor, type Editor as TipTapEditor } from '@tiptap/react'
-import StarterKit from '@tiptap/starter-kit'
 import Placeholder from '@tiptap/extension-placeholder'
-import Highlight from '@tiptap/extension-highlight'
 import type { Note } from '@shared/types'
 import { useStore } from '../../store/store'
 import { useDebouncedCallback } from '../../lib/useDebouncedCallback'
 import { Toolbar } from './Toolbar'
-import { InlineMath } from './extensions/InlineMath'
-import { BlockMath } from './extensions/BlockMath'
-import { DesmosNode } from './extensions/DesmosNode'
-import { WikiLink } from './extensions/WikiLink'
-import { ImageFile } from './extensions/ImageFile'
-import { DrawingNode } from './extensions/DrawingNode'
-import { CalculatorNode } from './extensions/CalculatorNode'
-import { DataTableNode } from './extensions/DataTableNode'
+import { contentExtensions } from './contentExtensions'
 import { Backlinks } from '../Backlinks/Backlinks'
 import { NoteAttachments } from '../Attachments/NoteAttachments'
 import styles from './Editor.module.css'
@@ -66,17 +57,8 @@ export function Editor({ note }: { note: Note }): React.JSX.Element {
 
   const editor = useEditor({
     extensions: [
-      StarterKit,
-      Placeholder.configure({ placeholder: 'Start writing…  (type / for commands)' }),
-      Highlight.configure({ multicolor: true }),
-      InlineMath,
-      BlockMath,
-      DesmosNode,
-      WikiLink,
-      ImageFile,
-      DrawingNode,
-      CalculatorNode,
-      DataTableNode
+      ...contentExtensions(),
+      Placeholder.configure({ placeholder: 'Start writing…  (type / for commands)' })
     ],
     content: parseContent(note.content),
     onUpdate: ({ editor }) => saveBody(JSON.stringify(editor.getJSON())),

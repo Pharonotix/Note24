@@ -23,6 +23,11 @@ interface AppState {
   dragItem: { kind: 'note' | 'folder'; id: number } | null
   /** Bumped after any attachment add/rename/move/delete, so panels know to refetch. */
   attachmentsVersion: number
+  /** The PDF currently shown full-viewport, or null when closed. */
+  pdfViewer: { id: string; filename: string } | null
+  exportPickerOpen: boolean
+  /** When set, the app renders only these notes (read-only, print layout) to capture a PDF/print job. */
+  printJob: { noteIds: number[]; mode: 'export' | 'print' } | null
 
   init: () => Promise<void>
   refreshNotes: () => Promise<void>
@@ -50,6 +55,9 @@ interface AppState {
   setEquationPanel: (open: boolean) => void
   setFileManagerOpen: (open: boolean) => void
   setSettingsOpen: (open: boolean) => void
+  setPdfViewer: (pdf: { id: string; filename: string } | null) => void
+  setExportPickerOpen: (open: boolean) => void
+  setPrintJob: (job: { noteIds: number[]; mode: 'export' | 'print' } | null) => void
   setTheme: (cfg: ThemeConfig) => void
   setEditor: (editor: Editor | null) => void
   bumpAttachments: () => void
@@ -73,6 +81,9 @@ export const useStore = create<AppState>((set, get) => ({
   editor: null,
   dragItem: null,
   attachmentsVersion: 0,
+  pdfViewer: null,
+  exportPickerOpen: false,
+  printJob: null,
 
   init: async () => {
     const theme = await loadTheme()
@@ -202,6 +213,9 @@ export const useStore = create<AppState>((set, get) => ({
   setEquationPanel: (open) => set({ equationPanelOpen: open }),
   setFileManagerOpen: (open) => set({ fileManagerOpen: open }),
   setSettingsOpen: (open) => set({ settingsOpen: open }),
+  setPdfViewer: (pdf) => set({ pdfViewer: pdf }),
+  setExportPickerOpen: (open) => set({ exportPickerOpen: open }),
+  setPrintJob: (job) => set({ printJob: job }),
   setTheme: (cfg) => {
     applyTheme(cfg)
     set({ theme: cfg })

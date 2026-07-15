@@ -5,12 +5,16 @@ import { Editor } from './components/Editor/Editor'
 import { QuickSwitcher } from './components/QuickSwitcher/QuickSwitcher'
 import { EquationLibrary } from './components/EquationLibrary/EquationLibrary'
 import { FileManager } from './components/FileManager/FileManager'
+import { PdfViewer } from './components/PdfViewer/PdfViewer'
+import { ExportPicker } from './components/ExportPicker/ExportPicker'
+import { PrintLayer } from './components/PrintLayer/PrintLayer'
 import { Settings } from './components/Settings/Settings'
 import styles from './App.module.css'
 
 function App(): React.JSX.Element {
   const init = useStore((s) => s.init)
   const currentNote = useStore((s) => s.currentNote)
+  const currentNoteId = useStore((s) => s.currentNoteId)
   const newNote = useStore((s) => s.newNote)
   const setQuickSwitcher = useStore((s) => s.setQuickSwitcher)
   const equationPanelOpen = useStore((s) => s.equationPanelOpen)
@@ -18,6 +22,9 @@ function App(): React.JSX.Element {
   const fileManagerOpen = useStore((s) => s.fileManagerOpen)
   const setFileManagerOpen = useStore((s) => s.setFileManagerOpen)
   const setSettingsOpen = useStore((s) => s.setSettingsOpen)
+  const setExportPickerOpen = useStore((s) => s.setExportPickerOpen)
+  const printJob = useStore((s) => s.printJob)
+  const setPrintJob = useStore((s) => s.setPrintJob)
 
   const openEquations = (v: boolean): void => {
     setEquationPanel(v)
@@ -57,6 +64,10 @@ function App(): React.JSX.Element {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [newNote, setQuickSwitcher, setSettingsOpen])
 
+  // While a print/export job is active, replace the whole app with the plain
+  // print-layout renderer so printToPDF/print() never capture app chrome.
+  if (printJob) return <PrintLayer />
+
   const panelOpen = equationPanelOpen || fileManagerOpen
 
   return (
@@ -78,6 +89,21 @@ function App(): React.JSX.Element {
               title="File manager (Ctrl+Shift+F)"
             >
               📁 Files
+            </button>
+            <button
+              className={styles.action}
+              disabled={currentNoteId == null}
+              onClick={() => currentNoteId != null && setPrintJob({ noteIds: [currentNoteId], mode: 'print' })}
+              title="Print current note"
+            >
+              🖨 Print
+            </button>
+            <button
+              className={styles.action}
+              onClick={() => setExportPickerOpen(true)}
+              title="Export notes to PDF"
+            >
+              ⤓ Export
             </button>
             <button
               className={styles.action}
@@ -106,6 +132,8 @@ function App(): React.JSX.Element {
       </main>
       <EquationLibrary />
       <FileManager />
+      <PdfViewer />
+      <ExportPicker />
       <QuickSwitcher />
       <Settings />
     </div>

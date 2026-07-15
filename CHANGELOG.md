@@ -2,6 +2,31 @@
 
 All notable changes to Note24. Newest first.
 
+## 0.7.0 — PDF Workspace
+
+### Added
+- **Embedded PDF viewer.** Clicking a PDF attachment anywhere (inline chip, File Manager,
+  Note Attachments) now opens it in-app instead of shelling out to the OS's default viewer.
+  Built on pdf.js (`pdfjs-dist`), lazy-loaded so it costs nothing until a PDF is opened.
+  Includes page navigation, zoom, a lazily-rendered thumbnail sidebar, the PDF's own
+  outline/bookmarks (when present), and full-document text search with page-jump results.
+  An "Open externally" button keeps the old behavior available as a fallback.
+- **Export to PDF.** A new "⤓ Export" action opens a checkbox tree over every note and
+  folder in the vault — check individual notes or a whole folder (recursively) and export
+  them as one combined PDF, with a table of contents when more than one note is selected.
+  Uses Electron's built-in `printToPDF` (no new dependency for this half of the feature);
+  notes render through the same TipTap editor used on screen, read-only, so equations,
+  tables, calculator blocks, graphs, and drawings appear exactly as authored.
+- **Print.** A "🖨 Print" action on the currently open note reuses the same print-layout
+  renderer and opens the OS print dialog via `webContents.print`.
+
+### Notes
+- New dependency: `pdfjs-dist` (pinned to 5.x — the current 6.x release uses very recent
+  JS syntax not yet supported by this Electron version's bundled Chromium; 5.x works
+  correctly). Its worker script is bundled as a static asset under `src/renderer/public/pdf/`,
+  same pattern as the Excalidraw font files.
+- No PDF24 launcher (merge/compress/split/OCR shortcuts) in this version — deferred.
+
 ## 0.6.0 — Attachments System
 
 ### Added

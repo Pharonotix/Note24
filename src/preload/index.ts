@@ -48,7 +48,12 @@ const api: Note24Api = {
     list: (filter) => ipcRenderer.invoke(IPC.attachmentsList, filter),
     rename: (id, filename) => ipcRenderer.invoke(IPC.attachmentsRename, id, filename),
     move: (id, target) => ipcRenderer.invoke(IPC.attachmentsMove, id, target),
-    delete: (id) => ipcRenderer.invoke(IPC.attachmentsDelete, id)
+    delete: (id) => ipcRenderer.invoke(IPC.attachmentsDelete, id),
+    readBytes: (id) => ipcRenderer.invoke(IPC.attachmentsReadBytes, id)
+  },
+  export: {
+    toPdf: (suggestedName) => ipcRenderer.invoke(IPC.exportToPdf, suggestedName),
+    print: () => ipcRenderer.invoke(IPC.exportPrint)
   },
   settings: {
     get: (key) => ipcRenderer.invoke(IPC.settingsGet, key),

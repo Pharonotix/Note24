@@ -14,7 +14,8 @@ Shipped versions (see `CHANGELOG.md` for details):
 - ✅ **v0.4.0** — Calculator & CAS: engineering constants (g, G, c, h, R, k, μ₀, ε₀), variable inspector, unit consistency checker, and a rearrangement wizard (solve any equation for a variable).
 - ✅ **v0.5.0** — Graphing & Data Analysis: table block (editable grid, CSV/TSV import, paste-to-fill), table→graph and calculator→graph (auto-seeded Desmos graphs), Desmos seed-attr integration improvement.
 - ✅ **v0.6.0** — Attachments System: note & folder attachment linkage, File Manager panel (search/rename/move/delete), a per-note attachments list, sidebar drag-and-drop file attach, broader file type support (audio/video/zip/docx), and cascade cleanup on note/folder delete.
-- ⏭️ **Next: v0.7.0** — PDF Workspace (embedded PDF viewer, search, bookmarks, thumbnails, export, print, PDF24 launcher). Deferred items to fold in later: the visual equation dependency **graph** (from v0.3.0), equation→calculator integration (from v0.4.0), and in-app audio/video players for attachments (from v0.6.0).
+- ✅ **v0.7.0** — PDF Workspace: embedded pdf.js viewer (search/zoom/outline/thumbnails), a checkbox-tree "Export to PDF" picker over notes and folders, and Print — both built on the same read-only print-layout renderer + Electron's built-in printToPDF/print.
+- ⏭️ **Next: v0.8.0** — Templates (built-in Problem Set / Lab Report / Research Notes / Lecture Notes, plus user-saved templates). Deferred items to fold in later: the visual equation dependency **graph** (from v0.3.0), equation→calculator integration (from v0.4.0), in-app audio/video players for attachments (from v0.6.0), and a PDF24 launcher for merge/compress/split/OCR (from v0.7.0, deliberately skipped this version).
 
 ---
 

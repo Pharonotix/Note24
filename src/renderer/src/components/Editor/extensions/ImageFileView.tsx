@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { NodeViewWrapper, type NodeViewProps } from '@tiptap/react'
+import { openAttachment } from '../../../lib/openAttachment'
 import styles from './ImageFile.module.css'
 
 const MIN_W = 80
@@ -47,8 +48,8 @@ export function ImageFileView({
         <div
           className={selected ? `${styles.chip} ${styles.sel}` : styles.chip}
           contentEditable={false}
-          onClick={() => window.api.attachments.open(id)}
-          title="Open file"
+          onClick={() => openAttachment({ id, filename, mime })}
+          title={mime === 'application/pdf' ? 'Open PDF' : 'Open file'}
         >
           <span className={styles.icon}>📎</span>
           <span className={styles.name}>{filename || 'file'}</span>

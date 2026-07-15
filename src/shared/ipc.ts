@@ -38,6 +38,10 @@ export const IPC = {
   attachmentsRename: 'attachments:rename',
   attachmentsMove: 'attachments:move',
   attachmentsDelete: 'attachments:delete',
+  attachmentsReadBytes: 'attachments:readBytes',
+
+  exportToPdf: 'export:toPdf',
+  exportPrint: 'export:print',
 
   settingsGet: 'settings:get',
   settingsSet: 'settings:set',

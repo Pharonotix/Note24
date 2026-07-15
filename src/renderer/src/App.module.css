@@ -46,6 +46,14 @@
   background: var(--surface-3);
   color: var(--text);
 }
+.action:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.action:disabled:hover {
+  background: var(--surface-2);
+  color: var(--text-muted);
+}
 .on {
   background: var(--primary);
   color: var(--primary-contrast);

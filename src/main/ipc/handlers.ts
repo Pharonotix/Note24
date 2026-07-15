@@ -18,6 +18,7 @@ import * as links from '../db/links'
 import * as settings from '../db/settings'
 import * as attachments from '../attachments'
 import * as locations from '../locations'
+import * as exportPdf from '../exportPdf'
 
 /** Registers every ipcMain.handle channel. Call once after the DB is ready. */
 export function registerIpcHandlers(): void {
@@ -112,6 +113,14 @@ export function registerIpcHandlers(): void {
     attachments.moveAttachment(id, target)
   )
   ipcMain.handle(IPC.attachmentsDelete, (_e, id: string) => attachments.deleteAttachment(id))
+  ipcMain.handle(IPC.attachmentsReadBytes, (_e, id: string) => {
+    const res = attachments.readAttachmentBytes(id)
+    return res ? { data: res.data, mime: res.mime } : null
+  })
+
+  // Export / print
+  ipcMain.handle(IPC.exportToPdf, (_e, suggestedName: string) => exportPdf.exportToPdf(suggestedName))
+  ipcMain.handle(IPC.exportPrint, () => exportPdf.printCurrent())
 
   // Settings
   ipcMain.handle(IPC.settingsGet, (_e, key: string) => settings.getSetting(key))
