@@ -28,6 +28,8 @@
   color: var(--text-muted);
 }
 .icon {
+  display: inline-flex;
+  align-items: center;
   font-size: 13px;
 }
 .label {
@@ -35,6 +37,9 @@
 }
 
 .hbtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   font-size: 11px;
   font-weight: 600;
   padding: 3px 9px;
@@ -101,9 +106,10 @@
   right: 2px;
   width: 14px;
   height: 14px;
-  line-height: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 50%;
-  font-size: 11px;
   color: var(--text-faint);
   background: transparent;
 }
@@ -120,9 +126,10 @@
 .rowDel {
   width: 18px;
   height: 18px;
-  line-height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 50%;
-  font-size: 12px;
   color: var(--text-faint);
 }
 .rowDel:hover {

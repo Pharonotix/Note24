@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { Paperclip } from 'lucide-react'
 import { NodeViewWrapper, type NodeViewProps } from '@tiptap/react'
 import { openAttachment } from '../../../lib/openAttachment'
 import { startResizeDrag } from '../../../lib/resizeDrag'
@@ -41,7 +42,9 @@ export function ImageFileView({
           onClick={() => openAttachment({ id, filename, mime })}
           title={mime === 'application/pdf' ? 'Open PDF' : 'Open file'}
         >
-          <span className={styles.icon}>📎</span>
+          <span className={styles.icon}>
+            <Paperclip size={13} />
+          </span>
           <span className={styles.name}>{filename || 'file'}</span>
         </div>
       </NodeViewWrapper>

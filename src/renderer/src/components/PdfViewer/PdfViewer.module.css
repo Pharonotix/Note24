@@ -28,6 +28,9 @@
   flex: 0 0 auto;
 }
 .filename {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
   font-weight: 600;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -54,6 +57,8 @@
   color: var(--text);
 }
 .close {
+  display: inline-flex;
+  align-items: center;
   color: var(--text-faint);
   padding: 4px 8px;
   border-radius: 5px;
@@ -74,6 +79,9 @@
   flex: 0 0 auto;
 }
 .tbtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
   padding: 4px 9px;
   border-radius: var(--radius-sm);
   color: var(--text-muted);

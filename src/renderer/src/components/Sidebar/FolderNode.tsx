@@ -1,3 +1,4 @@
+import { FilePlus2, FolderPlus, Palette, X } from 'lucide-react'
 import type { Folder } from '@shared/types'
 import { positionFromEvent } from './dragTypes'
 import type { TreeCtx } from './treeCtx'
@@ -96,24 +97,24 @@ export function FolderNode({
             ctx.setOpenPickerId(ctx.openPickerId === folder.id ? null : folder.id)
           }}
         >
-          🎨
+          <Palette size={13} />
         </button>
         <button
           className={styles.iconBtn}
           title="New subfolder"
           onClick={() => ctx.newSubfolder(folder.id)}
         >
-          🗀+
+          <FolderPlus size={13} />
         </button>
         <button className={styles.iconBtn} title="New note in folder" onClick={() => ctx.newNote(folder.id)}>
-          +
+          <FilePlus2 size={13} />
         </button>
         <button
           className={styles.iconBtn}
           title="Delete folder (notes are kept)"
           onClick={() => ctx.requestDeleteFolder(folder.id, folder.name)}
         >
-          ✕
+          <X size={13} />
         </button>
         {isDropOnThis && dt?.position === 'after' && (
           <span className={styles.insertLine} data-pos="after" />

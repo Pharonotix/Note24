@@ -28,6 +28,8 @@
   color: var(--text-muted);
 }
 .icon {
+  display: inline-flex;
+  align-items: center;
   font-size: 13px;
 }
 .label {
@@ -104,6 +106,9 @@
 
 /* ---- Header buttons (rearrange / constants toggles) ---- */
 .hbtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   font-size: 11px;
   font-weight: 600;
   padding: 2px 7px;
@@ -113,6 +118,10 @@
 .hbtn:hover {
   background: var(--surface-3);
   color: var(--text);
+}
+.hbtn:disabled {
+  opacity: 0.45;
+  cursor: default;
 }
 .hbtnOn {
   background: var(--surface-3);

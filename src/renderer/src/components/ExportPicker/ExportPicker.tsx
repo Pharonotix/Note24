@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { FileText, Folder as FolderIcon, X } from 'lucide-react'
 import type { Folder, NoteSummary } from '@shared/types'
 import { useStore } from '../../store/store'
 import styles from './ExportPicker.module.css'
@@ -81,7 +82,9 @@ export function ExportPicker(): React.JSX.Element | null {
   const renderNote = (n: NoteSummary, depth: number): React.JSX.Element => (
     <label key={`n${n.id}`} className={styles.row} style={{ marginLeft: depth * 16 }}>
       <input type="checkbox" checked={checked.has(n.id)} onChange={() => toggleNote(n.id)} />
-      <span className={styles.noteIcon}>📝</span>
+      <span className={styles.noteIcon}>
+        <FileText size={13} />
+      </span>
       {n.title || 'Untitled'}
     </label>
   )
@@ -99,7 +102,9 @@ export function ExportPicker(): React.JSX.Element | null {
             }}
             onChange={() => toggleFolder(f.id)}
           />
-          <span className={styles.folderIcon}>🗀</span>
+          <span className={styles.folderIcon}>
+            <FolderIcon size={13} />
+          </span>
           <span className={styles.folderName}>{f.name}</span>
         </label>
         {(foldersByParent.get(f.id) ?? []).map((c) => renderFolder(c, depth + 1))}
@@ -114,7 +119,7 @@ export function ExportPicker(): React.JSX.Element | null {
         <div className={styles.head}>
           <span className={styles.title}>Export to PDF</span>
           <button className={styles.close} onClick={() => setOpen(false)} title="Close">
-            ✕
+            <X size={15} />
           </button>
         </div>
         <div className={styles.hint}>

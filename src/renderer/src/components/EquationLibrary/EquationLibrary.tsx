@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { Keyboard, Network, Pencil, Plus, Trash2, X } from 'lucide-react'
 import type {
   DerivationStep,
   Equation,
@@ -242,7 +243,7 @@ export function EquationLibrary(): React.JSX.Element | null {
       <div className={styles.head}>
         <span className={styles.title}>Equations</span>
         <button className={styles.close} onClick={() => setOpen(false)} title="Close">
-          ✕
+          <X size={15} />
         </button>
       </div>
 
@@ -256,8 +257,8 @@ export function EquationLibrary(): React.JSX.Element | null {
             load(e.target.value)
           }}
         />
-        <button className={styles.add} onClick={startAdd}>
-          ＋
+        <button className={styles.add} onClick={startAdd} title="Add equation">
+          <Plus size={16} />
         </button>
       </div>
 
@@ -282,7 +283,7 @@ export function EquationLibrary(): React.JSX.Element | null {
             className={styles.symbolsToggle}
             onClick={() => setShowKeyboard((v) => !v)}
           >
-            🔡 Symbols
+            <Keyboard size={13} /> Symbols
           </button>
           {showKeyboard && (
             <MathKeyboard
@@ -375,15 +376,15 @@ export function EquationLibrary(): React.JSX.Element | null {
                         title="Relationships & derivation"
                         onClick={() => openDetail(eq)}
                       >
-                        🕸
+                        <Network size={13} />
                       </button>
                       {!eq.isBuiltin && (
                         <>
                           <button className={styles.mini} title="Edit" onClick={() => startEdit(eq)}>
-                            ✎
+                            <Pencil size={13} />
                           </button>
                           <button className={styles.mini} title="Delete" onClick={() => remove(eq.id)}>
-                            🗑
+                            <Trash2 size={13} />
                           </button>
                         </>
                       )}

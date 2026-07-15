@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { Pencil, Plus, Trash2, X } from 'lucide-react'
 import type { Attachment } from '@shared/types'
 import { useStore } from '../../store/store'
 import { iconForMime, formatFileSize } from '../../lib/fileIcons'
@@ -95,7 +96,7 @@ export function FileManager(): React.JSX.Element | null {
       <div className={styles.head}>
         <span className={styles.title}>Files</span>
         <button className={styles.close} onClick={() => setOpen(false)} title="Close">
-          ✕
+          <X size={15} />
         </button>
       </div>
 
@@ -110,7 +111,7 @@ export function FileManager(): React.JSX.Element | null {
           }}
         />
         <button className={styles.add} onClick={addUnlinked} title="Attach a file">
-          ＋
+          <Plus size={16} />
         </button>
       </div>
 
@@ -129,9 +130,13 @@ export function FileManager(): React.JSX.Element | null {
           void addFiles(e.dataTransfer.files)
         }}
       >
-        {files.map((f) => (
+        {files.map((f) => {
+          const TypeIcon = iconForMime(f.mime)
+          return (
           <div key={f.id} className={styles.item}>
-            <span className={styles.icon}>{iconForMime(f.mime)}</span>
+            <span className={styles.icon}>
+              <TypeIcon size={16} />
+            </span>
             <div className={styles.itemMain}>
               {editingId === f.id ? (
                 <input
@@ -188,15 +193,16 @@ export function FileManager(): React.JSX.Element | null {
               </optgroup>
             </select>
             <button className={styles.mini} title="Rename" onClick={() => setEditingId(f.id)}>
-              ✎
+              <Pencil size={13} />
             </button>
             <button className={styles.mini} title="Delete" onClick={() => setConfirmId(f.id)}>
-              🗑
+              <Trash2 size={13} />
             </button>
           </div>
-        ))}
+          )
+        })}
         {files.length === 0 && (
-          <div className={styles.empty}>No files found. Drop one here or click ＋ to attach.</div>
+          <div className={styles.empty}>No files found. Drop one here or click + to attach.</div>
         )}
       </div>
 

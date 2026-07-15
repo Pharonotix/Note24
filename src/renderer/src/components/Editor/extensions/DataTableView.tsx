@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import { ChartLine, FileUp, Sheet, X } from 'lucide-react'
 import { NodeViewWrapper, type NodeViewProps } from '@tiptap/react'
 import { parseDelimited } from '../../../lib/csv'
 import {
@@ -136,7 +137,9 @@ export function DataTableView({
         onKeyUp={(e) => e.stopPropagation()}
       >
         <div className={styles.header}>
-          <span className={styles.icon}>▦</span>
+          <span className={styles.icon}>
+            <Sheet size={14} />
+          </span>
           <span className={styles.label}>Table</span>
           {editable && (
             <>
@@ -152,7 +155,7 @@ export function DataTableView({
                 onClick={() => fileInputRef.current?.click()}
                 title="Import CSV / TSV file"
               >
-                Import CSV
+                <FileUp size={12} /> Import CSV
               </button>
               <input
                 ref={fileInputRef}
@@ -168,7 +171,7 @@ export function DataTableView({
                 disabled={!canGraph}
                 title={canGraph ? 'Graph the first two numeric columns' : 'Need at least 2 numeric columns to graph'}
               >
-                📈 Graph
+                <ChartLine size={12} /> Graph
               </button>
             </>
           )}
@@ -194,7 +197,7 @@ export function DataTableView({
                         onClick={() => removeCol(c)}
                         title="Remove column"
                       >
-                        ×
+                        <X size={10} />
                       </button>
                     )}
                   </th>
@@ -224,7 +227,7 @@ export function DataTableView({
                         onClick={() => removeRow(r)}
                         title="Remove row"
                       >
-                        ×
+                        <X size={11} />
                       </button>
                     </td>
                   )}

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Paperclip, Pencil, Trash2 } from 'lucide-react'
 import type { Attachment } from '@shared/types'
 import { useStore } from '../../store/store'
 import { iconForMime, formatFileSize } from '../../lib/fileIcons'
@@ -63,7 +64,7 @@ export function NoteAttachments({ noteId }: { noteId: number }): React.JSX.Eleme
       <div className={styles.head}>
         <span>Attachments{files.length > 0 ? ` · ${files.length}` : ''}</span>
         <button className={styles.attachBtn} onClick={attach} title="Attach a file">
-          + Attach
+          <Paperclip size={12} /> Attach
         </button>
       </div>
 
@@ -71,9 +72,13 @@ export function NoteAttachments({ noteId }: { noteId: number }): React.JSX.Eleme
         <div className={styles.empty}>Drop a file here or click "Attach".</div>
       ) : (
         <div className={styles.items}>
-          {files.map((f) => (
+          {files.map((f) => {
+            const TypeIcon = iconForMime(f.mime)
+            return (
             <div key={f.id} className={styles.item}>
-              <span className={styles.icon}>{iconForMime(f.mime)}</span>
+              <span className={styles.icon}>
+                <TypeIcon size={15} />
+              </span>
               {editingId === f.id ? (
                 <input
                   className={styles.renameInput}
@@ -97,13 +102,14 @@ export function NoteAttachments({ noteId }: { noteId: number }): React.JSX.Eleme
               )}
               <span className={styles.size}>{formatFileSize(f.size)}</span>
               <button className={styles.mini} title="Rename" onClick={() => setEditingId(f.id)}>
-                ✎
+                <Pencil size={13} />
               </button>
               <button className={styles.mini} title="Delete" onClick={() => setConfirmId(f.id)}>
-                🗑
+                <Trash2 size={13} />
               </button>
             </div>
-          ))}
+            )
+          })}
         </div>
       )}
 

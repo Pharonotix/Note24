@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { Download, FolderSearch2, PrinterCheck, Settings as SettingsIcon, Sigma } from 'lucide-react'
 import { useStore } from './store/store'
 import { Sidebar } from './components/Sidebar/Sidebar'
 import { Editor } from './components/Editor/Editor'
@@ -81,14 +82,14 @@ function App(): React.JSX.Element {
               onClick={() => openEquations(!equationPanelOpen)}
               title="Equation library (Ctrl+E)"
             >
-              Σ Equations
+              <Sigma size={15} /> Equations
             </button>
             <button
               className={fileManagerOpen ? `${styles.action} ${styles.on}` : styles.action}
               onClick={() => openFileManager(!fileManagerOpen)}
               title="File manager (Ctrl+Shift+F)"
             >
-              📁 Files
+              <FolderSearch2 size={15} /> Files
             </button>
             <button
               className={styles.action}
@@ -96,21 +97,21 @@ function App(): React.JSX.Element {
               onClick={() => currentNoteId != null && setPrintJob({ noteIds: [currentNoteId], mode: 'print' })}
               title="Print current note"
             >
-              🖨 Print
+              <PrinterCheck size={15} /> Print
             </button>
             <button
               className={styles.action}
               onClick={() => setExportPickerOpen(true)}
               title="Export notes to PDF"
             >
-              ⤓ Export
+              <Download size={15} /> Export
             </button>
             <button
               className={styles.action}
               onClick={() => setSettingsOpen(true)}
               title="Settings (Ctrl+,)"
             >
-              ⚙
+              <SettingsIcon size={15} />
             </button>
           </div>
         </div>

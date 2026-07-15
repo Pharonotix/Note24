@@ -34,6 +34,8 @@
   font-weight: 650;
 }
 .close {
+  display: inline-flex;
+  align-items: center;
   color: var(--text-faint);
   padding: 4px 7px;
   border-radius: 5px;
@@ -77,8 +79,10 @@
 }
 .noteIcon,
 .folderIcon {
+  display: inline-flex;
+  align-items: center;
   flex: 0 0 auto;
-  font-size: 12px;
+  color: var(--text-muted);
 }
 .folderName {
   font-weight: 600;

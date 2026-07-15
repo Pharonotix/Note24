@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { FolderPlus } from 'lucide-react'
 import type { Folder, NoteSummary } from '@shared/types'
 import { useStore } from '../../store/store'
 import { positionFromEvent, type DropTarget } from './dragTypes'
@@ -213,7 +214,7 @@ export function Sidebar(): React.JSX.Element {
           + New note
         </button>
         <button className={styles.ghost} title="New folder" onClick={() => newFolder('New Folder')}>
-          🗀+
+          <FolderPlus size={16} />
         </button>
       </div>
 

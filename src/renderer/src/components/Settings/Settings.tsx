@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { X } from 'lucide-react'
 import type { LocationsRegistry } from '@shared/types'
 import { useStore } from '../../store/store'
 import { ADVANCED_TOKENS, PRESETS, contrastOn, lighten, readToken, rgbToHex } from '../../lib/theme'
@@ -87,7 +88,7 @@ export function Settings(): React.JSX.Element | null {
         <div className={styles.head}>
           <span className={styles.title}>Settings</span>
           <button className={styles.close} onClick={() => setOpen(false)} title="Close">
-            ✕
+            <X size={15} />
           </button>
         </div>
 

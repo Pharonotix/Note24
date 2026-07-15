@@ -1,4 +1,15 @@
 import { useEffect, useRef, useState } from 'react'
+import {
+  Bookmark,
+  ChevronLeft,
+  ChevronRight,
+  FileText,
+  Images,
+  Search,
+  X,
+  ZoomIn,
+  ZoomOut
+} from 'lucide-react'
 import type { PDFDocumentLoadingTask, PDFDocumentProxy, PDFPageProxy } from 'pdfjs-dist'
 import { useStore } from '../../store/store'
 import { loadPdfJs } from '../../lib/pdf'
@@ -174,14 +185,14 @@ function PdfViewerInner({
       <div className={styles.window}>
         <div className={styles.header}>
           <span className={styles.filename} title={filename}>
-            📄 {filename}
+            <FileText size={16} /> {filename}
           </span>
           <div className={styles.headActions}>
             <button className={styles.hbtn} onClick={() => window.api.attachments.open(id)}>
               Open externally
             </button>
             <button className={styles.close} onClick={onClose} title="Close">
-              ✕
+              <X size={16} />
             </button>
           </div>
         </div>
@@ -192,7 +203,7 @@ function PdfViewerInner({
               className={sidebar === 'thumbnails' ? `${styles.tbtn} ${styles.tbtnOn}` : styles.tbtn}
               onClick={() => setSidebar((v) => (v === 'thumbnails' ? null : 'thumbnails'))}
             >
-              🖼 Thumbnails
+              <Images size={14} /> Thumbnails
             </button>
             <button
               className={sidebar === 'outline' ? `${styles.tbtn} ${styles.tbtnOn}` : styles.tbtn}
@@ -200,17 +211,17 @@ function PdfViewerInner({
               onClick={() => setSidebar((v) => (v === 'outline' ? null : 'outline'))}
               title={!outline || outline.length === 0 ? 'This PDF has no bookmarks' : undefined}
             >
-              🔖 Bookmarks
+              <Bookmark size={14} /> Bookmarks
             </button>
             <button
               className={sidebar === 'search' ? `${styles.tbtn} ${styles.tbtnOn}` : styles.tbtn}
               onClick={() => setSidebar((v) => (v === 'search' ? null : 'search'))}
             >
-              🔍 Search
+              <Search size={14} /> Search
             </button>
             <span className={styles.sep} />
-            <button className={styles.tbtn} onClick={() => goToPage(pageNum - 1)} disabled={pageNum <= 1}>
-              ‹
+            <button className={styles.tbtn} onClick={() => goToPage(pageNum - 1)} disabled={pageNum <= 1} title="Previous page">
+              <ChevronLeft size={15} />
             </button>
             <input
               className={styles.pageInput}
@@ -222,16 +233,16 @@ function PdfViewerInner({
               }}
             />
             <span className={styles.pageOf}>/ {numPages}</span>
-            <button className={styles.tbtn} onClick={() => goToPage(pageNum + 1)} disabled={pageNum >= numPages}>
-              ›
+            <button className={styles.tbtn} onClick={() => goToPage(pageNum + 1)} disabled={pageNum >= numPages} title="Next page">
+              <ChevronRight size={15} />
             </button>
             <span className={styles.sep} />
-            <button className={styles.tbtn} onClick={zoomOut}>
-              −
+            <button className={styles.tbtn} onClick={zoomOut} title="Zoom out">
+              <ZoomOut size={15} />
             </button>
             <span className={styles.zoomLabel}>{Math.round(scale * 100)}%</span>
-            <button className={styles.tbtn} onClick={zoomIn}>
-              +
+            <button className={styles.tbtn} onClick={zoomIn} title="Zoom in">
+              <ZoomIn size={15} />
             </button>
           </div>
         )}

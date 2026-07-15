@@ -43,6 +43,9 @@
   background: var(--primary-hover);
 }
 .ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   padding: 7px 10px;
   border-radius: var(--radius-sm);
   background: var(--surface-2);
@@ -160,9 +163,12 @@
 }
 
 .iconBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   color: var(--text-faint);
   opacity: 0;
-  padding: 1px 5px;
+  padding: 2px 4px;
   border-radius: 4px;
   font-size: 12px;
   flex: 0 0 auto;

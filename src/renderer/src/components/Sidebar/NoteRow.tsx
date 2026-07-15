@@ -1,3 +1,4 @@
+import { X } from 'lucide-react'
 import type { NoteSummary } from '@shared/types'
 import styles from './Sidebar.module.css'
 
@@ -91,7 +92,7 @@ export function NoteRow({
           onRequestDelete()
         }}
       >
-        ✕
+        <X size={13} />
       </button>
       {indicator === 'after' && <span className={styles.insertLine} data-pos="after" />}
     </li>

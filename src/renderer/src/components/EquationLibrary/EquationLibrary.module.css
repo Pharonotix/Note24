@@ -20,6 +20,8 @@
   font-weight: 600;
 }
 .close {
+  display: inline-flex;
+  align-items: center;
   color: var(--text-faint);
   padding: 4px 6px;
   border-radius: 4px;
@@ -46,6 +48,9 @@
   border-color: var(--primary);
 }
 .add {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 34px;
   border-radius: var(--radius-sm);
   background: var(--primary);
@@ -114,6 +119,9 @@
   padding: 2px 2px 0;
 }
 .symbolsToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   align-self: flex-start;
   font-size: 11px;
   font-weight: 600;
@@ -230,6 +238,9 @@
   background: var(--primary-hover);
 }
 .mini {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   padding: 3px 6px;
   border-radius: 4px;
   color: var(--text-muted);

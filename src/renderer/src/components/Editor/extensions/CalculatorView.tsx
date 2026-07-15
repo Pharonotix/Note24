@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { ArrowLeftRight, Calculator, ChartLine, Pi } from 'lucide-react'
 import { NodeViewWrapper, type NodeViewProps } from '@tiptap/react'
 import {
   CONSTANTS,
@@ -121,7 +122,9 @@ export function CalculatorView({
         onKeyUp={(e) => e.stopPropagation()}
       >
         <div className={styles.header}>
-          <span className={styles.icon}>🧮</span>
+          <span className={styles.icon}>
+            <Calculator size={14} />
+          </span>
           <span className={styles.label}>Calculator</span>
           {!engines && !engineError && <span className={styles.loading}>loading…</span>}
           {engineError && <span className={styles.err}>engine failed to load</span>}
@@ -133,7 +136,7 @@ export function CalculatorView({
                 title="Rearrange an equation (solve for a variable)"
                 onClick={() => setShowRearrange((v) => !v)}
               >
-                ⇄ Rearrange
+                <ArrowLeftRight size={12} /> Rearrange
               </button>
               <button
                 type="button"
@@ -141,7 +144,7 @@ export function CalculatorView({
                 title="Built-in constants"
                 onClick={() => setShowConstants((v) => !v)}
               >
-                π Constants
+                <Pi size={12} /> Constants
               </button>
               <button
                 type="button"
@@ -154,7 +157,7 @@ export function CalculatorView({
                 disabled={!graphableLines.length}
                 onClick={onGraph}
               >
-                📈 Graph
+                <ChartLine size={12} /> Graph
               </button>
             </>
           )}

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { Keyboard, Pencil } from 'lucide-react'
 import { NodeViewWrapper, type NodeViewProps } from '@tiptap/react'
 import { renderLatex } from '../../../lib/katex'
 import { parseVars, serializeVars } from '../../../lib/equationFormat'
@@ -121,8 +122,9 @@ export function MathView({ node, updateAttributes, selected, editor }: NodeViewP
             className={styles.symbolsToggle}
             onMouseDown={(e) => e.preventDefault()}
             onClick={() => setShowKeyboard((v) => !v)}
+            title="Symbol keyboard"
           >
-            🔡
+            <Keyboard size={14} />
           </button>
           {showKeyboard && <MathKeyboard targetRef={inputRef} value={draft} onChange={setDraft} />}
           <span className={styles.previewRow}>
@@ -196,7 +198,7 @@ export function MathView({ node, updateAttributes, selected, editor }: NodeViewP
                   Show details
                 </label>
                 <button type="button" className={styles.metaEditBtn} title="Edit equation" onClick={startEdit}>
-                  ✎
+                  <Pencil size={12} />
                 </button>
               </span>
               {name && <span className={styles.metaName}>{name}</span>}

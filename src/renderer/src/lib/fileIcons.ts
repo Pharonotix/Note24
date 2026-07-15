@@ -1,13 +1,23 @@
-/** A single representative emoji for a file's mime type, used across attachment UIs. */
-export function iconForMime(mime: string): string {
-  if (mime.startsWith('image/')) return '🖼'
-  if (mime.startsWith('audio/')) return '🎵'
-  if (mime.startsWith('video/')) return '🎬'
-  if (mime === 'application/pdf') return '📄'
-  if (mime === 'application/zip') return '🗜'
-  if (mime.includes('wordprocessingml') || mime === 'application/msword') return '📝'
-  if (mime.startsWith('text/')) return '📃'
-  return '📎'
+import {
+  File,
+  FileArchive,
+  FileAudio,
+  FileImage,
+  FileText,
+  FileVideo,
+  type LucideIcon
+} from 'lucide-react'
+
+/** A representative Lucide icon component for a file's mime type, used across attachment UIs. */
+export function iconForMime(mime: string): LucideIcon {
+  if (mime.startsWith('image/')) return FileImage
+  if (mime.startsWith('audio/')) return FileAudio
+  if (mime.startsWith('video/')) return FileVideo
+  if (mime === 'application/pdf') return FileText
+  if (mime === 'application/zip') return FileArchive
+  if (mime.includes('wordprocessingml') || mime === 'application/msword') return FileText
+  if (mime.startsWith('text/')) return FileText
+  return File
 }
 
 /** Human-readable file size, e.g. "512 B", "3.2 KB", "1.4 MB". */
