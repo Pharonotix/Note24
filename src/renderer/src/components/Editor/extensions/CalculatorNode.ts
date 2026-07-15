@@ -1,6 +1,7 @@
 import { Node, mergeAttributes } from '@tiptap/core'
 import { ReactNodeViewRenderer } from '@tiptap/react'
 import { CalculatorView } from './CalculatorView'
+import { numAttr, strAttr } from './nodeAttrs'
 
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
@@ -19,16 +20,8 @@ export const CalculatorNode = Node.create({
 
   addAttributes() {
     return {
-      text: {
-        default: '',
-        parseHTML: (el) => el.getAttribute('data-text') || '',
-        renderHTML: (attrs) => ({ 'data-text': attrs.text })
-      },
-      width: {
-        default: 460,
-        parseHTML: (el) => Number(el.getAttribute('data-width')) || 460,
-        renderHTML: (attrs) => ({ 'data-width': attrs.width })
-      }
+      text: strAttr('text'),
+      width: numAttr('width', 460)
     }
   },
 

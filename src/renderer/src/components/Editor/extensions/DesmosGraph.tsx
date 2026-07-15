@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { NodeViewWrapper, type NodeViewProps } from '@tiptap/react'
 import { applyDesmosSeed, type DesmosCalculator, getDesmosApiKey, loadDesmos } from '../../../lib/desmos'
+import { startResizeDrag } from '../../../lib/resizeDrag'
 import styles from './DesmosGraph.module.css'
 
 const DEFAULT_W = 640
@@ -99,28 +100,15 @@ export function DesmosGraph({
     calcRef.current?.resize()
   }, [size.w, size.h, status])
 
-  const onResizeStart = (e: React.PointerEvent): void => {
-    e.preventDefault()
-    e.stopPropagation()
-    const startX = e.clientX
-    const startY = e.clientY
-    const startW = size.w
-    const startH = size.h
-    let lw = startW
-    let lh = startH
-    const move = (ev: PointerEvent): void => {
-      lw = Math.max(MIN_W, startW + (ev.clientX - startX))
-      lh = Math.max(MIN_H, startH + (ev.clientY - startY))
-      setSize({ w: lw, h: lh })
-    }
-    const up = (): void => {
-      window.removeEventListener('pointermove', move)
-      window.removeEventListener('pointerup', up)
-      updateAttributes({ width: Math.round(lw), height: Math.round(lh) })
-    }
-    window.addEventListener('pointermove', move)
-    window.addEventListener('pointerup', up)
-  }
+  const onResizeStart = (e: React.PointerEvent): void =>
+    startResizeDrag(e, {
+      startW: size.w,
+      startH: size.h,
+      minW: MIN_W,
+      minH: MIN_H,
+      onLive: (w, h) => setSize({ w, h }),
+      onCommit: (width, height) => updateAttributes({ width, height })
+    })
 
   return (
     <NodeViewWrapper className={styles.wrap}>

@@ -2,6 +2,40 @@
 
 All notable changes to Note24. Newest first.
 
+## 0.7.1 — Optimization pass
+
+### Changed
+- **Installed size cut ~42% (634MB → ~365MB).** Renderer-only libraries (Excalidraw, pdf.js,
+  TipTap, KaTeX, mathjs, nerdamer, lucide-react, zustand) moved from `dependencies` to
+  `devDependencies` — Vite already bundles them into the app, so electron-builder was
+  shipping every one of them a second time as loose `node_modules` files. Production
+  `node_modules` now contains only better-sqlite3 (native) and the @electron-toolkit
+  helpers (~13MB, down from ~200MB+).
+- **electron-builder `files` is now an explicit allowlist** (`out/**`, `resources/**`) —
+  previously the blocklist quietly shipped stray repo files (roadmap docs, run notes, etc.).
+- **~10MB of dead mermaid/diagram chunks removed from every build.** Excalidraw lazily
+  imports `@excalidraw/mermaid-to-excalidraw` for a text-to-diagram dialog Note24 never
+  renders; it's now aliased to a tiny stub. Pasting mermaid-syntax text onto a drawing
+  falls back to plain text (the same path a mermaid syntax error already took). Renderer
+  build: 33MB → 27MB, and builds ~5s faster.
+- **Notes list queries are no longer N+1.** `listNotes`/`searchNotes` fetched tags with one
+  query per note on every refresh — and a refresh runs after every autosave. Now a single
+  JOIN fetches all tags at once.
+- **Attachment backfill runs once, not every launch.** The v0.6.0 embedded-image backfill
+  re-scanned every note's JSON on each startup; it now records completion in settings and
+  skips itself (new attachments are linked at creation time).
+
+### Removed (internal duplication)
+- The pointer-drag resize logic, copy-pasted in four block node views (calculator, Desmos,
+  drawing, image), is now one shared helper (`lib/resizeDrag.ts`).
+- The `data-*` TipTap attribute builders, duplicated or hand-rolled in seven extension
+  files, are now shared (`extensions/nodeAttrs.ts`).
+
+### Notes
+- No behavior changes intended anywhere; existing notes, attachments, and settings are
+  untouched. Verified against the real packaged build (launch, existing data, drawing,
+  calculator, table, and the PDF viewer all exercised in `dist/win-unpacked/Note24.exe`).
+
 ## 0.7.0 — PDF Workspace
 
 ### Added

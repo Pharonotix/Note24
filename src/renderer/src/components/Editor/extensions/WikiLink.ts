@@ -4,6 +4,7 @@ import { Suggestion } from '@tiptap/suggestion'
 import { PluginKey } from '@tiptap/pm/state'
 import { WikiLinkView } from './WikiLinkView'
 import { wikiSuggestionRender } from './wikiSuggestion'
+import { strAttr } from './nodeAttrs'
 
 export const WikiLink = Node.create({
   name: 'wikiLink',
@@ -14,11 +15,7 @@ export const WikiLink = Node.create({
 
   addAttributes() {
     return {
-      title: {
-        default: '',
-        parseHTML: (el) => el.getAttribute('data-title') || '',
-        renderHTML: (attrs) => ({ 'data-title': attrs.title })
-      }
+      title: strAttr('title')
     }
   },
 

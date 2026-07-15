@@ -1,6 +1,6 @@
 {
   "name": "note24",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "Note24 — a personal physics notebook with equations, Desmos graphs, drawings, and linked notes",
   "main": "./out/main/index.js",
   "author": "aiden",
@@ -22,6 +22,12 @@
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.2",
     "@electron-toolkit/utils": "^4.0.0",
+    "better-sqlite3": "^12.11.1"
+  },
+  "devDependencies": {
+    "@electron-toolkit/eslint-config-prettier": "^3.0.0",
+    "@electron-toolkit/eslint-config-ts": "^3.1.0",
+    "@electron-toolkit/tsconfig": "^2.0.0",
     "@excalidraw/excalidraw": "^0.18.1",
     "@tiptap/extension-highlight": "^3.27.3",
     "@tiptap/extension-placeholder": "^3.27.3",
@@ -29,18 +35,6 @@
     "@tiptap/react": "^3.27.3",
     "@tiptap/starter-kit": "^3.27.3",
     "@tiptap/suggestion": "^3.27.3",
-    "better-sqlite3": "^12.11.1",
-    "katex": "^0.17.0",
-    "lucide-react": "^1.23.0",
-    "mathjs": "^15.2.0",
-    "nerdamer": "^1.1.13",
-    "pdfjs-dist": "^5.4.624",
-    "zustand": "^5.0.14"
-  },
-  "devDependencies": {
-    "@electron-toolkit/eslint-config-prettier": "^3.0.0",
-    "@electron-toolkit/eslint-config-ts": "^3.1.0",
-    "@electron-toolkit/tsconfig": "^2.0.0",
     "@types/katex": "^0.16.8",
     "@types/node": "^22.19.1",
     "@types/react": "^19.2.7",
@@ -53,10 +47,16 @@
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",
+    "katex": "^0.17.0",
+    "lucide-react": "^1.23.0",
+    "mathjs": "^15.2.0",
+    "nerdamer": "^1.1.13",
+    "pdfjs-dist": "^5.4.624",
     "prettier": "^3.7.4",
     "react": "^19.2.1",
     "react-dom": "^19.2.1",
     "typescript": "^5.9.3",
-    "vite": "^7.2.6"
+    "vite": "^7.2.6",
+    "zustand": "^5.0.14"
   }
 }

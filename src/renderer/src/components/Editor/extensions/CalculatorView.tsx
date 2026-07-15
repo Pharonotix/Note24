@@ -9,6 +9,7 @@ import {
   type EvalOutput
 } from '../../../lib/calcEngine'
 import type { DesmosSeed } from '../../../lib/desmos'
+import { startResizeDrag } from '../../../lib/resizeDrag'
 import styles from './Calculator.module.css'
 
 const DEFAULT_W = 460
@@ -68,24 +69,13 @@ export function CalculatorView({
     saveTimer.current = setTimeout(() => updateAttributes({ text: value }), 500)
   }
 
-  const onResizeStart = (e: React.PointerEvent): void => {
-    e.preventDefault()
-    e.stopPropagation()
-    const startX = e.clientX
-    const startW = width
-    let lw = startW
-    const move = (ev: PointerEvent): void => {
-      lw = Math.max(MIN_W, startW + (ev.clientX - startX))
-      setWidth(lw)
-    }
-    const up = (): void => {
-      window.removeEventListener('pointermove', move)
-      window.removeEventListener('pointerup', up)
-      updateAttributes({ width: Math.round(lw) })
-    }
-    window.addEventListener('pointermove', move)
-    window.addEventListener('pointerup', up)
-  }
+  const onResizeStart = (e: React.PointerEvent): void =>
+    startResizeDrag(e, {
+      startW: width,
+      minW: MIN_W,
+      onLive: (w) => setWidth(w),
+      onCommit: (w) => updateAttributes({ width: w })
+    })
 
   const symbols = useMemo(() => extractSymbols(rearrEq), [rearrEq])
   const effectiveVar = symbols.includes(rearrVar) ? rearrVar : (symbols[0] ?? '')

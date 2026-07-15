@@ -1,6 +1,7 @@
 import { Node, mergeAttributes } from '@tiptap/core'
 import { ReactNodeViewRenderer } from '@tiptap/react'
 import { DrawingView } from './DrawingView'
+import { numAttr, strAttr } from './nodeAttrs'
 
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
@@ -19,21 +20,9 @@ export const DrawingNode = Node.create({
 
   addAttributes() {
     return {
-      scene: {
-        default: '',
-        parseHTML: (el) => el.getAttribute('data-scene') || '',
-        renderHTML: (attrs) => ({ 'data-scene': attrs.scene })
-      },
-      width: {
-        default: 700,
-        parseHTML: (el) => Number(el.getAttribute('data-width')) || 700,
-        renderHTML: (attrs) => ({ 'data-width': attrs.width })
-      },
-      height: {
-        default: 430,
-        parseHTML: (el) => Number(el.getAttribute('data-height')) || 430,
-        renderHTML: (attrs) => ({ 'data-height': attrs.height })
-      }
+      scene: strAttr('scene'),
+      width: numAttr('width', 700),
+      height: numAttr('height', 430)
     }
   },
 

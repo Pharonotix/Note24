@@ -1,6 +1,7 @@
 import { Node, mergeAttributes } from '@tiptap/core'
 import { ReactNodeViewRenderer } from '@tiptap/react'
 import { ImageFileView } from './ImageFileView'
+import { numAttr, strAttr } from './nodeAttrs'
 
 export interface ImageFileAttrs {
   attachmentId: string
@@ -16,12 +17,6 @@ declare module '@tiptap/core' {
   }
 }
 
-const strAttr = (name: string) => ({
-  default: '',
-  parseHTML: (el: HTMLElement) => el.getAttribute(`data-${name}`) || '',
-  renderHTML: (attrs: Record<string, unknown>) => ({ [`data-${name}`]: attrs[name] })
-})
-
 export const ImageFile = Node.create({
   name: 'imageFile',
   group: 'block',
@@ -34,11 +29,7 @@ export const ImageFile = Node.create({
       attachmentId: strAttr('attachmentId'),
       filename: strAttr('filename'),
       mime: strAttr('mime'),
-      width: {
-        default: 0,
-        parseHTML: (el) => Number(el.getAttribute('data-width')) || 0,
-        renderHTML: (attrs) => ({ 'data-width': attrs.width })
-      }
+      width: numAttr('width', 0)
     }
   },
 

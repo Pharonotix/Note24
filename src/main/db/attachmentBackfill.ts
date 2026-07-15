@@ -1,4 +1,7 @@
 import { getDb } from './database'
+import { getSetting, setSetting } from './settings'
+
+const DONE_FLAG = 'attachmentBackfillDone'
 
 interface PmNode {
   type?: string
@@ -31,9 +34,12 @@ function extractAttachmentIds(contentJson: string): string[] {
  * to the note they're embedded in, so they show up in that note's attachments list
  * even though they were uploaded before note/folder linkage existed. Only touches
  * attachment rows that are currently fully unlinked — never overwrites a deliberate
- * later move to a note or folder.
+ * later move to a note or folder. Runs once per database (tracked via a settings
+ * flag) — new attachments are linked at creation time, so re-scanning every note's
+ * JSON on every launch would be pure startup waste.
  */
 export function backfillAttachmentNoteLinks(): void {
+  if (getSetting(DONE_FLAG)) return
   const db = getDb()
   const notes = db.prepare(`SELECT id, content FROM notes`).all() as { id: number; content: string }[]
   const update = db.prepare(
@@ -47,4 +53,5 @@ export function backfillAttachmentNoteLinks(): void {
     }
   })
   tx()
+  setSetting(DONE_FLAG, '1')
 }

@@ -1,6 +1,7 @@
 import { Node, mergeAttributes } from '@tiptap/core'
 import { ReactNodeViewRenderer } from '@tiptap/react'
 import { DesmosGraph } from './DesmosGraph'
+import { numAttr, strAttr } from './nodeAttrs'
 
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
@@ -19,26 +20,10 @@ export const DesmosNode = Node.create({
 
   addAttributes() {
     return {
-      state: {
-        default: '',
-        parseHTML: (el) => el.getAttribute('data-state') || '',
-        renderHTML: (attrs) => ({ 'data-state': attrs.state })
-      },
-      width: {
-        default: 640,
-        parseHTML: (el) => Number(el.getAttribute('data-width')) || 640,
-        renderHTML: (attrs) => ({ 'data-width': attrs.width })
-      },
-      height: {
-        default: 380,
-        parseHTML: (el) => Number(el.getAttribute('data-height')) || 380,
-        renderHTML: (attrs) => ({ 'data-height': attrs.height })
-      },
-      seed: {
-        default: '',
-        parseHTML: (el) => el.getAttribute('data-seed') || '',
-        renderHTML: (attrs) => ({ 'data-seed': attrs.seed })
-      }
+      state: strAttr('state'),
+      width: numAttr('width', 640),
+      height: numAttr('height', 380),
+      seed: strAttr('seed')
     }
   },
 

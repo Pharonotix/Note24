@@ -31,13 +31,6 @@ function rowToNote(r: NoteRow): Note {
   }
 }
 
-function tagsFor(noteId: number): string[] {
-  const rows = getDb()
-    .prepare(`SELECT t.name FROM note_tags nt JOIN tags t ON t.id = nt.tag_id WHERE nt.note_id = ? ORDER BY t.name`)
-    .all(noteId) as { name: string }[]
-  return rows.map((r) => r.name)
-}
-
 interface SummaryRow {
   id: number
   title: string
@@ -46,22 +39,39 @@ interface SummaryRow {
   sort_order: number
 }
 
-function summarize(r: SummaryRow): NoteSummary {
-  return {
+/** All note tags in one query (avoids a per-note query on every list/search refresh). */
+function tagsByNote(): Map<number, string[]> {
+  const rows = getDb()
+    .prepare(
+      `SELECT nt.note_id, t.name FROM note_tags nt JOIN tags t ON t.id = nt.tag_id ORDER BY t.name`
+    )
+    .all() as { note_id: number; name: string }[]
+  const map = new Map<number, string[]>()
+  for (const r of rows) {
+    const list = map.get(r.note_id)
+    if (list) list.push(r.name)
+    else map.set(r.note_id, [r.name])
+  }
+  return map
+}
+
+function summarizeAll(rows: SummaryRow[]): NoteSummary[] {
+  const tags = tagsByNote()
+  return rows.map((r) => ({
     id: r.id,
     title: r.title,
     folderId: r.folder_id,
     updatedAt: r.updated_at,
-    tags: tagsFor(r.id),
+    tags: tags.get(r.id) ?? [],
     sortOrder: r.sort_order
-  }
+  }))
 }
 
 export function listNotes(): NoteSummary[] {
   const rows = getDb()
     .prepare(`SELECT id, title, folder_id, updated_at, sort_order FROM notes ORDER BY sort_order, updated_at DESC`)
     .all() as SummaryRow[]
-  return rows.map(summarize)
+  return summarizeAll(rows)
 }
 
 function nextNoteSortOrder(folderId: number | null): number {
@@ -152,7 +162,7 @@ export function searchNotes(query: string): NoteSummary[] {
          ORDER BY rank`
       )
       .all(match) as SummaryRow[]
-    return rows.map(summarize)
+    return summarizeAll(rows)
   } catch {
     return []
   }

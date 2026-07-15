@@ -2,6 +2,7 @@ import { Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import { NodeViewWrapper, type NodeViewProps } from '@tiptap/react'
 import { useStore } from '../../../store/store'
 import { isDarkPreset } from '../../../lib/theme'
+import { startResizeDrag } from '../../../lib/resizeDrag'
 import { ExcalidrawCanvas } from '../../ExcalidrawCanvas'
 import styles from './Drawing.module.css'
 
@@ -43,28 +44,15 @@ export function DrawingView({
     }, 800)
   }
 
-  const onResizeStart = (e: React.PointerEvent): void => {
-    e.preventDefault()
-    e.stopPropagation()
-    const startX = e.clientX
-    const startY = e.clientY
-    const startW = size.w
-    const startH = size.h
-    let lw = startW
-    let lh = startH
-    const move = (ev: PointerEvent): void => {
-      lw = Math.max(MIN_W, startW + (ev.clientX - startX))
-      lh = Math.max(MIN_H, startH + (ev.clientY - startY))
-      setSize({ w: lw, h: lh })
-    }
-    const up = (): void => {
-      window.removeEventListener('pointermove', move)
-      window.removeEventListener('pointerup', up)
-      updateAttributes({ width: Math.round(lw), height: Math.round(lh) })
-    }
-    window.addEventListener('pointermove', move)
-    window.addEventListener('pointerup', up)
-  }
+  const onResizeStart = (e: React.PointerEvent): void =>
+    startResizeDrag(e, {
+      startW: size.w,
+      startH: size.h,
+      minW: MIN_W,
+      minH: MIN_H,
+      onLive: (w, h) => setSize({ w, h }),
+      onCommit: (width, height) => updateAttributes({ width, height })
+    })
 
   return (
     <NodeViewWrapper className={styles.wrap}>

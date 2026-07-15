@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { NodeViewWrapper, type NodeViewProps } from '@tiptap/react'
 import { openAttachment } from '../../../lib/openAttachment'
+import { startResizeDrag } from '../../../lib/resizeDrag'
 import styles from './ImageFile.module.css'
 
 const MIN_W = 80
@@ -23,24 +24,13 @@ export function ImageFileView({
   const [w, setW] = useState<number | null>(width || null)
   useEffect(() => setW(width || null), [width])
 
-  const onResizeStart = (e: React.PointerEvent): void => {
-    e.preventDefault()
-    e.stopPropagation()
-    const startW = frameRef.current?.offsetWidth ?? 320
-    const startX = e.clientX
-    let lw = startW
-    const move = (ev: PointerEvent): void => {
-      lw = Math.max(MIN_W, startW + (ev.clientX - startX))
-      setW(lw)
-    }
-    const up = (): void => {
-      window.removeEventListener('pointermove', move)
-      window.removeEventListener('pointerup', up)
-      updateAttributes({ width: Math.round(lw) })
-    }
-    window.addEventListener('pointermove', move)
-    window.addEventListener('pointerup', up)
-  }
+  const onResizeStart = (e: React.PointerEvent): void =>
+    startResizeDrag(e, {
+      startW: frameRef.current?.offsetWidth ?? 320,
+      minW: MIN_W,
+      onLive: (w) => setW(w),
+      onCommit: (w) => updateAttributes({ width: w })
+    })
 
   if (!isImage) {
     return (

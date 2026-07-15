@@ -1,6 +1,7 @@
 import { Node, mergeAttributes } from '@tiptap/core'
 import { ReactNodeViewRenderer } from '@tiptap/react'
 import { MathView } from './MathView'
+import { strAttr } from './nodeAttrs'
 
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
@@ -19,11 +20,7 @@ export const InlineMath = Node.create({
 
   addAttributes() {
     return {
-      latex: {
-        default: '',
-        parseHTML: (el) => el.getAttribute('data-latex') || '',
-        renderHTML: (attrs) => ({ 'data-latex': attrs.latex })
-      }
+      latex: strAttr('latex')
     }
   },
 

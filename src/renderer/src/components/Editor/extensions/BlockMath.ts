@@ -1,6 +1,7 @@
 import { Node, mergeAttributes } from '@tiptap/core'
 import { ReactNodeViewRenderer } from '@tiptap/react'
 import { MathView } from './MathView'
+import { strAttr } from './nodeAttrs'
 
 export interface BlockMathAttrs {
   latex?: string
@@ -20,12 +21,6 @@ declare module '@tiptap/core' {
     }
   }
 }
-
-const strAttr = (name: string) => ({
-  default: '',
-  parseHTML: (el: HTMLElement) => el.getAttribute(`data-${name}`) || '',
-  renderHTML: (attrs: Record<string, unknown>) => ({ [`data-${name}`]: attrs[name] })
-})
 
 export const BlockMath = Node.create({
   name: 'blockMath',

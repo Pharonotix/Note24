@@ -2,13 +2,13 @@ appId: com.aiden.note24
 productName: Note24
 directories:
   buildResources: build
+# Explicit allowlist: only the built app and runtime resources ship. package.json and
+# production-dependency node_modules (just better-sqlite3 + @electron-toolkit) are added
+# automatically by electron-builder — renderer libraries live in devDependencies since
+# Vite bundles them into out/renderer, so shipping their node_modules would duplicate them.
 files:
-  - '!**/.vscode/*'
-  - '!src/*'
-  - '!electron.vite.config.{js,ts,mjs,cjs}'
-  - '!{.eslintcache,eslint.config.mjs,.prettierignore,.prettierrc.yaml,dev-app-update.yml,CHANGELOG.md,README.md}'
-  - '!{.env,.env.*,.npmrc,pnpm-lock.yaml}'
-  - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
+  - out/**
+  - resources/**
 asar: false
 asarUnpack:
   - resources/**
