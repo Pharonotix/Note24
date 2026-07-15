@@ -15,7 +15,8 @@ import type {
   NoteSummary,
   NoteUpdateInput,
   RelationKind,
-  Tag
+  Tag,
+  Template
 } from './types'
 
 /**
@@ -71,6 +72,12 @@ export interface Note24Api {
   export: {
     toPdf(suggestedName: string): Promise<{ canceled: boolean; path?: string }>
     print(): Promise<void>
+  }
+  templates: {
+    list(): Promise<Template[]>
+    create(name: string, content: string): Promise<Template>
+    rename(id: number, name: string): Promise<void>
+    delete(id: number): Promise<void>
   }
   settings: {
     get(key: string): Promise<string | null>

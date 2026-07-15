@@ -130,11 +130,22 @@ export interface Backlink {
   title: string
 }
 
+/** A user-saved reusable note template (built-ins are static data, not stored here). */
+export interface Template {
+  id: number
+  name: string
+  /** ProseMirror document, JSON-stringified — same shape as Note.content. */
+  content: string
+  createdAt: number
+}
+
 /* ---- Input payloads ---- */
 
 export interface NoteCreateInput {
   title?: string
   folderId?: number | null
+  /** Seeds the new note's body (e.g. from a template) instead of the default empty doc. */
+  content?: string
 }
 
 export interface NoteUpdateInput {

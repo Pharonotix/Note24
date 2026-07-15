@@ -55,6 +55,12 @@ const api: Note24Api = {
     toPdf: (suggestedName) => ipcRenderer.invoke(IPC.exportToPdf, suggestedName),
     print: () => ipcRenderer.invoke(IPC.exportPrint)
   },
+  templates: {
+    list: () => ipcRenderer.invoke(IPC.templatesList),
+    create: (name, content) => ipcRenderer.invoke(IPC.templatesCreate, name, content),
+    rename: (id, name) => ipcRenderer.invoke(IPC.templatesRename, id, name),
+    delete: (id) => ipcRenderer.invoke(IPC.templatesDelete, id)
+  },
   settings: {
     get: (key) => ipcRenderer.invoke(IPC.settingsGet, key),
     set: (key, value) => ipcRenderer.invoke(IPC.settingsSet, key, value),

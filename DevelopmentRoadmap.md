@@ -16,7 +16,8 @@ Shipped versions (see `CHANGELOG.md` for details):
 - ✅ **v0.6.0** — Attachments System: note & folder attachment linkage, File Manager panel (search/rename/move/delete), a per-note attachments list, sidebar drag-and-drop file attach, broader file type support (audio/video/zip/docx), and cascade cleanup on note/folder delete.
 - ✅ **v0.7.0** — PDF Workspace: embedded pdf.js viewer (search/zoom/outline/thumbnails), a checkbox-tree "Export to PDF" picker over notes and folders, and Print — both built on the same read-only print-layout renderer + Electron's built-in printToPDF/print.
 - ✅ **v0.7.1** — Optimization pass: installed size −42% (634MB → ~365MB) by shipping only runtime deps, dead mermaid chunks stubbed out (−6MB renderer build), N+1 tags query fixed, attachment backfill made run-once, resize-drag and node-attr duplication extracted into shared helpers.
-- ⏭️ **Next: v0.8.0** — Templates (built-in Problem Set / Lab Report / Research Notes / Lecture Notes, plus user-saved templates). Deferred items to fold in later: the visual equation dependency **graph** (from v0.3.0), equation→calculator integration (from v0.4.0), in-app audio/video players for attachments (from v0.6.0), and a PDF24 launcher for merge/compress/split/OCR (from v0.7.0, deliberately skipped this version).
+- ✅ **v0.8.0** — Templates: 4 built-in templates (Problem Set, Lab Report, Research Notes, Lecture Notes) seeded with real interactive blocks, user-saved templates, and one Template Picker for both.
+- ⏭️ **Next: v0.9.0** — Citation Manager (Books/Papers/Websites/Videos/DOIs; APA/MLA/Chicago/IEEE formats). Deferred items to fold in later: the visual equation dependency **graph** (from v0.3.0), equation→calculator integration (from v0.4.0), in-app audio/video players for attachments (from v0.6.0), and a PDF24 launcher for merge/compress/split/OCR (from v0.7.0, deliberately skipped).
 
 ---
 

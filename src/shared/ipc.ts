@@ -43,6 +43,11 @@ export const IPC = {
   exportToPdf: 'export:toPdf',
   exportPrint: 'export:print',
 
+  templatesList: 'templates:list',
+  templatesCreate: 'templates:create',
+  templatesRename: 'templates:rename',
+  templatesDelete: 'templates:delete',
+
   settingsGet: 'settings:get',
   settingsSet: 'settings:set',
   settingsGetAll: 'settings:getAll',

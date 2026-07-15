@@ -19,6 +19,7 @@ import * as settings from '../db/settings'
 import * as attachments from '../attachments'
 import * as locations from '../locations'
 import * as exportPdf from '../exportPdf'
+import * as templates from '../db/templates'
 
 /** Registers every ipcMain.handle channel. Call once after the DB is ready. */
 export function registerIpcHandlers(): void {
@@ -121,6 +122,16 @@ export function registerIpcHandlers(): void {
   // Export / print
   ipcMain.handle(IPC.exportToPdf, (_e, suggestedName: string) => exportPdf.exportToPdf(suggestedName))
   ipcMain.handle(IPC.exportPrint, () => exportPdf.printCurrent())
+
+  // Templates
+  ipcMain.handle(IPC.templatesList, () => templates.listTemplates())
+  ipcMain.handle(IPC.templatesCreate, (_e, name: string, content: string) =>
+    templates.createTemplate(name, content)
+  )
+  ipcMain.handle(IPC.templatesRename, (_e, id: number, name: string) =>
+    templates.renameTemplate(id, name)
+  )
+  ipcMain.handle(IPC.templatesDelete, (_e, id: number) => templates.deleteTemplate(id))
 
   // Settings
   ipcMain.handle(IPC.settingsGet, (_e, key: string) => settings.getSetting(key))

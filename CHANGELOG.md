@@ -2,6 +2,29 @@
 
 All notable changes to Note24. Newest first.
 
+## 0.8.0 — Templates
+
+### Added
+- **4 built-in templates** — Problem Set, Lab Report, Research Notes, Lecture Notes — each
+  with the sections from the roadmap as headings, seeded with real interactive blocks where
+  it adds value: Problem Set gets an empty equation block and an empty Desmos graph; Lab
+  Report gets an empty data table and an empty calculator block; Research Notes and Lecture
+  Notes get bullet/numbered list placeholders. Static data, no DB table needed.
+- **User templates** — "Save current note" in the template picker saves the open note's
+  content as a reusable template (new `templates` table), with rename and delete.
+- **One Template Picker** — a new "New from template" button next to "+ New note" in the
+  sidebar opens a single modal listing both built-in and user templates side by side.
+
+### Notes
+- `NoteCreateInput` gained an optional `content` field so a template applies atomically at
+  note creation, matching the note's plaintext into the FTS index immediately.
+- **Incidental find during verification**: the live database had pre-existing corruption in
+  the `attachments` table (unrelated to this version's code — confirmed read-only before any
+  change), left over from repeated dev-build launch/kill cycles across recent sessions. It
+  was recovered following the documented procedure (corrupted file preserved, not deleted;
+  the one salvageable note was empty so nothing of value was lost). See
+  `note24-build-gotchas` memory for the incident record.
+
 ## 0.7.1 — Optimization pass
 
 ### Changed

@@ -122,5 +122,18 @@ export const migrations: string[] = [
   ALTER TABLE attachments ADD COLUMN folder_id INTEGER;
   CREATE INDEX idx_attachments_note ON attachments(note_id);
   CREATE INDEX idx_attachments_folder ON attachments(folder_id);
+  `,
+
+  /* --- 5: user templates ---
+     Built-in templates (Problem Set, Lab Report, Research Notes, Lecture Notes) are
+     static data in the renderer (src/renderer/src/lib/builtinTemplates.ts) — fixed,
+     never edited, so they don't need a DB row. Only user-saved templates persist here. */
+  `
+  CREATE TABLE templates (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    name       TEXT NOT NULL,
+    content    TEXT NOT NULL,
+    created_at INTEGER NOT NULL
+  );
   `
 ]

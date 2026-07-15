@@ -9,6 +9,7 @@ import { FileManager } from './components/FileManager/FileManager'
 import { PdfViewer } from './components/PdfViewer/PdfViewer'
 import { ExportPicker } from './components/ExportPicker/ExportPicker'
 import { PrintLayer } from './components/PrintLayer/PrintLayer'
+import { TemplatePicker } from './components/TemplatePicker/TemplatePicker'
 import { Settings } from './components/Settings/Settings'
 import styles from './App.module.css'
 
@@ -135,6 +136,7 @@ function App(): React.JSX.Element {
       <FileManager />
       <PdfViewer />
       <ExportPicker />
+      <TemplatePicker />
       <QuickSwitcher />
       <Settings />
     </div>

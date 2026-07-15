@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import type { Editor } from '@tiptap/react'
-import type { Folder, Note, NoteSummary, Tag } from '@shared/types'
+import type { Folder, Note, NoteSummary, Tag, Template } from '@shared/types'
 import { applyTheme, DEFAULT_THEME, loadTheme, saveTheme, type ThemeConfig } from '../lib/theme'
 
 const LAST_NOTE_KEY = 'lastNoteId'
@@ -28,6 +28,8 @@ interface AppState {
   exportPickerOpen: boolean
   /** When set, the app renders only these notes (read-only, print layout) to capture a PDF/print job. */
   printJob: { noteIds: number[]; mode: 'export' | 'print' } | null
+  templatePickerOpen: boolean
+  userTemplates: Template[]
 
   init: () => Promise<void>
   refreshNotes: () => Promise<void>
@@ -38,6 +40,7 @@ interface AppState {
   selectNote: (id: number) => Promise<void>
   openByTitle: (title: string) => Promise<void>
   newNote: (folderId?: number | null) => Promise<void>
+  newNoteFromTemplate: (content: string, folderId?: number | null) => Promise<void>
   removeNote: (id: number) => Promise<void>
   saveContent: (id: number, content: string) => Promise<void>
   renameNote: (id: number, title: string) => Promise<void>
@@ -58,6 +61,11 @@ interface AppState {
   setPdfViewer: (pdf: { id: string; filename: string } | null) => void
   setExportPickerOpen: (open: boolean) => void
   setPrintJob: (job: { noteIds: number[]; mode: 'export' | 'print' } | null) => void
+  setTemplatePickerOpen: (open: boolean) => void
+  refreshTemplates: () => Promise<void>
+  saveCurrentNoteAsTemplate: (name: string) => Promise<void>
+  renameTemplate: (id: number, name: string) => Promise<void>
+  deleteTemplate: (id: number) => Promise<void>
   setTheme: (cfg: ThemeConfig) => void
   setEditor: (editor: Editor | null) => void
   bumpAttachments: () => void
@@ -84,6 +92,8 @@ export const useStore = create<AppState>((set, get) => ({
   pdfViewer: null,
   exportPickerOpen: false,
   printJob: null,
+  templatePickerOpen: false,
+  userTemplates: [],
 
   init: async () => {
     const theme = await loadTheme()
@@ -131,6 +141,13 @@ export const useStore = create<AppState>((set, get) => ({
     const note = await window.api.notes.create({ folderId })
     await get().refreshNotes()
     set({ currentNoteId: note.id, currentNote: note })
+    await window.api.settings.set(LAST_NOTE_KEY, String(note.id))
+  },
+
+  newNoteFromTemplate: async (content, folderId = null) => {
+    const note = await window.api.notes.create({ folderId, content })
+    await get().refreshNotes()
+    set({ currentNoteId: note.id, currentNote: note, templatePickerOpen: false })
     await window.api.settings.set(LAST_NOTE_KEY, String(note.id))
   },
 
@@ -216,6 +233,26 @@ export const useStore = create<AppState>((set, get) => ({
   setPdfViewer: (pdf) => set({ pdfViewer: pdf }),
   setExportPickerOpen: (open) => set({ exportPickerOpen: open }),
   setPrintJob: (job) => set({ printJob: job }),
+  setTemplatePickerOpen: (open) => set({ templatePickerOpen: open }),
+
+  refreshTemplates: async () => set({ userTemplates: await window.api.templates.list() }),
+
+  saveCurrentNoteAsTemplate: async (name) => {
+    const note = get().currentNote
+    if (!note) return
+    await window.api.templates.create(name, note.content)
+    await get().refreshTemplates()
+  },
+
+  renameTemplate: async (id, name) => {
+    await window.api.templates.rename(id, name)
+    await get().refreshTemplates()
+  },
+
+  deleteTemplate: async (id) => {
+    await window.api.templates.delete(id)
+    await get().refreshTemplates()
+  },
   setTheme: (cfg) => {
     applyTheme(cfg)
     set({ theme: cfg })

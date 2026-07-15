@@ -101,14 +101,15 @@ export function createNote(input: NoteCreateInput = {}): Note {
   const ts = now()
   const title = input.title ?? 'Untitled'
   const folderId = input.folderId ?? null
+  const content = input.content ?? EMPTY_DOC
   const info = db
     .prepare(
       `INSERT INTO notes (title, content, annotations, folder_id, created_at, updated_at, sort_order)
        VALUES (?, ?, ?, ?, ?, ?, ?)`
     )
-    .run(title, EMPTY_DOC, null, folderId, ts, ts, nextNoteSortOrder(folderId))
+    .run(title, content, null, folderId, ts, ts, nextNoteSortOrder(folderId))
   const id = Number(info.lastInsertRowid)
-  syncFts(id, title, '')
+  syncFts(id, title, extractPlaintext(content))
   return getNote(id)!
 }
 
