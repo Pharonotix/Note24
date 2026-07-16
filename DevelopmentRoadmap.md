@@ -17,7 +17,8 @@ Shipped versions (see `CHANGELOG.md` for details):
 - ✅ **v0.7.0** — PDF Workspace: embedded pdf.js viewer (search/zoom/outline/thumbnails), a checkbox-tree "Export to PDF" picker over notes and folders, and Print — both built on the same read-only print-layout renderer + Electron's built-in printToPDF/print.
 - ✅ **v0.7.1** — Optimization pass: installed size −42% (634MB → ~365MB) by shipping only runtime deps, dead mermaid chunks stubbed out (−6MB renderer build), N+1 tags query fixed, attachment backfill made run-once, resize-drag and node-attr duplication extracted into shared helpers.
 - ✅ **v0.8.0** — Templates: 4 built-in templates (Problem Set, Lab Report, Research Notes, Lecture Notes) seeded with real interactive blocks, user-saved templates, and one Template Picker for both.
-- ⏭️ **Next: v0.9.0** — Citation Manager (Books/Papers/Websites/Videos/DOIs; APA/MLA/Chicago/IEEE formats). Deferred items to fold in later: the visual equation dependency **graph** (from v0.3.0), equation→calculator integration (from v0.4.0), in-app audio/video players for attachments (from v0.6.0), and a PDF24 launcher for merge/compress/split/OCR (from v0.7.0, deliberately skipped).
+- ✅ **v0.9.0** — Citation Manager: 5 source types, 4 citation formats (APA/MLA/Chicago/IEEE), PDF attachment (reuses the existing attachment system), an inline `citationRef` node for referencing a citation in a note, and "Used in" source-relationship tracking.
+- ⏭️ **Next: v0.10.0** — Study System (flashcards, formula sheets, infinite formula sheet, study mode, spaced repetition — generate flashcards from equations). Deferred items to fold in later: the visual equation dependency **graph** (from v0.3.0), equation→calculator integration (from v0.4.0), in-app audio/video players for attachments (from v0.6.0), and a PDF24 launcher for merge/compress/split/OCR (from v0.7.0, deliberately skipped).
 
 ---
 

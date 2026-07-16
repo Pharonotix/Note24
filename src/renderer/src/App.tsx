@@ -1,10 +1,11 @@
 import { useEffect } from 'react'
-import { Download, FolderSearch2, PrinterCheck, Settings as SettingsIcon, Sigma } from 'lucide-react'
+import { BookMarked, Download, FolderSearch2, PrinterCheck, Settings as SettingsIcon, Sigma } from 'lucide-react'
 import { useStore } from './store/store'
 import { Sidebar } from './components/Sidebar/Sidebar'
 import { Editor } from './components/Editor/Editor'
 import { QuickSwitcher } from './components/QuickSwitcher/QuickSwitcher'
 import { EquationLibrary } from './components/EquationLibrary/EquationLibrary'
+import { CitationLibrary } from './components/CitationLibrary/CitationLibrary'
 import { FileManager } from './components/FileManager/FileManager'
 import { PdfViewer } from './components/PdfViewer/PdfViewer'
 import { ExportPicker } from './components/ExportPicker/ExportPicker'
@@ -23,6 +24,8 @@ function App(): React.JSX.Element {
   const setEquationPanel = useStore((s) => s.setEquationPanel)
   const fileManagerOpen = useStore((s) => s.fileManagerOpen)
   const setFileManagerOpen = useStore((s) => s.setFileManagerOpen)
+  const citationLibraryOpen = useStore((s) => s.citationLibraryOpen)
+  const setCitationLibraryOpen = useStore((s) => s.setCitationLibraryOpen)
   const setSettingsOpen = useStore((s) => s.setSettingsOpen)
   const setExportPickerOpen = useStore((s) => s.setExportPickerOpen)
   const printJob = useStore((s) => s.printJob)
@@ -30,11 +33,24 @@ function App(): React.JSX.Element {
 
   const openEquations = (v: boolean): void => {
     setEquationPanel(v)
-    if (v) setFileManagerOpen(false)
+    if (v) {
+      setFileManagerOpen(false)
+      setCitationLibraryOpen(false)
+    }
   }
   const openFileManager = (v: boolean): void => {
     setFileManagerOpen(v)
-    if (v) setEquationPanel(false)
+    if (v) {
+      setEquationPanel(false)
+      setCitationLibraryOpen(false)
+    }
+  }
+  const openCitations = (v: boolean): void => {
+    setCitationLibraryOpen(v)
+    if (v) {
+      setEquationPanel(false)
+      setFileManagerOpen(false)
+    }
   }
 
   useEffect(() => {
@@ -70,7 +86,7 @@ function App(): React.JSX.Element {
   // print-layout renderer so printToPDF/print() never capture app chrome.
   if (printJob) return <PrintLayer />
 
-  const panelOpen = equationPanelOpen || fileManagerOpen
+  const panelOpen = equationPanelOpen || fileManagerOpen || citationLibraryOpen
 
   return (
     <div className={panelOpen ? `${styles.app} ${styles.withPanel}` : styles.app}>
@@ -91,6 +107,13 @@ function App(): React.JSX.Element {
               title="File manager (Ctrl+Shift+F)"
             >
               <FolderSearch2 size={15} /> Files
+            </button>
+            <button
+              className={citationLibraryOpen ? `${styles.action} ${styles.on}` : styles.action}
+              onClick={() => openCitations(!citationLibraryOpen)}
+              title="Citation library"
+            >
+              <BookMarked size={15} /> Citations
             </button>
             <button
               className={styles.action}
@@ -133,6 +156,7 @@ function App(): React.JSX.Element {
         </div>
       </main>
       <EquationLibrary />
+      <CitationLibrary />
       <FileManager />
       <PdfViewer />
       <ExportPicker />

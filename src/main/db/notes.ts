@@ -2,6 +2,7 @@ import type { Note, NoteCreateInput, NoteSummary, NoteUpdateInput } from '@share
 import { getDb } from './database'
 import { extractPlaintext } from './plaintext'
 import { syncLinks } from './links'
+import { syncCitationRefs } from './citationLinks'
 import { deleteAttachmentsForNote } from '../attachments'
 
 interface NoteRow {
@@ -136,7 +137,10 @@ export function updateNote(id: number, patch: NoteUpdateInput): void {
     ).run(title, content, annotations, folderId, now(), id)
   }
   syncFts(id, title, extractPlaintext(content))
-  if (patch.content !== undefined) syncLinks(id, content)
+  if (patch.content !== undefined) {
+    syncLinks(id, content)
+    syncCitationRefs(id, content)
+  }
 }
 
 export function deleteNote(id: number): void {

@@ -61,6 +61,14 @@ const api: Note24Api = {
     rename: (id, name) => ipcRenderer.invoke(IPC.templatesRename, id, name),
     delete: (id) => ipcRenderer.invoke(IPC.templatesDelete, id)
   },
+  citations: {
+    list: () => ipcRenderer.invoke(IPC.citationsList),
+    search: (query) => ipcRenderer.invoke(IPC.citationsSearch, query),
+    create: (input) => ipcRenderer.invoke(IPC.citationsCreate, input),
+    update: (id, patch) => ipcRenderer.invoke(IPC.citationsUpdate, id, patch),
+    delete: (id) => ipcRenderer.invoke(IPC.citationsDelete, id),
+    usage: (id) => ipcRenderer.invoke(IPC.citationsUsage, id)
+  },
   settings: {
     get: (key) => ipcRenderer.invoke(IPC.settingsGet, key),
     set: (key, value) => ipcRenderer.invoke(IPC.settingsSet, key, value),

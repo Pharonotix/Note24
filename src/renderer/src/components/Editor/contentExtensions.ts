@@ -9,6 +9,7 @@ import { ImageFile } from './extensions/ImageFile'
 import { DrawingNode } from './extensions/DrawingNode'
 import { CalculatorNode } from './extensions/CalculatorNode'
 import { DataTableNode } from './extensions/DataTableNode'
+import { CitationRef } from './extensions/CitationRef'
 
 /**
  * The block/mark extensions every note body needs, shared by the live editor
@@ -27,6 +28,7 @@ export function contentExtensions(): AnyExtension[] {
     ImageFile,
     DrawingNode,
     CalculatorNode,
-    DataTableNode
+    DataTableNode,
+    CitationRef
   ]
 }

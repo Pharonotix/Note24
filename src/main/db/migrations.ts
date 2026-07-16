@@ -135,5 +135,36 @@ export const migrations: string[] = [
     content    TEXT NOT NULL,
     created_at INTEGER NOT NULL
   );
+  `,
+
+  /* --- 6: citation manager ---
+     `attachment_id` links to the existing attachments table by its uuid — no SQL FK
+     (attachments predate this table and already use app-level cleanup everywhere), so
+     an attached PDF's own lifecycle stays independent of the citation. `citation_refs`
+     mirrors `links`: source_note_id cascades with the note (real FK, like links.ts),
+     citation_id does not (cleaned up in code on citation delete, like equation_relationships). */
+  `
+  CREATE TABLE citations (
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    type          TEXT NOT NULL DEFAULT 'book',
+    title         TEXT NOT NULL DEFAULT '',
+    authors       TEXT NOT NULL DEFAULT '',
+    year          TEXT NOT NULL DEFAULT '',
+    publisher     TEXT NOT NULL DEFAULT '',
+    url           TEXT NOT NULL DEFAULT '',
+    doi           TEXT NOT NULL DEFAULT '',
+    attachment_id TEXT,
+    created_at    INTEGER NOT NULL,
+    updated_at    INTEGER NOT NULL
+  );
+  CREATE INDEX idx_citations_type ON citations(type);
+
+  CREATE TABLE citation_refs (
+    id             INTEGER PRIMARY KEY AUTOINCREMENT,
+    source_note_id INTEGER NOT NULL REFERENCES notes(id) ON DELETE CASCADE,
+    citation_id    INTEGER NOT NULL,
+    UNIQUE(source_note_id, citation_id)
+  );
+  CREATE INDEX idx_citation_refs_citation ON citation_refs(citation_id);
   `
 ]

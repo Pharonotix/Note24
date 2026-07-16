@@ -139,6 +139,34 @@ export interface Template {
   createdAt: number
 }
 
+export type CitationType = 'book' | 'paper' | 'website' | 'video' | 'doi'
+
+export type CitationStyle = 'apa' | 'mla' | 'chicago' | 'ieee'
+
+/** A stored research source. Authors are free text, "Last, First; Last, First". */
+export interface Citation {
+  id: number
+  type: CitationType
+  title: string
+  authors: string
+  year: string
+  /** Publisher (books), journal/conference (papers), site name (websites/videos). */
+  publisher: string
+  url: string
+  doi: string
+  /** An attachment's uuid (usually a PDF), or null. Independent lifecycle — deleting
+   *  the citation does not delete the attachment. */
+  attachmentId: string | null
+  createdAt: number
+  updatedAt: number
+}
+
+/** A note that references a citation (for the citation's "used in" list). */
+export interface CitationUsage {
+  noteId: number
+  title: string
+}
+
 /* ---- Input payloads ---- */
 
 export interface NoteCreateInput {
@@ -162,4 +190,15 @@ export interface EquationInput {
   category?: string
   variables?: EquationVariable[]
   tags?: string[]
+}
+
+export interface CitationInput {
+  type: CitationType
+  title: string
+  authors?: string
+  year?: string
+  publisher?: string
+  url?: string
+  doi?: string
+  attachmentId?: string | null
 }

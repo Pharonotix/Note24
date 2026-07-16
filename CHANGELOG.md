@@ -2,6 +2,31 @@
 
 All notable changes to Note24. Newest first.
 
+## 0.9.0 — Citation Manager
+
+### Added
+- **Citation entries** — a new Citation Library panel (topbar button) for storing research
+  sources of 5 types (Book, Paper, Website, Video, DOI source): title, authors, year,
+  publisher/journal/site, URL, DOI.
+- **4 citation formats** — APA, MLA, Chicago, IEEE — generated from the structured fields
+  with a style switcher and one-click copy in the citation's detail view.
+- **Attach a PDF to a citation** — reuses the existing attachment system as-is; the citation
+  stores a normal (unlinked) attachment's id, so no schema change was needed there. Opens in
+  the existing in-app PDF viewer.
+- **Reference a citation in a note** — a new inline `citationRef` node (same shape as the
+  existing wiki-link node) renders a short marker like "(Dirac et al., 1958)"; clicking it
+  jumps to that citation's entry in the library.
+- **Source relationships** — a citation's detail view lists every note that references it
+  ("Used in"), kept in sync on every save via the same content-scan pattern already used for
+  wiki-link backlinks.
+
+### Notes
+- No new dependency — citation formatting is a small set of pure functions
+  (`src/renderer/src/lib/citationFormat.ts`), not a full CSL engine; handles the common case
+  per style for each of the 5 source types rather than chasing exhaustive edge cases.
+- `citations`/`citation_refs` are additive tables; `citation_refs.citation_id` has no SQL FK
+  (cleaned up in code on citation delete), matching the `equation_relationships` precedent.
+
 ## 0.8.0 — Templates
 
 ### Added

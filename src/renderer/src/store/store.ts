@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import type { Editor } from '@tiptap/react'
-import type { Folder, Note, NoteSummary, Tag, Template } from '@shared/types'
+import type { Citation, Folder, Note, NoteSummary, Tag, Template } from '@shared/types'
 import { applyTheme, DEFAULT_THEME, loadTheme, saveTheme, type ThemeConfig } from '../lib/theme'
 
 const LAST_NOTE_KEY = 'lastNoteId'
@@ -30,6 +30,11 @@ interface AppState {
   printJob: { noteIds: number[]; mode: 'export' | 'print' } | null
   templatePickerOpen: boolean
   userTemplates: Template[]
+  /** Loaded at startup (like notes/folders) so citation refs can render inline in any note. */
+  citations: Citation[]
+  citationLibraryOpen: boolean
+  /** A citation to scroll to/highlight when the library opens, set by clicking a ref in a note. */
+  citationFocusId: number | null
 
   init: () => Promise<void>
   refreshNotes: () => Promise<void>
@@ -66,6 +71,9 @@ interface AppState {
   saveCurrentNoteAsTemplate: (name: string) => Promise<void>
   renameTemplate: (id: number, name: string) => Promise<void>
   deleteTemplate: (id: number) => Promise<void>
+  refreshCitations: () => Promise<void>
+  setCitationLibraryOpen: (open: boolean) => void
+  setCitationFocusId: (id: number | null) => void
   setTheme: (cfg: ThemeConfig) => void
   setEditor: (editor: Editor | null) => void
   bumpAttachments: () => void
@@ -94,12 +102,20 @@ export const useStore = create<AppState>((set, get) => ({
   printJob: null,
   templatePickerOpen: false,
   userTemplates: [],
+  citations: [],
+  citationLibraryOpen: false,
+  citationFocusId: null,
 
   init: async () => {
     const theme = await loadTheme()
     applyTheme(theme)
     set({ theme })
-    await Promise.all([get().refreshNotes(), get().refreshFolders(), get().refreshTags()])
+    await Promise.all([
+      get().refreshNotes(),
+      get().refreshFolders(),
+      get().refreshTags(),
+      get().refreshCitations()
+    ])
     const last = await window.api.settings.get(LAST_NOTE_KEY)
     const lastId = last ? Number(last) : null
     const notes = get().notes
@@ -253,6 +269,10 @@ export const useStore = create<AppState>((set, get) => ({
     await window.api.templates.delete(id)
     await get().refreshTemplates()
   },
+
+  refreshCitations: async () => set({ citations: await window.api.citations.list() }),
+  setCitationLibraryOpen: (open) => set({ citationLibraryOpen: open }),
+  setCitationFocusId: (id) => set({ citationFocusId: id }),
   setTheme: (cfg) => {
     applyTheme(cfg)
     set({ theme: cfg })

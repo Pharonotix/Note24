@@ -3,6 +3,7 @@ import { IPC } from '@shared/ipc'
 import type {
   AttachmentFilter,
   AttachmentTarget,
+  CitationInput,
   DerivationStep,
   EquationInput,
   NoteCreateInput,
@@ -20,6 +21,8 @@ import * as attachments from '../attachments'
 import * as locations from '../locations'
 import * as exportPdf from '../exportPdf'
 import * as templates from '../db/templates'
+import * as citations from '../db/citations'
+import * as citationLinks from '../db/citationLinks'
 
 /** Registers every ipcMain.handle channel. Call once after the DB is ready. */
 export function registerIpcHandlers(): void {
@@ -132,6 +135,16 @@ export function registerIpcHandlers(): void {
     templates.renameTemplate(id, name)
   )
   ipcMain.handle(IPC.templatesDelete, (_e, id: number) => templates.deleteTemplate(id))
+
+  // Citations
+  ipcMain.handle(IPC.citationsList, () => citations.listCitations())
+  ipcMain.handle(IPC.citationsSearch, (_e, query: string) => citations.searchCitations(query))
+  ipcMain.handle(IPC.citationsCreate, (_e, input: CitationInput) => citations.createCitation(input))
+  ipcMain.handle(IPC.citationsUpdate, (_e, id: number, patch: Partial<CitationInput>) =>
+    citations.updateCitation(id, patch)
+  )
+  ipcMain.handle(IPC.citationsDelete, (_e, id: number) => citations.deleteCitation(id))
+  ipcMain.handle(IPC.citationsUsage, (_e, id: number) => citationLinks.getCitationUsage(id))
 
   // Settings
   ipcMain.handle(IPC.settingsGet, (_e, key: string) => settings.getSetting(key))

@@ -3,6 +3,9 @@ import type {
   AttachmentFilter,
   AttachmentTarget,
   Backlink,
+  Citation,
+  CitationInput,
+  CitationUsage,
   DataLocation,
   DerivationStep,
   Equation,
@@ -78,6 +81,14 @@ export interface Note24Api {
     create(name: string, content: string): Promise<Template>
     rename(id: number, name: string): Promise<void>
     delete(id: number): Promise<void>
+  }
+  citations: {
+    list(): Promise<Citation[]>
+    search(query: string): Promise<Citation[]>
+    create(input: CitationInput): Promise<Citation>
+    update(id: number, patch: Partial<CitationInput>): Promise<void>
+    delete(id: number): Promise<void>
+    usage(id: number): Promise<CitationUsage[]>
   }
   settings: {
     get(key: string): Promise<string | null>

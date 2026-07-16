@@ -48,6 +48,13 @@ export const IPC = {
   templatesRename: 'templates:rename',
   templatesDelete: 'templates:delete',
 
+  citationsList: 'citations:list',
+  citationsSearch: 'citations:search',
+  citationsCreate: 'citations:create',
+  citationsUpdate: 'citations:update',
+  citationsDelete: 'citations:delete',
+  citationsUsage: 'citations:usage',
+
   settingsGet: 'settings:get',
   settingsSet: 'settings:set',
   settingsGetAll: 'settings:getAll',
