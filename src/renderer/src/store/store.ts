@@ -37,6 +37,7 @@ interface AppState {
   citationFocusId: number | null
   studyPanelOpen: boolean
   flashcards: Flashcard[]
+  whiteboardOpen: boolean
 
   init: () => Promise<void>
   refreshNotes: () => Promise<void>
@@ -80,6 +81,7 @@ interface AppState {
   refreshFlashcards: () => Promise<void>
   generateFlashcardsFromEquations: () => Promise<number>
   reviewFlashcard: (id: number, correct: boolean) => Promise<void>
+  setWhiteboardOpen: (open: boolean) => void
   setTheme: (cfg: ThemeConfig) => void
   setEditor: (editor: Editor | null) => void
   bumpAttachments: () => void
@@ -113,6 +115,7 @@ export const useStore = create<AppState>((set, get) => ({
   citationFocusId: null,
   studyPanelOpen: false,
   flashcards: [],
+  whiteboardOpen: false,
 
   init: async () => {
     const theme = await loadTheme()
@@ -292,6 +295,7 @@ export const useStore = create<AppState>((set, get) => ({
     await window.api.flashcards.review(id, correct)
     await get().refreshFlashcards()
   },
+  setWhiteboardOpen: (open) => set({ whiteboardOpen: open }),
   setTheme: (cfg) => {
     applyTheme(cfg)
     set({ theme: cfg })

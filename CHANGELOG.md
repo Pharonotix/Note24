@@ -2,6 +2,34 @@
 
 All notable changes to Note24. Newest first.
 
+## 0.12.0 — Infinite Whiteboard
+
+### Added
+- **Infinite Whiteboard** (topbar button) — a full-screen, freehand-drawable canvas (the
+  existing Excalidraw engine) that also holds reference "cards" for Notes, Equations,
+  PDFs, and Graphs, dropped from a searchable picker and freely dragged around.
+  - **Note cards** — click to jump straight to that note.
+  - **Equation cards** — a live-rendered LaTeX preview of an equation from the library.
+  - **PDF cards** — click opens the PDF in the existing in-app viewer.
+  - **Graph cards** — a small live, editable Desmos calculator embedded directly on the
+    board (not just a static reference).
+  - One shared board for the whole vault, persisted as a single JSON blob under the
+    existing `settings` key/value store — no new database table or migration needed.
+
+### Notes
+- Found and fixed a genuine React crash (error #185, "maximum update depth exceeded")
+  during testing: syncing Excalidraw's live pan/zoom into this component's own React
+  state on every single `onChange` event (which fires very frequently) created a
+  same-tick render cascade with Excalidraw's internal reflow. Fixed by (a) keeping the
+  drawn scene itself in a ref, never in state — only the overlay cards' positions need
+  Excalidraw's pan/zoom, and the debounced disk-save reads the ref directly — and (b)
+  coalescing that pan/zoom sync to at most once per animation frame instead of once per
+  `onChange` call.
+  - Also fixed the overlay cards rendering with correct DOM position and content but
+    invisibly stacked underneath Excalidraw's own canvas (no explicit `z-index` on the
+    overlay layer).
+- No new dependencies — reuses the existing Excalidraw and Desmos integrations.
+
 ## 0.11.0 — Flowcharts
 
 ### Added

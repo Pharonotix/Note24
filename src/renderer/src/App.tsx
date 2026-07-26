@@ -4,6 +4,7 @@ import {
   Download,
   FolderSearch2,
   GraduationCap,
+  Infinity as InfinityIcon,
   PrinterCheck,
   Settings as SettingsIcon,
   Sigma
@@ -15,6 +16,7 @@ import { QuickSwitcher } from './components/QuickSwitcher/QuickSwitcher'
 import { EquationLibrary } from './components/EquationLibrary/EquationLibrary'
 import { CitationLibrary } from './components/CitationLibrary/CitationLibrary'
 import { StudyPanel } from './components/StudyPanel/StudyPanel'
+import { Whiteboard } from './components/Whiteboard/Whiteboard'
 import { FileManager } from './components/FileManager/FileManager'
 import { PdfViewer } from './components/PdfViewer/PdfViewer'
 import { ExportPicker } from './components/ExportPicker/ExportPicker'
@@ -37,6 +39,8 @@ function App(): React.JSX.Element {
   const setCitationLibraryOpen = useStore((s) => s.setCitationLibraryOpen)
   const studyPanelOpen = useStore((s) => s.studyPanelOpen)
   const setStudyPanelOpen = useStore((s) => s.setStudyPanelOpen)
+  const whiteboardOpen = useStore((s) => s.whiteboardOpen)
+  const setWhiteboardOpen = useStore((s) => s.setWhiteboardOpen)
   const setSettingsOpen = useStore((s) => s.setSettingsOpen)
   const setExportPickerOpen = useStore((s) => s.setExportPickerOpen)
   const printJob = useStore((s) => s.printJob)
@@ -111,6 +115,10 @@ function App(): React.JSX.Element {
   // print-layout renderer so printToPDF/print() never capture app chrome.
   if (printJob) return <PrintLayer />
 
+  // The whiteboard is a full-screen takeover (an infinite canvas needs the room),
+  // not another docked side panel — same reasoning as PrintLayer above.
+  if (whiteboardOpen) return <Whiteboard />
+
   const panelOpen = equationPanelOpen || fileManagerOpen || citationLibraryOpen || studyPanelOpen
 
   return (
@@ -146,6 +154,13 @@ function App(): React.JSX.Element {
               title="Study — flashcards & formula sheets (Ctrl+Shift+S)"
             >
               <GraduationCap size={15} /> Study
+            </button>
+            <button
+              className={styles.action}
+              onClick={() => setWhiteboardOpen(true)}
+              title="Infinite whiteboard"
+            >
+              <InfinityIcon size={15} /> Whiteboard
             </button>
             <button
               className={styles.action}

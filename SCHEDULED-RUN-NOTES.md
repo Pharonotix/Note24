@@ -2,6 +2,47 @@
 
 Log of autonomous scheduled-task runs on Note24. Newest first.
 
+## 2026-07-26 — v0.12.0 Infinite Whiteboard
+
+**Completed:** v0.12.0 in full, third version of this session's v0.10–v0.20 sweep.
+
+**Built:** A full-screen "Whiteboard" mode (topbar button) — the existing Excalidraw
+engine as an infinite freehand-drawing canvas, plus draggable overlay "cards" for Notes
+(click → jump to note), Equations (live LaTeX), PDFs (click → open in-app viewer), and
+Graphs (a real embedded, editable mini Desmos calculator, not just a static reference).
+One shared board per vault, persisted as a single JSON blob under the existing
+`settings` table — deliberately no new DB table/migration.
+
+**Bugs found and fixed during testing (real bugs):**
+- A React error #185 ("maximum update depth exceeded") crash that blanked the entire
+  app whenever the whiteboard opened. Root cause: syncing Excalidraw's pan/zoom into
+  this component's own React state on every single `onChange` event (which fires very
+  rapidly) created a same-tick render cascade with Excalidraw's internal reflow.
+  Diagnosed by bisecting — disabling Excalidraw entirely stopped the crash; re-enabling
+  it but stubbing out just the `setTransform` state update also stopped it, isolating
+  the exact cause. Fixed by keeping the drawn scene in a ref (never state — the
+  debounced disk-save reads the ref directly, Excalidraw manages its own rendering) and
+  coalescing the pan/zoom state sync to at most once per animation frame via
+  `requestAnimationFrame` instead of once per `onChange` call.
+- A separate, unrelated bug found in the same session: overlay cards rendered with
+  correct DOM position and content but were invisible, painted underneath Excalidraw's
+  own canvas — needed an explicit `z-index` on the overlay layer.
+
+**Verified:** `npm run typecheck` and `npm run build` pass. Real workflow testing via
+the `run-note24` driver: opened the whiteboard, added a live graph card and a note-
+reference card (both correctly visible after the z-index fix), closed and reopened the
+whiteboard within the same session, then did a full app restart and confirmed the graph
+card (and its position) survived.
+
+**Left over / notes for next run:**
+- Did not exhaustively test PDF/Equation card creation or freehand drawing + card
+  dragging in this pass — they share the identical picker/addCard code path already
+  verified for Note/Graph cards, so confidence is high, but a future run could spot-
+  check them if whiteboard bugs come up.
+- Same deferred items as before (equation graph, equation→calculator, attachment
+  audio/video players, PDF24 launcher, formula-sheet print export).
+- Next version: v0.13.0 Circuit Design — continuing in this same session.
+
 ## 2026-07-26 — v0.11.0 Flowcharts
 
 **Completed:** v0.11.0 in full, second version of this session's full v0.10–v0.20 sweep.
