@@ -21,6 +21,7 @@ if (process.stdout._handle && process.stdout._handle.setBlocking) {
 
 let app = null
 let page = null
+const consoleLog = []
 
 const electronBin = path.join(APP_DIR, 'node_modules/electron/dist/electron.exe')
 
@@ -35,8 +36,22 @@ const COMMANDS = {
     await new Promise((r) => setTimeout(r, 3_000))
     page = app.windows().find((w) => !w.url().startsWith('devtools://')) ?? (await app.firstWindow())
     await page.waitForLoadState('domcontentloaded').catch(() => {})
+    page.on('console', (msg) => consoleLog.push(`[${msg.type()}] ${msg.text()}`))
+    page.on('pageerror', (err) => consoleLog.push(`[pageerror] ${err.message}`))
+    // Electron's default `backgroundThrottling: true` fully suspends timers/rAF for an
+    // unfocused BrowserWindow — and this window never gets real OS focus under
+    // automation. Force focus so debounced-save timers (autosave, etc.) actually run;
+    // without this, any code waiting on setTimeout/setInterval appears to hang forever.
+    await page.bringToFront().catch(() => {})
+    await app.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0]?.focus()).catch(() => {})
     console.log('launched.', app.windows().length, 'windows:')
     for (const w of app.windows()) console.log(' ', w.url())
+  },
+
+  // Prints (and clears) captured browser console/pageerror messages since launch/last call.
+  async logs() {
+    console.log(consoleLog.length ? consoleLog.join('\n') : '(no console output captured)')
+    consoleLog.length = 0
   },
 
   async ss(name) {
@@ -73,8 +88,67 @@ const COMMANDS = {
   async type(text) {
     if (page) await page.keyboard.type(text, { delay: 20 })
   },
+
+  // Real mouse drag via page.mouse — needed for canvas/SVG interactions (e.g. React
+  // Flow edge-connect handles) where a DOM .click() can't express a drag gesture.
+  // Usage: drag x1,y1 x2,y2 (screenshot-pixel coordinates).
+  async drag(args) {
+    if (!page) return console.log('ERROR: launch first')
+    const [from, to] = args.split(/\s+/)
+    const [x1, y1] = from.split(',').map(Number)
+    const [x2, y2] = to.split(',').map(Number)
+    await page.mouse.move(x1, y1)
+    await page.mouse.down()
+    await page.mouse.move((x1 + x2) / 2, (y1 + y2) / 2, { steps: 5 })
+    await page.mouse.move(x2, y2, { steps: 5 })
+    await page.mouse.up()
+    console.log('drag', from, '→', to)
+  },
   async press(key) {
     if (page) await page.keyboard.press(key)
+  },
+
+  // React-Flow-specific: drags from a source handle on the Nth `.react-flow__node`
+  // to a target handle on the Mth one (0-indexed, DOM order). Targets the actual
+  // `.react-flow__handle` elements' centers (not the node's own bounding box —
+  // handles are small ~10px hit targets, and missing them by a few px silently
+  // fails the connection without any error, which is flaky if you approximate
+  // from the node rect instead).
+  async 'connect-nodes'(args) {
+    if (!page) return console.log('ERROR: launch first')
+    const [i, j] = args.split(/\s+/).map(Number)
+    const handles = await page.evaluate(() =>
+      [...document.querySelectorAll('.react-flow__node')].map((n) => {
+        const center = (el) => {
+          if (!el) return null
+          const r = el.getBoundingClientRect()
+          return { x: r.x + r.width / 2, y: r.y + r.height / 2 }
+        }
+        return {
+          source: center(n.querySelector('.react-flow__handle-bottom.source, .react-flow__handle.source')),
+          target: center(n.querySelector('.react-flow__handle-top.target, .react-flow__handle.target'))
+        }
+      })
+    )
+    if (!handles[i]?.source || !handles[j]?.target) {
+      return console.log('connect-nodes: handle not found', JSON.stringify(handles))
+    }
+    const from = handles[i].source
+    const to = handles[j].target
+    // Small pauses between steps: React Flow's connection state machine listens for
+    // pointerdown/pointermove and needs a beat to register the drag start — a fully
+    // instantaneous CDP-dispatched down→move→up sequence can silently fail to start
+    // a connection at all (no error, just no edge).
+    await page.mouse.move(from.x, from.y)
+    await page.waitForTimeout(100)
+    await page.mouse.down()
+    await page.waitForTimeout(100)
+    await page.mouse.move((from.x + to.x) / 2, (from.y + to.y) / 2, { steps: 10 })
+    await page.waitForTimeout(100)
+    await page.mouse.move(to.x, to.y, { steps: 10 })
+    await page.waitForTimeout(100)
+    await page.mouse.up()
+    console.log('connect-nodes', i, '→', j, JSON.stringify({ from, to }))
   },
 
   async wait(sel) {

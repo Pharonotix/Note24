@@ -2,6 +2,37 @@
 
 All notable changes to Note24. Newest first.
 
+## 0.11.0 — Flowcharts
+
+### Added
+- **Flowchart block** (toolbar button, "Insert flowchart") — a new TipTap block backed by
+  React Flow (`@xyflow/react`), for flowcharts, mind maps, and dependency maps. Lazily
+  loaded (its own ~370KB chunk, split out of the main bundle) so it never costs startup
+  time for notes that don't use it — same pattern as the existing Excalidraw drawing block.
+- **Editable nodes** — "+ Node" adds a node; double-click any node to rename it in place
+  (small inline text input, not a native `prompt()`), Enter/blur commits, Escape cancels.
+- **Connections** — drag from a node's edge (top/bottom/left/right handles) to another
+  node to draw a connection between them; standard React Flow connect/pan/zoom/minimap.
+- Resizable, themed to match the app (dark/light), same resize-handle affordance as the
+  drawing and table blocks.
+
+### Notes
+- New dependency: `@xyflow/react` (the roadmap names React Flow explicitly for this
+  phase). No other new dependencies.
+- Node/edge state is serialized to the block's `data` attr (JSON) on an 800ms debounce,
+  same shape as the drawing block's scene autosave; flushes immediately on unmount
+  (switching notes) so a pending edit isn't lost, matching `Editor.tsx`'s own save-flush
+  pattern.
+- Fixed a node-id collision bug found during testing: rapid "+ Node" clicks landing in
+  the same millisecond got the same `Date.now()`-based id, and React Flow silently drops
+  nodes with duplicate ids — ids now include a random suffix. Also fixed newly-added
+  nodes sometimes landing outside the visible viewport (`fitView` only auto-runs once on
+  mount) by refitting the view after every node add.
+- Added `.claude/skills/run-note24/` improvements from this version's testing: console-log
+  capture (`logs` command), a real-mouse `drag`/`connect-nodes` command, and a documented
+  gotcha that Electron's `backgroundThrottling` fully suspends timers for a window that
+  never gets real OS focus under automation (the `launch` command now forces focus).
+
 ## 0.10.0 — Study System
 
 ### Added

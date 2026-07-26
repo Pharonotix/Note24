@@ -22,7 +22,8 @@ import {
   SquareRadical,
   Strikethrough,
   Underline,
-  Undo
+  Undo,
+  Workflow
 } from 'lucide-react'
 import { useStore } from '../../store/store'
 import styles from './Toolbar.module.css'
@@ -122,6 +123,7 @@ export function Toolbar({ editor, noteId }: { editor: Editor; noteId: number }):
       {btn(<PenLine {...ICON} />, 'Insert drawing', () => chain().insertDrawing().run())}
       {btn(<Calculator {...ICON} />, 'Insert calculator', () => chain().insertCalculator().run())}
       {btn(<Sheet {...ICON} />, 'Insert table', () => chain().insertDataTable().run())}
+      {btn(<Workflow {...ICON} />, 'Insert flowchart', () => chain().insertFlowchart().run())}
       <span className={styles.sep} />
       {btn(<Undo {...ICON} />, 'Undo', () => chain().undo().run())}
       {btn(<Redo {...ICON} />, 'Redo', () => chain().redo().run())}

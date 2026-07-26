@@ -46,10 +46,13 @@ first time). Screenshots land in `.driver-shots/` (override: `SCREENSHOT_DIR`).
 | `click <css-sel>` | click element via DOM `.click()` (not Playwright coordinates) |
 | `click-text <text>` | click the first button/link/`[role=button]` containing `text` |
 | `type <text>` / `press <key>` | keyboard input (use for TipTap/contentEditable — `fill()` won't work) |
+| `drag x1,y1 x2,y2` | real mouse drag between two screenshot-pixel coordinates (canvas/SVG drags, e.g. React Flow edge handles, that a DOM `.click()` can't express) |
+| `connect-nodes <i> <j>` | React-Flow-specific: drags from the bottom of the i-th `.react-flow__node` to the top of the j-th (0-indexed, computes coordinates live — use instead of `drag` for flowchart blocks) |
 | `wait <css-sel>` | wait up to 10s for a selector |
 | `eval <js>` | evaluate an expression in the page, print JSON |
 | `text [css-sel]` | print `innerText` of a selector (or `document.body`) |
 | `windows` | list Electron windows (only one BrowserWindow in this app) |
+| `logs` | print (and clear) captured browser console/pageerror messages since launch or the last `logs` call |
 | `quit` | close the app, exit the driver |
 
 ## Run (human path)
@@ -61,6 +64,33 @@ npm start       # electron-vite preview — runs the last `npm run build` output
 
 ## Gotchas
 
+- **Unfocused window = fully suspended timers, not just throttled.** Electron's
+  `backgroundThrottling` (default `true`) fully suspends `setTimeout`/`setInterval`/
+  `requestAnimationFrame` for a BrowserWindow that doesn't have real OS focus — and this
+  window never gets focus automatically under Playwright automation. `launch` now calls
+  `page.bringToFront()` + focuses the window from the main process, but if you ever see a
+  debounced action (autosave, etc.) never fire no matter how long you wait — even a
+  `setInterval` heartbeat placed right next to it never fires either — suspect this before
+  suspecting your code. Confirmed by adding a heartbeat log: zero timer ticks for 8+ real
+  seconds until the window was focused.
+- **Drag-to-connect gestures (React Flow handles, and likely similar pointer-capture-
+  based drag interactions elsewhere) are unreliable to automate.** Neither
+  `page.mouse.move/down/move/up` (real trusted CDP input) nor synthetic
+  `dispatchEvent(new PointerEvent(...))` reliably completed a React Flow handle-to-handle
+  connection in testing, even with precise handle-center coordinates and added pauses —
+  likely because such libraries lean on real `setPointerCapture()`, which only works
+  for trusted, hardware-originated pointer sequences. If you need to verify a
+  drag-dependent feature, prefer round-tripping the underlying data directly (e.g., write
+  the target state via `window.api.*` and reload) over trying to automate the drag gesture
+  itself; don't burn much time chasing "it worked once, then stopped" on this class of
+  interaction — it's a harness limitation, not necessarily an app bug.
+- **`playwright-core` is dev-tooling only, not a real dependency** — it's installed with
+  `npm install playwright-core --no-save` so it lives in `node_modules/` without touching
+  `package.json`/`package-lock.json` (this driver isn't part of the shipped app). Any later
+  `npm install <pkg>` (even with `--save` for an unrelated package) re-resolves the tree
+  from the lockfile and **prunes it back out**. If `driver.mjs` fails with
+  `ERR_MODULE_NOT_FOUND: playwright-core`, just re-run
+  `npm install playwright-core --no-save` — no need to investigate further.
 - **This app has exactly one `BrowserWindow`** — no BrowserView/webview split, no
   splash screen. `app.firstWindow()` is always the real UI; no window-hunting needed.
 - **Piped stdin delivers all lines before any async handler resolves.** The driver

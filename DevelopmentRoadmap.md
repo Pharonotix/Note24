@@ -19,7 +19,8 @@ Shipped versions (see `CHANGELOG.md` for details):
 - ✅ **v0.8.0** — Templates: 4 built-in templates (Problem Set, Lab Report, Research Notes, Lecture Notes) seeded with real interactive blocks, user-saved templates, and one Template Picker for both.
 - ✅ **v0.9.0** — Citation Manager: 5 source types, 4 citation formats (APA/MLA/Chicago/IEEE), PDF attachment (reuses the existing attachment system), an inline `citationRef` node for referencing a citation in a note, and "Used in" source-relationship tracking.
 - ✅ **v0.10.0** — Study System: flashcards (manual + one-click "Generate from Equations", idempotent), a Study mode that cycles due cards with flip-to-reveal and Got it/Missed it grading, spaced repetition (1 day → 3 days → 1 week → 2 weeks → 1 month ladder), and a live Formula Sheet tab that auto-gathers every equation grouped by category.
-- ⏭️ **Next: v0.11.0** — Flowcharts (React Flow). Deferred items to fold in later: the visual equation dependency **graph** (from v0.3.0), equation→calculator integration (from v0.4.0), in-app audio/video players for attachments (from v0.6.0), a PDF24 launcher for merge/compress/split/OCR (from v0.7.0, deliberately skipped), and formula-sheet PDF/print export (from v0.10.0 — `PrintLayer` is currently note-shaped only).
+- ✅ **v0.11.0** — Flowcharts: a React-Flow-backed block for flowcharts/mind maps/dependency maps — add nodes, rename them inline, drag-connect them, resize the block; lazily loaded so it doesn't cost startup time.
+- ⏭️ **Next: v0.12.0** — Infinite Whiteboard. Deferred items to fold in later: the visual equation dependency **graph** (from v0.3.0), equation→calculator integration (from v0.4.0), in-app audio/video players for attachments (from v0.6.0), a PDF24 launcher for merge/compress/split/OCR (from v0.7.0, deliberately skipped), and formula-sheet PDF/print export (from v0.10.0 — `PrintLayer` is currently note-shaped only).
 
 ---
 

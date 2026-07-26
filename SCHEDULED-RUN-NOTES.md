@@ -2,6 +2,54 @@
 
 Log of autonomous scheduled-task runs on Note24. Newest first.
 
+## 2026-07-26 — v0.11.0 Flowcharts
+
+**Completed:** v0.11.0 in full, second version of this session's full v0.10–v0.20 sweep.
+
+**Built:** A React-Flow-backed (`@xyflow/react`, new dependency) flowchart/mind-map/
+dependency-map block — `FlowchartCanvas.tsx` (lazy-loaded canvas + editable-label custom
+node type), `FlowchartNode.ts`/`FlowchartView.tsx`/`Flowchart.module.css` (TipTap block,
+same 3-file pattern as the Drawing block), registered in `contentExtensions.ts` and the
+toolbar. "+ Node" adds nodes, double-click renames in place, drag between handles
+connects nodes, block is resizable and reskinned to the app theme.
+
+**Bugs found and fixed during testing (real bugs, not testing artifacts):**
+- Node-id collisions: `Date.now()`-only ids could collide on rapid clicks, silently
+  dropping nodes (React Flow de-dupes by id) — fixed with a random suffix.
+- New nodes could land outside the visible viewport since React Flow's `fitView` prop
+  only runs once on mount — fixed by calling `fitView()` again after every node add.
+
+**Testing-harness findings (not app bugs, but cost significant time to diagnose — see
+`.claude/skills/run-note24/SKILL.md` Gotchas for the durable record):**
+- Electron's `backgroundThrottling` (default on) fully *suspends* (not just throttles)
+  timers for a BrowserWindow that never receives real OS focus under automation — this
+  made the flowchart's 800ms save-debounce appear completely broken (confirmed via a
+  heartbeat `setInterval` that never ticked for 8+ seconds) until `launch` was changed to
+  force `page.bringToFront()` + `BrowserWindow.focus()`. Even then, a timer registered by
+  one `page.evaluate()`/input-dispatch call and awaited by a *separate* later call still
+  never fired — only combining the triggering action and the wait inside one evaluate()
+  call reliably let pending timers run. This means any future debounced-save testing
+  should use that combined-call pattern, not separate click-then-wait commands.
+- Drag-to-connect (React Flow's handle-to-handle connection gesture) could not be
+  reliably automated via either real Playwright mouse events or synthetic PointerEvents,
+  precise handle targeting notwithstanding — almost certainly because such libraries rely
+  on real `setPointerCapture()`, which requires trusted, hardware-originated pointer
+  sequences. Verified the underlying data path instead: manually wrote a note containing
+  a flowchart node with a pre-built edge via `window.api.notes.update`, reloaded, and
+  confirmed the edge rendered correctly — proving the save/load round-trip works even
+  though the interactive drag gesture itself couldn't be automated end-to-end.
+
+**Verified:** `npm run typecheck` and `npm run build` pass. Real workflow testing via the
+(now more capable) `run-note24` driver: inserted a flowchart, added multiple distinct
+nodes (post-fix), renamed a node in place with the change persisting to the note content
+and surviving a full app restart, and confirmed a pre-built node+edge graph loads and
+renders correctly.
+
+**Left over / notes for next run:**
+- Same deferred items as before (equation graph, equation→calculator, attachment
+  audio/video players, PDF24 launcher, formula-sheet print export).
+- Next version: v0.12.0 Infinite Whiteboard — continuing in this same session.
+
 ## 2026-07-26 — v0.10.0 Study System
 
 **Completed:** v0.10.0 in full (tree was clean at start — jumped straight from v0.9.0 to
