@@ -1,11 +1,20 @@
 import { useEffect } from 'react'
-import { BookMarked, Download, FolderSearch2, PrinterCheck, Settings as SettingsIcon, Sigma } from 'lucide-react'
+import {
+  BookMarked,
+  Download,
+  FolderSearch2,
+  GraduationCap,
+  PrinterCheck,
+  Settings as SettingsIcon,
+  Sigma
+} from 'lucide-react'
 import { useStore } from './store/store'
 import { Sidebar } from './components/Sidebar/Sidebar'
 import { Editor } from './components/Editor/Editor'
 import { QuickSwitcher } from './components/QuickSwitcher/QuickSwitcher'
 import { EquationLibrary } from './components/EquationLibrary/EquationLibrary'
 import { CitationLibrary } from './components/CitationLibrary/CitationLibrary'
+import { StudyPanel } from './components/StudyPanel/StudyPanel'
 import { FileManager } from './components/FileManager/FileManager'
 import { PdfViewer } from './components/PdfViewer/PdfViewer'
 import { ExportPicker } from './components/ExportPicker/ExportPicker'
@@ -26,6 +35,8 @@ function App(): React.JSX.Element {
   const setFileManagerOpen = useStore((s) => s.setFileManagerOpen)
   const citationLibraryOpen = useStore((s) => s.citationLibraryOpen)
   const setCitationLibraryOpen = useStore((s) => s.setCitationLibraryOpen)
+  const studyPanelOpen = useStore((s) => s.studyPanelOpen)
+  const setStudyPanelOpen = useStore((s) => s.setStudyPanelOpen)
   const setSettingsOpen = useStore((s) => s.setSettingsOpen)
   const setExportPickerOpen = useStore((s) => s.setExportPickerOpen)
   const printJob = useStore((s) => s.printJob)
@@ -36,6 +47,7 @@ function App(): React.JSX.Element {
     if (v) {
       setFileManagerOpen(false)
       setCitationLibraryOpen(false)
+      setStudyPanelOpen(false)
     }
   }
   const openFileManager = (v: boolean): void => {
@@ -43,6 +55,7 @@ function App(): React.JSX.Element {
     if (v) {
       setEquationPanel(false)
       setCitationLibraryOpen(false)
+      setStudyPanelOpen(false)
     }
   }
   const openCitations = (v: boolean): void => {
@@ -50,6 +63,15 @@ function App(): React.JSX.Element {
     if (v) {
       setEquationPanel(false)
       setFileManagerOpen(false)
+      setStudyPanelOpen(false)
+    }
+  }
+  const openStudy = (v: boolean): void => {
+    setStudyPanelOpen(v)
+    if (v) {
+      setEquationPanel(false)
+      setFileManagerOpen(false)
+      setCitationLibraryOpen(false)
     }
   }
 
@@ -72,6 +94,9 @@ function App(): React.JSX.Element {
       } else if (mod && e.shiftKey && e.key.toLowerCase() === 'f') {
         e.preventDefault()
         openFileManager(!useStore.getState().fileManagerOpen)
+      } else if (mod && e.shiftKey && e.key.toLowerCase() === 's') {
+        e.preventDefault()
+        openStudy(!useStore.getState().studyPanelOpen)
       } else if (mod && e.key === ',') {
         e.preventDefault()
         setSettingsOpen(true)
@@ -86,7 +111,7 @@ function App(): React.JSX.Element {
   // print-layout renderer so printToPDF/print() never capture app chrome.
   if (printJob) return <PrintLayer />
 
-  const panelOpen = equationPanelOpen || fileManagerOpen || citationLibraryOpen
+  const panelOpen = equationPanelOpen || fileManagerOpen || citationLibraryOpen || studyPanelOpen
 
   return (
     <div className={panelOpen ? `${styles.app} ${styles.withPanel}` : styles.app}>
@@ -114,6 +139,13 @@ function App(): React.JSX.Element {
               title="Citation library"
             >
               <BookMarked size={15} /> Citations
+            </button>
+            <button
+              className={studyPanelOpen ? `${styles.action} ${styles.on}` : styles.action}
+              onClick={() => openStudy(!studyPanelOpen)}
+              title="Study — flashcards & formula sheets (Ctrl+Shift+S)"
+            >
+              <GraduationCap size={15} /> Study
             </button>
             <button
               className={styles.action}
@@ -157,6 +189,7 @@ function App(): React.JSX.Element {
       </main>
       <EquationLibrary />
       <CitationLibrary />
+      <StudyPanel />
       <FileManager />
       <PdfViewer />
       <ExportPicker />

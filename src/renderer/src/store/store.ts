@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import type { Editor } from '@tiptap/react'
-import type { Citation, Folder, Note, NoteSummary, Tag, Template } from '@shared/types'
+import type { Citation, Flashcard, Folder, Note, NoteSummary, Tag, Template } from '@shared/types'
 import { applyTheme, DEFAULT_THEME, loadTheme, saveTheme, type ThemeConfig } from '../lib/theme'
 
 const LAST_NOTE_KEY = 'lastNoteId'
@@ -35,6 +35,8 @@ interface AppState {
   citationLibraryOpen: boolean
   /** A citation to scroll to/highlight when the library opens, set by clicking a ref in a note. */
   citationFocusId: number | null
+  studyPanelOpen: boolean
+  flashcards: Flashcard[]
 
   init: () => Promise<void>
   refreshNotes: () => Promise<void>
@@ -74,6 +76,10 @@ interface AppState {
   refreshCitations: () => Promise<void>
   setCitationLibraryOpen: (open: boolean) => void
   setCitationFocusId: (id: number | null) => void
+  setStudyPanelOpen: (open: boolean) => void
+  refreshFlashcards: () => Promise<void>
+  generateFlashcardsFromEquations: () => Promise<number>
+  reviewFlashcard: (id: number, correct: boolean) => Promise<void>
   setTheme: (cfg: ThemeConfig) => void
   setEditor: (editor: Editor | null) => void
   bumpAttachments: () => void
@@ -105,6 +111,8 @@ export const useStore = create<AppState>((set, get) => ({
   citations: [],
   citationLibraryOpen: false,
   citationFocusId: null,
+  studyPanelOpen: false,
+  flashcards: [],
 
   init: async () => {
     const theme = await loadTheme()
@@ -273,6 +281,17 @@ export const useStore = create<AppState>((set, get) => ({
   refreshCitations: async () => set({ citations: await window.api.citations.list() }),
   setCitationLibraryOpen: (open) => set({ citationLibraryOpen: open }),
   setCitationFocusId: (id) => set({ citationFocusId: id }),
+  setStudyPanelOpen: (open) => set({ studyPanelOpen: open }),
+  refreshFlashcards: async () => set({ flashcards: await window.api.flashcards.list() }),
+  generateFlashcardsFromEquations: async () => {
+    const created = await window.api.flashcards.generateFromEquations()
+    await get().refreshFlashcards()
+    return created
+  },
+  reviewFlashcard: async (id, correct) => {
+    await window.api.flashcards.review(id, correct)
+    await get().refreshFlashcards()
+  },
   setTheme: (cfg) => {
     applyTheme(cfg)
     set({ theme: cfg })

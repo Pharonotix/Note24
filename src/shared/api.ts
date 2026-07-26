@@ -11,6 +11,8 @@ import type {
   Equation,
   EquationInput,
   EquationRelationshipView,
+  Flashcard,
+  FlashcardInput,
   Folder,
   LocationsRegistry,
   Note,
@@ -89,6 +91,15 @@ export interface Note24Api {
     update(id: number, patch: Partial<CitationInput>): Promise<void>
     delete(id: number): Promise<void>
     usage(id: number): Promise<CitationUsage[]>
+  }
+  flashcards: {
+    list(): Promise<Flashcard[]>
+    create(input: FlashcardInput): Promise<Flashcard>
+    update(id: number, patch: Partial<FlashcardInput>): Promise<void>
+    delete(id: number): Promise<void>
+    review(id: number, correct: boolean): Promise<void>
+    /** Generates a card for every equation that doesn't already have one; returns the count created. */
+    generateFromEquations(): Promise<number>
   }
   settings: {
     get(key: string): Promise<string | null>

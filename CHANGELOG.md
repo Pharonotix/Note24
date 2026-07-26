@@ -2,6 +2,41 @@
 
 All notable changes to Note24. Newest first.
 
+## 0.10.0 — Study System
+
+### Added
+- **Flashcards** — a new Study panel (topbar button, Ctrl+Shift+S) with a Flashcards tab:
+  add/edit/delete cards by hand (front, back, category, plain-text or LaTeX answer), grouped
+  by category, showing each card's next-due date.
+- **Generate from Equations** — one click turns every equation in the library into a
+  flashcard (front = name/description, back = its LaTeX, rendered live with KaTeX).
+  Idempotent — re-running it only adds cards for equations that don't have one yet, so it's
+  safe to hit again as the equation library grows.
+- **Study mode** — a Study tab cycles through due cards (or all cards, if none are due) in
+  random order, flips to reveal the answer on click, and grades each as "Got it" / "Missed
+  it", showing a session summary at the end.
+- **Spaced repetition** — every card carries its own interval index and next-due timestamp;
+  a correct answer advances it along the 1 day → 3 days → 1 week → 2 weeks → 1 month ladder,
+  a miss resets it to day 1. Pure scheduling logic lives in
+  `src/renderer/src/lib/spacedRepetition.ts`.
+- **Formula sheet** — a live, auto-updating Formula Sheet tab lists every equation in the
+  library grouped by category with rendered LaTeX — always current since it just reads the
+  equation library, with no separate document to keep in sync.
+
+### Notes
+- New `flashcards` table (migration 7): `source_slug` links a generated card back to its
+  equation by stable slug (same rationale as `equation_relationships` — no SQL FK, since
+  built-ins reseed on launch); a partial unique index on `source_slug` makes generation
+  idempotent. `due_at`/`interval_idx` implement the whole spaced-repetition schedule in this
+  one table — no separate review-log table.
+- No PDF/print export for the formula sheet yet — `PrintLayer` is currently note-shaped only
+  (renders `Note` documents); printing an equation-library view would need a second content
+  path there. Left for a later pass; the on-screen sheet already covers the "auto-gathers all
+  known formulas" requirement.
+- Added `.claude/skills/run-note24/` — a Playwright `_electron` REPL driver for launching and
+  clicking through the app during verification (this repo had no prior automated way to drive
+  the UI beyond one-off throwaway scripts). Reused for this version's own testing.
+
 ## 0.9.0 — Citation Manager
 
 ### Added

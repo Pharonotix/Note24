@@ -69,6 +69,14 @@ const api: Note24Api = {
     delete: (id) => ipcRenderer.invoke(IPC.citationsDelete, id),
     usage: (id) => ipcRenderer.invoke(IPC.citationsUsage, id)
   },
+  flashcards: {
+    list: () => ipcRenderer.invoke(IPC.flashcardsList),
+    create: (input) => ipcRenderer.invoke(IPC.flashcardsCreate, input),
+    update: (id, patch) => ipcRenderer.invoke(IPC.flashcardsUpdate, id, patch),
+    delete: (id) => ipcRenderer.invoke(IPC.flashcardsDelete, id),
+    review: (id, correct) => ipcRenderer.invoke(IPC.flashcardsReview, id, correct),
+    generateFromEquations: () => ipcRenderer.invoke(IPC.flashcardsGenerateFromEquations)
+  },
   settings: {
     get: (key) => ipcRenderer.invoke(IPC.settingsGet, key),
     set: (key, value) => ipcRenderer.invoke(IPC.settingsSet, key, value),

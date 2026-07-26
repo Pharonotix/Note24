@@ -55,6 +55,13 @@ export const IPC = {
   citationsDelete: 'citations:delete',
   citationsUsage: 'citations:usage',
 
+  flashcardsList: 'flashcards:list',
+  flashcardsCreate: 'flashcards:create',
+  flashcardsUpdate: 'flashcards:update',
+  flashcardsDelete: 'flashcards:delete',
+  flashcardsReview: 'flashcards:review',
+  flashcardsGenerateFromEquations: 'flashcards:generateFromEquations',
+
   settingsGet: 'settings:get',
   settingsSet: 'settings:set',
   settingsGetAll: 'settings:getAll',

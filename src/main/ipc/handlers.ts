@@ -6,6 +6,7 @@ import type {
   CitationInput,
   DerivationStep,
   EquationInput,
+  FlashcardInput,
   NoteCreateInput,
   NoteUpdateInput,
   RelationKind
@@ -23,6 +24,7 @@ import * as exportPdf from '../exportPdf'
 import * as templates from '../db/templates'
 import * as citations from '../db/citations'
 import * as citationLinks from '../db/citationLinks'
+import * as flashcards from '../db/flashcards'
 
 /** Registers every ipcMain.handle channel. Call once after the DB is ready. */
 export function registerIpcHandlers(): void {
@@ -145,6 +147,22 @@ export function registerIpcHandlers(): void {
   )
   ipcMain.handle(IPC.citationsDelete, (_e, id: number) => citations.deleteCitation(id))
   ipcMain.handle(IPC.citationsUsage, (_e, id: number) => citationLinks.getCitationUsage(id))
+
+  // Flashcards / study system
+  ipcMain.handle(IPC.flashcardsList, () => flashcards.listFlashcards())
+  ipcMain.handle(IPC.flashcardsCreate, (_e, input: FlashcardInput) =>
+    flashcards.createFlashcard(input)
+  )
+  ipcMain.handle(IPC.flashcardsUpdate, (_e, id: number, patch: Partial<FlashcardInput>) =>
+    flashcards.updateFlashcard(id, patch)
+  )
+  ipcMain.handle(IPC.flashcardsDelete, (_e, id: number) => flashcards.deleteFlashcard(id))
+  ipcMain.handle(IPC.flashcardsReview, (_e, id: number, correct: boolean) =>
+    flashcards.reviewFlashcard(id, correct)
+  )
+  ipcMain.handle(IPC.flashcardsGenerateFromEquations, () =>
+    flashcards.generateFlashcardsFromEquations()
+  )
 
   // Settings
   ipcMain.handle(IPC.settingsGet, (_e, key: string) => settings.getSetting(key))

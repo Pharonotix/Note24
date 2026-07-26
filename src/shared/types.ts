@@ -167,6 +167,25 @@ export interface CitationUsage {
   title: string
 }
 
+export type FlashcardBackFormat = 'text' | 'latex'
+
+/** A study flashcard, either hand-authored or generated from an equation. */
+export interface Flashcard {
+  id: number
+  front: string
+  back: string
+  backFormat: FlashcardBackFormat
+  category: string
+  /** The equation slug this card was generated from, or null for manual cards. */
+  sourceSlug: string | null
+  /** Index into the spaced-repetition interval table (see lib/spacedRepetition.ts). */
+  intervalIdx: number
+  dueAt: number
+  lastReviewedAt: number | null
+  createdAt: number
+  updatedAt: number
+}
+
 /* ---- Input payloads ---- */
 
 export interface NoteCreateInput {
@@ -201,4 +220,12 @@ export interface CitationInput {
   url?: string
   doi?: string
   attachmentId?: string | null
+}
+
+export interface FlashcardInput {
+  front: string
+  back: string
+  backFormat?: FlashcardBackFormat
+  category?: string
+  sourceSlug?: string | null
 }

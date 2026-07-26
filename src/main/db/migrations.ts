@@ -166,5 +166,31 @@ export const migrations: string[] = [
     UNIQUE(source_note_id, citation_id)
   );
   CREATE INDEX idx_citation_refs_citation ON citation_refs(citation_id);
+  `,
+
+  /* --- 7: study system (flashcards + spaced repetition) ---
+     `source_slug` links a generated card back to the equation it was made from (stable
+     slug, same rationale as equation_relationships — no SQL FK since built-ins reseed);
+     it is NULL for manually-authored cards. The unique partial index makes "generate
+     from equations" idempotent — re-running it only inserts cards for equations that
+     don't have one yet. `due_at`/`interval_idx` implement spaced repetition entirely in
+     this table; no separate review-log table is needed since only the next due date
+     (not full history) drives scheduling. */
+  `
+  CREATE TABLE flashcards (
+    id               INTEGER PRIMARY KEY AUTOINCREMENT,
+    front            TEXT NOT NULL,
+    back             TEXT NOT NULL,
+    back_format      TEXT NOT NULL DEFAULT 'text',
+    category         TEXT NOT NULL DEFAULT '',
+    source_slug      TEXT,
+    interval_idx     INTEGER NOT NULL DEFAULT 0,
+    due_at           INTEGER NOT NULL,
+    last_reviewed_at INTEGER,
+    created_at       INTEGER NOT NULL,
+    updated_at       INTEGER NOT NULL
+  );
+  CREATE INDEX idx_flashcards_due ON flashcards(due_at);
+  CREATE UNIQUE INDEX idx_flashcards_source ON flashcards(source_slug) WHERE source_slug IS NOT NULL;
   `
 ]
