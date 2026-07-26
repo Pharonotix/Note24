@@ -2,6 +2,39 @@
 
 Log of autonomous scheduled-task runs on Note24. Newest first.
 
+## 2026-07-26 — v0.13.0 Circuit Design
+
+**Completed:** v0.13.0 in full, fourth version of this session's v0.10–v0.20 sweep.
+
+**Built:** A schematic-diagram block reusing the Flowchart block's React Flow
+foundation (v0.11.0) with a custom node type per component (resistor, capacitor,
+inductor, IC, source, ground — hand-drawn SVG symbols, not an external symbol
+library), a component palette, drag-to-wire connections, inline rename, and three
+per-block export buttons (PNG/SVG/PDF) using two new lazy-loaded dependencies
+(`html-to-image`, `jspdf`) plus a new generic `export.saveDataUrl` IPC channel that
+writes any data: URL to a user-picked file.
+
+**No new bugs found this round** — reusing the already-hardened Flowchart
+block pattern (ref-based debounce+flush, random-suffixed node ids, `fitView` refresh
+after adding a node) meant this version didn't hit the same class of issues v0.11/v0.12
+did.
+
+**Verified:** `npm run typecheck` and `npm run build` pass. Real workflow testing via
+the `run-note24` driver: inserted a circuit block, added resistor/capacitor/ground
+components (all render with correct schematic symbols and labels), clicked Export PNG
+(no console errors through to the native save-dialog call — dialog itself can't be
+driven by automation, which is expected), and confirmed a resistor component survives
+a full app restart.
+
+**Left over / notes for next run:**
+- Did not automate the wire-drag-connect gesture (same known harness limitation
+  documented in `.claude/skills/run-note24/SKILL.md` from v0.11.0) or the actual save-
+  dialog file write (native OS dialog, can't be driven by CDP) — both use the identical,
+  already-proven mechanics from the Flowchart block and PDF/print export respectively.
+- Same deferred items as before (equation graph, equation→calculator, attachment
+  audio/video players, PDF24 launcher, formula-sheet print export).
+- Next version: v0.14.0 User Experience — continuing in this same session.
+
 ## 2026-07-26 — v0.12.0 Infinite Whiteboard
 
 **Completed:** v0.12.0 in full, third version of this session's v0.10–v0.20 sweep.

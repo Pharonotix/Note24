@@ -77,6 +77,12 @@ export interface Note24Api {
   export: {
     toPdf(suggestedName: string): Promise<{ canceled: boolean; path?: string }>
     print(): Promise<void>
+    /** Saves a data: URL (image or PDF) to a file the user picks. */
+    saveDataUrl(
+      dataUrl: string,
+      suggestedName: string,
+      extension: string
+    ): Promise<{ canceled: boolean; path?: string }>
   }
   templates: {
     list(): Promise<Template[]>

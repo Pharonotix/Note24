@@ -2,6 +2,29 @@
 
 All notable changes to Note24. Newest first.
 
+## 0.13.0 — Circuit Design
+
+### Added
+- **Circuit block** (toolbar button, "Insert circuit") — a schematic-diagram block for
+  the same React Flow foundation the Flowchart block (v0.11.0) uses, with 6 standard
+  component symbols: resistor, capacitor, inductor, IC, source, and ground.
+- **Components & wiring** — a palette of "+ Resistor / + Capacitor / …" buttons adds a
+  component; double-click to rename its label (e.g. "R1" → "R2/10kΩ"); drag between
+  component leads to wire them together, same connect gesture as flowcharts.
+- **Export PNG / SVG / PDF** — three buttons on the block itself rasterize (or
+  vectorize) just that circuit's canvas and save it via a native Save dialog.
+
+### Notes
+- New dependencies: `html-to-image` (DOM → PNG/SVG capture) and `jspdf` (wraps the PNG
+  into a single-page PDF sized to the image). Both lazy-imported only when an export
+  button is actually clicked, so they don't cost startup time or bundle weight for the
+  common case of a note with no circuit block.
+- Added a small generic `export.saveDataUrl` IPC channel (`src/main/exportDataUrl.ts`)
+  that writes any `data:` URL to a user-picked file — reused by all three export
+  formats rather than adding one channel per format.
+- Same persistence pattern as the Flowchart block: node/edge JSON debounced into the
+  block's TipTap attrs, flushed immediately on unmount (switching notes).
+
 ## 0.12.0 — Infinite Whiteboard
 
 ### Added

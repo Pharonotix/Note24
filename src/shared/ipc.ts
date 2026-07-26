@@ -42,6 +42,7 @@ export const IPC = {
 
   exportToPdf: 'export:toPdf',
   exportPrint: 'export:print',
+  exportSaveDataUrl: 'export:saveDataUrl',
 
   templatesList: 'templates:list',
   templatesCreate: 'templates:create',

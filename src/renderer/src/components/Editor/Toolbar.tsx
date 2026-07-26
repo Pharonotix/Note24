@@ -17,6 +17,7 @@ import {
   PenLine,
   Quote,
   Radical,
+  CircuitBoard,
   Redo,
   Sheet,
   SquareRadical,
@@ -124,6 +125,7 @@ export function Toolbar({ editor, noteId }: { editor: Editor; noteId: number }):
       {btn(<Calculator {...ICON} />, 'Insert calculator', () => chain().insertCalculator().run())}
       {btn(<Sheet {...ICON} />, 'Insert table', () => chain().insertDataTable().run())}
       {btn(<Workflow {...ICON} />, 'Insert flowchart', () => chain().insertFlowchart().run())}
+      {btn(<CircuitBoard {...ICON} />, 'Insert circuit', () => chain().insertCircuit().run())}
       <span className={styles.sep} />
       {btn(<Undo {...ICON} />, 'Undo', () => chain().undo().run())}
       {btn(<Redo {...ICON} />, 'Redo', () => chain().redo().run())}

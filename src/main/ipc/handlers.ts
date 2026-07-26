@@ -21,6 +21,7 @@ import * as settings from '../db/settings'
 import * as attachments from '../attachments'
 import * as locations from '../locations'
 import * as exportPdf from '../exportPdf'
+import { saveDataUrl } from '../exportDataUrl'
 import * as templates from '../db/templates'
 import * as citations from '../db/citations'
 import * as citationLinks from '../db/citationLinks'
@@ -127,6 +128,9 @@ export function registerIpcHandlers(): void {
   // Export / print
   ipcMain.handle(IPC.exportToPdf, (_e, suggestedName: string) => exportPdf.exportToPdf(suggestedName))
   ipcMain.handle(IPC.exportPrint, () => exportPdf.printCurrent())
+  ipcMain.handle(IPC.exportSaveDataUrl, (_e, dataUrl: string, suggestedName: string, extension: string) =>
+    saveDataUrl(exportPdf.getMainWindow(), dataUrl, suggestedName, extension)
+  )
 
   // Templates
   ipcMain.handle(IPC.templatesList, () => templates.listTemplates())

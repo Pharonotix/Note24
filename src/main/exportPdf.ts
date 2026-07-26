@@ -8,6 +8,11 @@ export function setMainWindow(win: BrowserWindow): void {
   mainWindow = win
 }
 
+/** The registered main window, for other export helpers (e.g. saveDataUrl) that need a parent for dialogs. */
+export function getMainWindow(): BrowserWindow | null {
+  return mainWindow
+}
+
 /**
  * Saves the main window's current page to a PDF file the user picks. The renderer is
  * responsible for having already swapped its DOM into a print-layout view (see the

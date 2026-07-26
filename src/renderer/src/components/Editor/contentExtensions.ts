@@ -11,6 +11,7 @@ import { CalculatorNode } from './extensions/CalculatorNode'
 import { DataTableNode } from './extensions/DataTableNode'
 import { CitationRef } from './extensions/CitationRef'
 import { FlowchartNode } from './extensions/FlowchartNode'
+import { CircuitNode } from './extensions/CircuitNode'
 
 /**
  * The block/mark extensions every note body needs, shared by the live editor
@@ -31,6 +32,7 @@ export function contentExtensions(): AnyExtension[] {
     CalculatorNode,
     DataTableNode,
     CitationRef,
-    FlowchartNode
+    FlowchartNode,
+    CircuitNode
   ]
 }
