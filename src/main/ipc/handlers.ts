@@ -26,6 +26,8 @@ import * as templates from '../db/templates'
 import * as citations from '../db/citations'
 import * as citationLinks from '../db/citationLinks'
 import * as flashcards from '../db/flashcards'
+import * as noteVersions from '../db/noteVersions'
+import { backupVault, restoreVault } from '../vault'
 
 /** Registers every ipcMain.handle channel. Call once after the DB is ready. */
 export function registerIpcHandlers(): void {
@@ -44,6 +46,12 @@ export function registerIpcHandlers(): void {
     notes.reorderNotes(folderId, orderedIds)
   )
   ipcMain.handle(IPC.notesSetPinned, (_e, id: number, pinned: boolean) => notes.setNotePinned(id, pinned))
+  ipcMain.handle(IPC.notesVersionsList, (_e, noteId: number) => noteVersions.listVersions(noteId))
+  ipcMain.handle(IPC.notesVersionSnapshot, (_e, noteId: number) => notes.snapshotNoteVersion(noteId))
+  ipcMain.handle(IPC.notesVersionRestore, (_e, noteId: number, versionId: number) => {
+    const version = noteVersions.getVersion(versionId)
+    if (version) notes.restoreNoteVersion(noteId, version)
+  })
 
   // Folders
   ipcMain.handle(IPC.foldersList, () => folders.listFolders())
@@ -193,4 +201,8 @@ export function registerIpcHandlers(): void {
     app.exit(0)
   })
   ipcMain.handle(IPC.locationsRemove, (_e, id: string) => locations.removeLocation(id))
+
+  // Vault backup / restore
+  ipcMain.handle(IPC.vaultBackup, () => backupVault(exportPdf.getMainWindow()))
+  ipcMain.handle(IPC.vaultRestore, () => restoreVault(exportPdf.getMainWindow()))
 }

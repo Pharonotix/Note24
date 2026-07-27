@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Clock, FileText, LayoutTemplate, Pin, Plus, Sigma } from 'lucide-react'
+import { Clock, FileText, LayoutTemplate, Pin, Plus, Save, Sigma, Trash2 } from 'lucide-react'
 import { useStore } from '../../store/store'
 import { LAYOUT_PRESETS } from '../../lib/workspace'
 import styles from './Dashboard.module.css'
@@ -9,6 +9,11 @@ export function Dashboard(): React.JSX.Element {
   const notes = useStore((s) => s.notes)
   const citations = useStore((s) => s.citations)
   const recentNoteIds = useStore((s) => s.recentNoteIds)
+  const openTabs = useStore((s) => s.openTabs)
+  const workspaceSnapshots = useStore((s) => s.workspaceSnapshots)
+  const saveWorkspaceSnapshot = useStore((s) => s.saveWorkspaceSnapshot)
+  const restoreWorkspaceSnapshot = useStore((s) => s.restoreWorkspaceSnapshot)
+  const deleteWorkspaceSnapshot = useStore((s) => s.deleteWorkspaceSnapshot)
   const selectNote = useStore((s) => s.selectNote)
   const newNote = useStore((s) => s.newNote)
   const setTemplatePickerOpen = useStore((s) => s.setTemplatePickerOpen)
@@ -19,6 +24,8 @@ export function Dashboard(): React.JSX.Element {
 
   const [equationCount, setEquationCount] = useState<number | null>(null)
   const [attachmentCount, setAttachmentCount] = useState<number | null>(null)
+  const [savingSession, setSavingSession] = useState(false)
+  const [sessionName, setSessionName] = useState('')
 
   useEffect(() => {
     window.api.equations.list().then((eqs) => setEquationCount(eqs.length))
@@ -116,6 +123,67 @@ export function Dashboard(): React.JSX.Element {
               </button>
             ))}
             {recent.length === 0 && <div className={styles.empty}>No notes opened yet.</div>}
+          </div>
+        </section>
+
+        <section className={styles.section}>
+          <h2 className={styles.h2}>
+            <Save size={14} /> Saved sessions
+          </h2>
+          {savingSession ? (
+            <div className={styles.sessionForm}>
+              <input
+                autoFocus
+                className={styles.sessionInput}
+                placeholder="Session name…"
+                value={sessionName}
+                onChange={(e) => setSessionName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    saveWorkspaceSnapshot(sessionName)
+                    setSessionName('')
+                    setSavingSession(false)
+                  }
+                  if (e.key === 'Escape') setSavingSession(false)
+                }}
+              />
+              <button
+                className={styles.action}
+                onClick={() => {
+                  saveWorkspaceSnapshot(sessionName)
+                  setSessionName('')
+                  setSavingSession(false)
+                }}
+              >
+                Save
+              </button>
+            </div>
+          ) : (
+            <button
+              className={styles.action}
+              disabled={openTabs.length === 0}
+              onClick={() => setSavingSession(true)}
+            >
+              <Save size={14} /> Save current session ({openTabs.length} tab
+              {openTabs.length === 1 ? '' : 's'})
+            </button>
+          )}
+          <div className={styles.noteGrid} style={{ marginTop: 10 }}>
+            {workspaceSnapshots.map((s) => (
+              <div key={s.id} className={styles.sessionCard}>
+                <button className={styles.sessionOpen} onClick={() => restoreWorkspaceSnapshot(s.id)}>
+                  {s.name} <span className={styles.sessionMeta}>({s.tabs.length})</span>
+                </button>
+                <button
+                  className={styles.sessionDelete}
+                  onClick={() => deleteWorkspaceSnapshot(s.id)}
+                  title="Delete session"
+                >
+                  <Trash2 size={12} />
+                </button>
+              </div>
+            ))}
+            {workspaceSnapshots.length === 0 && <div className={styles.empty}>No saved sessions yet.</div>}
           </div>
         </section>
 

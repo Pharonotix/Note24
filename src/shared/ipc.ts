@@ -10,6 +10,12 @@ export const IPC = {
   notesBacklinks: 'notes:backlinks',
   notesReorder: 'notes:reorder',
   notesSetPinned: 'notes:setPinned',
+  notesVersionsList: 'notes:versionsList',
+  notesVersionSnapshot: 'notes:versionSnapshot',
+  notesVersionRestore: 'notes:versionRestore',
+
+  vaultBackup: 'vault:backup',
+  vaultRestore: 'vault:restore',
 
   foldersList: 'folders:list',
   foldersCreate: 'folders:create',

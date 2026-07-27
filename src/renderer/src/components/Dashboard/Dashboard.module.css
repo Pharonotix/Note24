@@ -138,3 +138,55 @@
   font-size: 12.5px;
   color: var(--text-faint);
 }
+
+.sessionForm {
+  display: flex;
+  gap: 8px;
+}
+.sessionInput {
+  flex: 1;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 13px;
+  outline: none;
+}
+.sessionInput:focus {
+  border-color: var(--primary);
+}
+
+.sessionCard {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+.sessionOpen {
+  flex: 1;
+  padding: 8px 10px;
+  text-align: left;
+  font-size: 12.5px;
+  color: var(--text);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.sessionOpen:hover {
+  background: var(--surface-2);
+}
+.sessionMeta {
+  color: var(--text-faint);
+}
+.sessionDelete {
+  flex: 0 0 auto;
+  padding: 8px;
+  color: var(--text-faint);
+}
+.sessionDelete:hover {
+  color: var(--danger);
+}

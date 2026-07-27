@@ -198,5 +198,23 @@ export const migrations: string[] = [
   `
   ALTER TABLE notes ADD COLUMN pinned INTEGER NOT NULL DEFAULT 0;
   CREATE INDEX idx_notes_pinned ON notes(pinned);
+  `,
+
+  /* --- 9: data protection (per-note version history) ---
+     A version is snapshotted when a note is switched away from (not on every
+     debounced autosave — that would be one row per keystroke), and skipped if the
+     content is unchanged since the last snapshot. No SQL FK on note_id: versions of a
+     deleted note are cleaned up in code (like attachments/citation_refs), since a
+     cascade would silently lose history the moment someone deletes a note by mistake
+     and undoes it via restore — better to let deleteNote() decide explicitly. */
+  `
+  CREATE TABLE note_versions (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    note_id    INTEGER NOT NULL,
+    title      TEXT NOT NULL,
+    content    TEXT NOT NULL,
+    created_at INTEGER NOT NULL
+  );
+  CREATE INDEX idx_note_versions_note ON note_versions(note_id, created_at DESC);
   `
 ]

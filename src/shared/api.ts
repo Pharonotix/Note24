@@ -19,6 +19,7 @@ import type {
   NoteCreateInput,
   NoteSummary,
   NoteUpdateInput,
+  NoteVersion,
   RelationKind,
   Tag,
   Template
@@ -40,6 +41,9 @@ export interface Note24Api {
     backlinks(id: number): Promise<Backlink[]>
     reorder(folderId: number | null, orderedIds: number[]): Promise<void>
     setPinned(id: number, pinned: boolean): Promise<void>
+    versions(noteId: number): Promise<NoteVersion[]>
+    snapshotVersion(noteId: number): Promise<void>
+    restoreVersion(noteId: number, versionId: number): Promise<void>
   }
   folders: {
     list(): Promise<Folder[]>
@@ -121,5 +125,12 @@ export interface Note24Api {
     /** Persists the switch, then relaunches the app — never resolves. */
     switch(id: string): Promise<void>
     remove(id: string): Promise<void>
+  }
+  vault: {
+    /** Checkpoints the DB and copies it to a user-picked file. */
+    backup(): Promise<{ canceled: boolean; path?: string }>
+    /** Copies a user-picked backup file over the current DB, then relaunches — never
+     *  resolves on success. */
+    restore(): Promise<{ canceled: boolean }>
   }
 }

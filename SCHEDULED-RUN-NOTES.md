@@ -2,6 +2,42 @@
 
 Log of autonomous scheduled-task runs on Note24. Newest first.
 
+## 2026-07-26 — v0.16.0 Data Protection
+
+**Completed:** v0.16.0 in full, seventh version of this session's v0.10–v0.20 sweep.
+
+**Built:** Per-note version history — a new `note_versions` table (migration 9,
+capped at 50 versions/note), snapshotted automatically when switching away from an
+edited note (not on every keystroke), viewable/restorable via a new "Version history"
+toolbar button; restoring snapshots the current state first so it's never a dead end.
+Vault backup & restore (Settings) — checkpoints the WAL and copies the raw SQLite file
+to a user-picked path for backup; restore closes the live DB connection (required on
+Windows before overwriting an open file), copies the picked backup over the active
+vault, clears stale WAL/SHM sidecars, and relaunches. Workspace snapshots ("Saved
+sessions" on the Dashboard) — save/restore a named set of open tabs, reusing the same
+settings-blob pattern as v0.15.0's recent-notes/open-tabs.
+
+**No new bugs found this round.**
+
+**Verified:** `npm run typecheck` and `npm run build` pass. Real workflow testing via
+the `run-note24` driver: typed content into a note and switched away, then confirmed
+via direct API a version snapshot was created with the exact typed content; overwrote
+the note's content, called `restoreVersion`, and confirmed the content correctly
+reverted to the earlier snapshot; opened the Version History modal via the UI and
+confirmed it lists entries with a working Restore → confirm/cancel flow; opened
+Settings and confirmed the Backup & restore section renders with working buttons
+(didn't click through the actual native save/open dialogs, which can't be driven by
+this automation — same limitation as PDF export in earlier versions).
+
+**Left over / notes for next run:**
+- Workspace snapshots (the Dashboard's "Saved sessions") weren't given a dedicated UI
+  test this round — high confidence since it reuses the identical settings-blob
+  pattern already proven for recent-notes/open-tabs, but worth a spot-check if
+  workspace-snapshot bugs come up later.
+- Same deferred items as before (equation graph, equation→calculator, attachment
+  audio/video players, PDF24 launcher, formula-sheet print export).
+- Next version: v0.17.0 Laboratory Workspace — continuing in this same session.
+
 ## 2026-07-26 — v0.15.0 Productivity Workspace
 
 **Completed:** v0.15.0 in full, sixth version of this session's v0.10–v0.20 sweep.

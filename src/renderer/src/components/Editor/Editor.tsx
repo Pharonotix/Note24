@@ -92,12 +92,19 @@ export function Editor({ note }: { note: Note }): React.JSX.Element {
     return () => setEditor(null)
   }, [editor, setEditor])
 
-  // Flush pending saves when unmounting (i.e. switching notes).
+  // Flush pending saves when unmounting (i.e. switching notes), then snapshot a
+  // version. flushBody/flushTitle dispatch their IPC writes synchronously (not
+  // awaited — this is a sync cleanup function), and snapshotVersion is dispatched
+  // right after: Electron preserves per-channel message ordering and better-sqlite3
+  // is fully synchronous in the main process, so the snapshot always sees this
+  // flush's just-written content, never a stale pre-flush read.
   useEffect(() => {
     return () => {
       flushBody()
       flushTitle()
+      void window.api.notes.snapshotVersion(note.id)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [flushBody, flushTitle])
 
   return (

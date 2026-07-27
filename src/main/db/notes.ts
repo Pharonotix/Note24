@@ -4,6 +4,7 @@ import { extractPlaintext } from './plaintext'
 import { syncLinks } from './links'
 import { syncCitationRefs } from './citationLinks'
 import { deleteAttachmentsForNote } from '../attachments'
+import { createVersionIfChanged, deleteVersionsForNote } from './noteVersions'
 
 interface NoteRow {
   id: number
@@ -153,9 +154,25 @@ export function updateNote(id: number, patch: NoteUpdateInput): void {
 
 export function deleteNote(id: number): void {
   deleteAttachmentsForNote(id)
+  deleteVersionsForNote(id)
   const db = getDb()
   db.prepare(`DELETE FROM notes WHERE id = ?`).run(id)
   db.prepare(`DELETE FROM notes_fts WHERE rowid = ?`).run(id)
+}
+
+/** Snapshots a note's current state into version history — called when switching
+ *  away from it in the editor (see Editor.tsx's unmount-flush effect). */
+export function snapshotNoteVersion(id: number): void {
+  const note = getNote(id)
+  if (!note) return
+  createVersionIfChanged(id, note.title, note.content)
+}
+
+/** Restores a note to a past version's title/content. Snapshots the note's current
+ *  (about-to-be-overwritten) state first, so restoring is itself undoable. */
+export function restoreNoteVersion(noteId: number, version: { title: string; content: string }): void {
+  snapshotNoteVersion(noteId)
+  updateNote(noteId, { title: version.title, content: version.content })
 }
 
 export function searchNotes(query: string): NoteSummary[] {

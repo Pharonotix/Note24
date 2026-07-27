@@ -131,6 +131,16 @@ export interface Backlink {
   title: string
 }
 
+/** A snapshot of a note's content, taken when switching away from it (not on every
+ *  keystroke) — see src/main/db/noteVersions.ts. */
+export interface NoteVersion {
+  id: number
+  noteId: number
+  title: string
+  content: string
+  createdAt: number
+}
+
 /** A user-saved reusable note template (built-ins are static data, not stored here). */
 export interface Template {
   id: number

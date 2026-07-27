@@ -9,6 +9,7 @@ import {
   Heading1,
   Heading2,
   Heading3,
+  History,
   Image,
   Italic,
   List,
@@ -129,6 +130,8 @@ export function Toolbar({ editor, noteId }: { editor: Editor; noteId: number }):
       <span className={styles.sep} />
       {btn(<Undo {...ICON} />, 'Undo', () => chain().undo().run())}
       {btn(<Redo {...ICON} />, 'Redo', () => chain().redo().run())}
+      <span className={styles.sep} />
+      {btn(<History {...ICON} />, 'Version history', () => useStore.getState().setVersionHistoryNoteId(noteId))}
     </div>
   )
 }

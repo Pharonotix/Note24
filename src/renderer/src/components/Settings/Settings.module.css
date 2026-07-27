@@ -349,3 +349,35 @@
   color: var(--primary);
   background: var(--surface-2);
 }
+
+.backupRow {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.backupBtn {
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 12px;
+}
+.backupBtn:hover {
+  background: var(--surface-3);
+  color: var(--text);
+}
+.backupBtn:disabled {
+  opacity: 0.6;
+}
+.dangerBtn {
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  background: var(--danger);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+}
+.dangerBtn:hover {
+  opacity: 0.9;
+}

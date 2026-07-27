@@ -30,6 +30,7 @@ import { ExportPicker } from './components/ExportPicker/ExportPicker'
 import { PrintLayer } from './components/PrintLayer/PrintLayer'
 import { TemplatePicker } from './components/TemplatePicker/TemplatePicker'
 import { Settings } from './components/Settings/Settings'
+import { VersionHistory } from './components/VersionHistory/VersionHistory'
 import styles from './App.module.css'
 
 function App(): React.JSX.Element {
@@ -58,6 +59,7 @@ function App(): React.JSX.Element {
   const setFocusMode = useStore((s) => s.setFocusMode)
   const dashboardOpen = useStore((s) => s.dashboardOpen)
   const setDashboardOpen = useStore((s) => s.setDashboardOpen)
+  const noteReloadToken = useStore((s) => s.noteReloadToken)
 
   const openEquations = (v: boolean): void => {
     setEquationPanel(v)
@@ -245,7 +247,7 @@ function App(): React.JSX.Element {
           {dashboardOpen ? (
             <Dashboard />
           ) : currentNote ? (
-            <Editor key={currentNote.id} note={currentNote} />
+            <Editor key={`${currentNote.id}-${noteReloadToken}`} note={currentNote} />
           ) : (
             <div className={styles.empty}>
               <div>
@@ -268,6 +270,7 @@ function App(): React.JSX.Element {
       <TemplatePicker />
       <QuickSwitcher />
       <Settings />
+      <VersionHistory />
     </div>
   )
 }

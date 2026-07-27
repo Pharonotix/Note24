@@ -10,7 +10,16 @@ import {
   type EditorPrefs
 } from '../lib/editorPrefs'
 import { DEFAULT_SHORTCUTS, loadShortcuts, saveShortcuts, type ShortcutAction } from '../lib/shortcuts'
-import { loadOpenTabs, loadRecentNoteIds, pushRecent, saveOpenTabs, saveRecentNoteIds } from '../lib/workspace'
+import {
+  loadOpenTabs,
+  loadRecentNoteIds,
+  loadWorkspaceSnapshots,
+  pushRecent,
+  saveOpenTabs,
+  saveRecentNoteIds,
+  saveWorkspaceSnapshots,
+  type WorkspaceSnapshot
+} from '../lib/workspace'
 
 const LAST_NOTE_KEY = 'lastNoteId'
 
@@ -54,6 +63,12 @@ interface AppState {
   recentNoteIds: number[]
   openTabs: number[]
   dashboardOpen: boolean
+  versionHistoryNoteId: number | null
+  /** Bumped after restoring a version of the *currently open* note, so App.tsx can
+   *  force the Editor to remount (its key is otherwise just the stable note id, and
+   *  TipTap doesn't reactively re-apply a changed `content` prop after first mount). */
+  noteReloadToken: number
+  workspaceSnapshots: WorkspaceSnapshot[]
 
   init: () => Promise<void>
   refreshNotes: () => Promise<void>
@@ -73,6 +88,11 @@ interface AppState {
   togglePinned: (id: number) => Promise<void>
   closeTab: (id: number) => Promise<void>
   setDashboardOpen: (open: boolean) => void
+  setVersionHistoryNoteId: (id: number | null) => void
+  restoreNoteVersion: (noteId: number, versionId: number) => Promise<void>
+  saveWorkspaceSnapshot: (name: string) => Promise<void>
+  restoreWorkspaceSnapshot: (id: string) => Promise<void>
+  deleteWorkspaceSnapshot: (id: string) => Promise<void>
   setCurrentNoteTags: (tags: string[]) => Promise<void>
   newFolder: (name: string, parentId?: number | null) => Promise<void>
   renameFolder: (id: number, name: string) => Promise<void>
@@ -147,6 +167,9 @@ export const useStore = create<AppState>((set, get) => ({
   recentNoteIds: [],
   openTabs: [],
   dashboardOpen: false,
+  versionHistoryNoteId: null,
+  noteReloadToken: 0,
+  workspaceSnapshots: [],
 
   init: async () => {
     const theme = await loadTheme()
@@ -157,6 +180,7 @@ export const useStore = create<AppState>((set, get) => ({
     set({ editorPrefs })
     set({ shortcuts: await loadShortcuts() })
     set({ recentNoteIds: await loadRecentNoteIds(), openTabs: await loadOpenTabs() })
+    set({ workspaceSnapshots: await loadWorkspaceSnapshots() })
     await Promise.all([
       get().refreshNotes(),
       get().refreshFolders(),
@@ -283,6 +307,45 @@ export const useStore = create<AppState>((set, get) => ({
     }
   },
   setDashboardOpen: (open) => set({ dashboardOpen: open }),
+  setVersionHistoryNoteId: (id) => set({ versionHistoryNoteId: id }),
+  restoreNoteVersion: async (noteId, versionId) => {
+    await window.api.notes.restoreVersion(noteId, versionId)
+    await get().refreshNotes()
+    if (get().currentNoteId === noteId) {
+      const note = await window.api.notes.get(noteId)
+      set((s) => ({ currentNote: note, noteReloadToken: s.noteReloadToken + 1 }))
+    }
+    set({ versionHistoryNoteId: null })
+  },
+
+  saveWorkspaceSnapshot: async (name) => {
+    const snap: WorkspaceSnapshot = {
+      id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      name: name.trim() || 'Untitled session',
+      tabs: get().openTabs,
+      currentNoteId: get().currentNoteId,
+      createdAt: Date.now()
+    }
+    const next = [snap, ...get().workspaceSnapshots]
+    set({ workspaceSnapshots: next })
+    await saveWorkspaceSnapshots(next)
+  },
+
+  restoreWorkspaceSnapshot: async (id) => {
+    const snap = get().workspaceSnapshots.find((s) => s.id === id)
+    if (!snap) return
+    const validTabs = snap.tabs.filter((t) => get().notes.some((n) => n.id === t))
+    set({ openTabs: validTabs })
+    await saveOpenTabs(validTabs)
+    const target = snap.currentNoteId && validTabs.includes(snap.currentNoteId) ? snap.currentNoteId : validTabs[0]
+    if (target != null) await get().selectNote(target)
+  },
+
+  deleteWorkspaceSnapshot: async (id) => {
+    const next = get().workspaceSnapshots.filter((s) => s.id !== id)
+    set({ workspaceSnapshots: next })
+    await saveWorkspaceSnapshots(next)
+  },
 
   setCurrentNoteTags: async (tags) => {
     const id = get().currentNoteId

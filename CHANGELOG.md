@@ -2,6 +2,33 @@
 
 All notable changes to Note24. Newest first.
 
+## 0.16.0 — Data Protection
+
+### Added
+- **Note version history** — a new "Version history" button in the editor toolbar.
+  Note24 automatically snapshots a note's content whenever you switch away from it
+  (not on every keystroke — only when the content actually changed since the last
+  snapshot), and lets you preview and restore any past version. Restoring itself
+  snapshots the current state first, so a restore is never a dead end.
+- **Vault backup & restore** (Settings → Backup & restore) — one-click backup
+  checkpoints the database and copies it to a file you choose; restoring picks a
+  backup file, replaces the active vault, and restarts Note24.
+- **Workspace snapshots** ("Saved sessions" on the Dashboard) — save the current set
+  of open tabs (and which one was active) under a name, and jump back into that exact
+  working set later.
+
+### Notes
+- New `note_versions` table (migration 9), capped at 50 versions per note (oldest
+  pruned first) — no SQL foreign key to `notes`, cleaned up in code on note delete,
+  same rationale as attachments/citation_refs.
+- Backup/restore operates on the raw SQLite file after a full WAL checkpoint — no new
+  dependency, no archive format; a "backup" is just a self-contained `.db` file.
+  Restore closes the live DB connection before overwriting it (required on Windows,
+  where an open file can't be replaced) and clears stale `-wal`/`-shm` sidecars before
+  relaunching.
+- Workspace snapshots reuse the same settings-table JSON-blob pattern as recent
+  notes/open tabs (v0.15.0) — no new table.
+
 ## 0.15.0 — Productivity Workspace
 
 ### Added

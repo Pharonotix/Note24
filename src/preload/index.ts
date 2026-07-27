@@ -14,7 +14,10 @@ const api: Note24Api = {
     setTags: (id, tags) => ipcRenderer.invoke(IPC.notesSetTags, id, tags),
     backlinks: (id) => ipcRenderer.invoke(IPC.notesBacklinks, id),
     reorder: (folderId, orderedIds) => ipcRenderer.invoke(IPC.notesReorder, folderId, orderedIds),
-    setPinned: (id, pinned) => ipcRenderer.invoke(IPC.notesSetPinned, id, pinned)
+    setPinned: (id, pinned) => ipcRenderer.invoke(IPC.notesSetPinned, id, pinned),
+    versions: (noteId) => ipcRenderer.invoke(IPC.notesVersionsList, noteId),
+    snapshotVersion: (noteId) => ipcRenderer.invoke(IPC.notesVersionSnapshot, noteId),
+    restoreVersion: (noteId, versionId) => ipcRenderer.invoke(IPC.notesVersionRestore, noteId, versionId)
   },
   folders: {
     list: () => ipcRenderer.invoke(IPC.foldersList),
@@ -92,6 +95,10 @@ const api: Note24Api = {
     rename: (id, label) => ipcRenderer.invoke(IPC.locationsRename, id, label),
     switch: (id) => ipcRenderer.invoke(IPC.locationsSwitch, id),
     remove: (id) => ipcRenderer.invoke(IPC.locationsRemove, id)
+  },
+  vault: {
+    backup: () => ipcRenderer.invoke(IPC.vaultBackup),
+    restore: () => ipcRenderer.invoke(IPC.vaultRestore)
   }
 }
 

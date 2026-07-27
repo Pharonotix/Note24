@@ -32,6 +32,9 @@ export function Settings(): React.JSX.Element | null {
   const [renamingLocId, setRenamingLocId] = useState<string | null>(null)
   const [switching, setSwitching] = useState(false)
   const [recordingAction, setRecordingAction] = useState<ShortcutAction | null>(null)
+  const [backing, setBacking] = useState(false)
+  const [backupMsg, setBackupMsg] = useState<string | null>(null)
+  const [confirmRestore, setConfirmRestore] = useState(false)
 
   useEffect(() => {
     if (open) {
@@ -96,6 +99,24 @@ export function Settings(): React.JSX.Element | null {
     if (!window.confirm(`Remove "${label}" from the list? Its files are not deleted.`)) return
     await window.api.locations.remove(id)
     await refreshLocations()
+  }
+
+  const runBackup = async (): Promise<void> => {
+    setBacking(true)
+    setBackupMsg(null)
+    try {
+      const res = await window.api.vault.backup()
+      setBackupMsg(res.canceled ? null : `Backed up to ${res.path}`)
+    } finally {
+      setBacking(false)
+    }
+  }
+
+  const runRestore = async (): Promise<void> => {
+    setConfirmRestore(false)
+    const res = await window.api.vault.restore()
+    // On success this never resolves (the app relaunches); only a cancel reaches here.
+    if (res.canceled) setBackupMsg(null)
   }
 
   return (
@@ -273,6 +294,35 @@ export function Settings(): React.JSX.Element | null {
             <button className={styles.reset} onClick={addDataFolder}>
               + Add data folder…
             </button>
+          </section>
+
+          <section className={styles.section}>
+            <h3 className={styles.h3}>Backup &amp; restore</h3>
+            <p className={styles.hint}>
+              A backup is a single file containing every note, equation, citation, and
+              attachment reference in this vault. Restoring replaces the current vault and
+              restarts Note24.
+            </p>
+            <div className={styles.backupRow}>
+              <button className={styles.backupBtn} onClick={runBackup} disabled={backing}>
+                {backing ? 'Backing up…' : 'Back up vault…'}
+              </button>
+              {confirmRestore ? (
+                <>
+                  <button className={styles.dangerBtn} onClick={runRestore}>
+                    Confirm restore &amp; restart
+                  </button>
+                  <button className={styles.backupBtn} onClick={() => setConfirmRestore(false)}>
+                    Cancel
+                  </button>
+                </>
+              ) : (
+                <button className={styles.backupBtn} onClick={() => setConfirmRestore(true)}>
+                  Restore from backup…
+                </button>
+              )}
+            </div>
+            {backupMsg && <p className={styles.hint}>{backupMsg}</p>}
           </section>
 
           <section className={styles.section}>

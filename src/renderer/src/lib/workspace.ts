@@ -45,6 +45,33 @@ export async function saveOpenTabs(ids: number[]): Promise<void> {
   await window.api.settings.set(TABS_KEY, JSON.stringify(ids))
 }
 
+const SNAPSHOTS_KEY = 'workspaceSnapshots'
+
+/** A saved "session" — which notes were open as tabs and which was active — so a user
+ *  can jump back into a whole working set instead of one note at a time. */
+export interface WorkspaceSnapshot {
+  id: string
+  name: string
+  tabs: number[]
+  currentNoteId: number | null
+  createdAt: number
+}
+
+export async function loadWorkspaceSnapshots(): Promise<WorkspaceSnapshot[]> {
+  const raw = await window.api.settings.get(SNAPSHOTS_KEY)
+  if (!raw) return []
+  try {
+    const parsed = JSON.parse(raw)
+    return Array.isArray(parsed) ? parsed : []
+  } catch {
+    return []
+  }
+}
+
+export async function saveWorkspaceSnapshots(snapshots: WorkspaceSnapshot[]): Promise<void> {
+  await window.api.settings.set(SNAPSHOTS_KEY, JSON.stringify(snapshots))
+}
+
 /** Named quick-actions for common workflows — the app has one docked side-panel slot,
  *  so a "layout preset" here means "jump straight into this workflow's panel/mode"
  *  rather than arranging multiple panes at once. */
