@@ -2,6 +2,14 @@ import { create } from 'zustand'
 import type { Editor } from '@tiptap/react'
 import type { Citation, Flashcard, Folder, Note, NoteSummary, Tag, Template } from '@shared/types'
 import { applyTheme, DEFAULT_THEME, loadTheme, saveTheme, type ThemeConfig } from '../lib/theme'
+import {
+  applyEditorPrefs,
+  DEFAULT_EDITOR_PREFS,
+  loadEditorPrefs,
+  saveEditorPrefs,
+  type EditorPrefs
+} from '../lib/editorPrefs'
+import { DEFAULT_SHORTCUTS, loadShortcuts, saveShortcuts, type ShortcutAction } from '../lib/shortcuts'
 
 const LAST_NOTE_KEY = 'lastNoteId'
 
@@ -38,6 +46,10 @@ interface AppState {
   studyPanelOpen: boolean
   flashcards: Flashcard[]
   whiteboardOpen: boolean
+  editorPrefs: EditorPrefs
+  shortcuts: Record<ShortcutAction, string>
+  readingMode: boolean
+  focusMode: boolean
 
   init: () => Promise<void>
   refreshNotes: () => Promise<void>
@@ -82,6 +94,11 @@ interface AppState {
   generateFlashcardsFromEquations: () => Promise<number>
   reviewFlashcard: (id: number, correct: boolean) => Promise<void>
   setWhiteboardOpen: (open: boolean) => void
+  setEditorPrefs: (prefs: EditorPrefs) => void
+  setShortcut: (action: ShortcutAction, combo: string) => void
+  resetShortcuts: () => void
+  setReadingMode: (on: boolean) => void
+  setFocusMode: (on: boolean) => void
   setTheme: (cfg: ThemeConfig) => void
   setEditor: (editor: Editor | null) => void
   bumpAttachments: () => void
@@ -116,11 +133,19 @@ export const useStore = create<AppState>((set, get) => ({
   studyPanelOpen: false,
   flashcards: [],
   whiteboardOpen: false,
+  editorPrefs: DEFAULT_EDITOR_PREFS,
+  shortcuts: DEFAULT_SHORTCUTS,
+  readingMode: false,
+  focusMode: false,
 
   init: async () => {
     const theme = await loadTheme()
     applyTheme(theme)
     set({ theme })
+    const editorPrefs = await loadEditorPrefs()
+    applyEditorPrefs(editorPrefs)
+    set({ editorPrefs })
+    set({ shortcuts: await loadShortcuts() })
     await Promise.all([
       get().refreshNotes(),
       get().refreshFolders(),
@@ -301,6 +326,22 @@ export const useStore = create<AppState>((set, get) => ({
     set({ theme: cfg })
     void saveTheme(cfg)
   },
+  setEditorPrefs: (prefs) => {
+    applyEditorPrefs(prefs)
+    set({ editorPrefs: prefs })
+    void saveEditorPrefs(prefs)
+  },
+  setShortcut: (action, combo) => {
+    const next = { ...get().shortcuts, [action]: combo }
+    set({ shortcuts: next })
+    void saveShortcuts(next)
+  },
+  resetShortcuts: () => {
+    set({ shortcuts: DEFAULT_SHORTCUTS })
+    void saveShortcuts(DEFAULT_SHORTCUTS)
+  },
+  setReadingMode: (on) => set({ readingMode: on }),
+  setFocusMode: (on) => set({ focusMode: on }),
   setEditor: (editor) => set({ editor }),
   setDragItem: (item) => set({ dragItem: item }),
 

@@ -2,6 +2,34 @@
 
 All notable changes to Note24. Newest first.
 
+## 0.14.0 — User Experience
+
+### Added
+- **Editor fonts** — a font-family picker in Settings (System Default, Inter, Roboto,
+  Merriweather, JetBrains Mono, Caveat), all self-hosted via `@fontsource` (no network
+  fetch, no CSP exceptions needed) plus a font-size slider (80–200%). Applies live via
+  CSS custom properties, no editor remount.
+- **Reading Mode** (topbar button / Ctrl+Shift+R) — a wider, read-only column with more
+  line-height; hides the formatting toolbar, attachments, and backlinks for a
+  distraction-free read.
+- **Focus Mode** (topbar button / Ctrl+Shift+D) — hides the sidebar and topbar entirely,
+  leaving just the editor and a small always-present exit button (or press the shortcut
+  again).
+- **Custom keyboard shortcuts** — a new Settings section lists every global shortcut
+  (new note, quick switcher, equations, file manager, study, whiteboard, settings,
+  reading mode, focus mode); click a binding and press new keys to rebind it, or reset
+  all to defaults. The whiteboard now has its own default shortcut (Ctrl+Shift+W) — it
+  had none before.
+
+### Notes
+- Spellcheck and Themes already existed (v0.2.0, v0.7.1) — no new work needed there,
+  the roadmap phase just re-lists them alongside the genuinely new items above.
+- New dependencies: `@fontsource/inter`, `@fontsource/roboto`, `@fontsource/merriweather`,
+  `@fontsource/jetbrains-mono`, `@fontsource/caveat` — static font-file packages (no
+  runtime code), imported once in `main.tsx`. A `@font-face` CSS import doesn't force a
+  download; the browser only fetches a font file once something is actually rendered in
+  that family, so this doesn't cost anything for users who stick with System Default.
+
 ## 0.13.0 — Circuit Design
 
 ### Added

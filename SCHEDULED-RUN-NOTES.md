@@ -2,6 +2,36 @@
 
 Log of autonomous scheduled-task runs on Note24. Newest first.
 
+## 2026-07-26 — v0.14.0 User Experience
+
+**Completed:** v0.14.0 in full, fifth version of this session's v0.10–v0.20 sweep.
+
+**Built:** Self-hosted editor fonts (`@fontsource/*` packages — Inter, Roboto,
+Merriweather, JetBrains Mono, Caveat — no network fetch, no CSP changes needed) plus a
+font-size slider (80–200%), both applied live via CSS custom properties
+(`src/renderer/src/lib/editorPrefs.ts`). Reading Mode (wider read-only column, hides
+toolbar/attachments/backlinks) and Focus Mode (hides sidebar+topbar, small persistent
+exit button). Fully customizable global keyboard shortcuts
+(`src/renderer/src/lib/shortcuts.ts` + a new Settings section) — click a binding,
+press new keys, it saves; the whiteboard also got its own default shortcut
+(Ctrl+Shift+W) which it never had before. Spellcheck and Themes already existed
+(v0.2.0/v0.7.1) so no work was needed there.
+
+**No new bugs found this round.**
+
+**Verified:** `npm run typecheck` and `npm run build` pass. Real workflow testing via
+the `run-note24` driver: changed the font to Caveat + 150% size in Settings and
+confirmed it rendered correctly in the editor (visually distinct handwriting font at
+larger size); toggled Reading Mode (toolbar/attachments hidden, wider column) and
+Focus Mode (sidebar/topbar hidden, exit button present) and confirmed both visually;
+rebound the "New note" shortcut from Ctrl+N to Ctrl+Shift+J via the Settings UI and
+confirmed the change persisted correctly to the settings store.
+
+**Left over / notes for next run:**
+- Same deferred items as before (equation graph, equation→calculator, attachment
+  audio/video players, PDF24 launcher, formula-sheet print export).
+- Next version: v0.15.0 Productivity Workspace — continuing in this same session.
+
 ## 2026-07-26 — v0.13.0 Circuit Design
 
 **Completed:** v0.13.0 in full, fourth version of this session's v0.10–v0.20 sweep.

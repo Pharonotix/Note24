@@ -22,7 +22,8 @@ Shipped versions (see `CHANGELOG.md` for details):
 - ✅ **v0.11.0** — Flowcharts: a React-Flow-backed block for flowcharts/mind maps/dependency maps — add nodes, rename them inline, drag-connect them, resize the block; lazily loaded so it doesn't cost startup time.
 - ✅ **v0.12.0** — Infinite Whiteboard: a full-screen Excalidraw-based canvas that also holds draggable reference cards for Notes, Equations, PDFs, and live Desmos Graph cards — one shared board per vault, saved to `settings` as a single JSON blob.
 - ✅ **v0.13.0** — Circuit Design: a React-Flow-backed schematic block (resistor/capacitor/inductor/IC/source/ground symbols), wiring via drag-connect, and per-block Export PNG/SVG/PDF (`html-to-image` + `jspdf`, both lazy-loaded).
-- ⏭️ **Next: v0.14.0** — User Experience. Deferred items to fold in later: the visual equation dependency **graph** (from v0.3.0), equation→calculator integration (from v0.4.0), in-app audio/video players for attachments (from v0.6.0), a PDF24 launcher for merge/compress/split/OCR (from v0.7.0, deliberately skipped), and formula-sheet PDF/print export (from v0.10.0 — `PrintLayer` is currently note-shaped only).
+- ✅ **v0.14.0** — User Experience: self-hosted editor fonts (Inter/Roboto/Merriweather/JetBrains Mono/Caveat) + 80–200% font size, Reading Mode, Focus Mode, and fully customizable keyboard shortcuts. (Spellcheck/Themes already existed from v0.2.0/v0.7.1.)
+- ⏭️ **Next: v0.15.0** — Productivity Workspace. Deferred items to fold in later: the visual equation dependency **graph** (from v0.3.0), equation→calculator integration (from v0.4.0), in-app audio/video players for attachments (from v0.6.0), a PDF24 launcher for merge/compress/split/OCR (from v0.7.0, deliberately skipped), and formula-sheet PDF/print export (from v0.10.0 — `PrintLayer` is currently note-shaped only).
 
 ---
 

@@ -287,3 +287,65 @@
   font-size: 15px;
   font-weight: 600;
 }
+
+.fontSizeRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.fontSizeRow input[type='range'] {
+  flex: 1;
+  accent-color: var(--primary);
+}
+.fontSizeValue {
+  min-width: 42px;
+  text-align: right;
+  font-size: 12.5px;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.shortcutsHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.shortcutsHead .h3 {
+  margin-bottom: 0;
+}
+.shortcutList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.shortcutRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.shortcutLabel {
+  font-size: 13px;
+  color: var(--text);
+}
+.shortcutKey {
+  min-width: 120px;
+  padding: 5px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 12px;
+  font-family: var(--font-mono);
+  text-align: center;
+}
+.shortcutKey:hover {
+  border-color: var(--primary);
+  color: var(--text);
+}
+.shortcutKeyRecording {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--surface-2);
+}

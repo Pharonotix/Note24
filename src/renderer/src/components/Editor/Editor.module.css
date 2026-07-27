@@ -11,6 +11,18 @@
   min-height: 0;
 }
 
+/* Reading mode: wider column, more line-height, read-only (see Editor.tsx's
+   `editable: !readingMode`) — optimized for consuming a note, not editing it. */
+.reading .title {
+  cursor: default;
+}
+.reading .body {
+  max-width: 860px;
+}
+.reading .body :global(.ProseMirror) {
+  line-height: 1.9;
+}
+
 .title {
   display: block;
   width: 100%;
@@ -40,7 +52,8 @@
   outline: none;
   min-height: 200px;
   color: var(--text);
-  font-size: 15.5px;
+  font-family: var(--editor-font-family, var(--font-ui));
+  font-size: calc(15.5px * var(--editor-font-scale, 1));
   line-height: 1.7;
 }
 .body :global(.ProseMirror) > * + * {

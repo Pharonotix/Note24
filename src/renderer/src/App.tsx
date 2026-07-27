@@ -1,15 +1,19 @@
 import { useEffect } from 'react'
 import {
   BookMarked,
+  BookOpenText,
   Download,
   FolderSearch2,
   GraduationCap,
   Infinity as InfinityIcon,
+  Maximize2,
+  Minimize2,
   PrinterCheck,
   Settings as SettingsIcon,
   Sigma
 } from 'lucide-react'
 import { useStore } from './store/store'
+import { matchShortcut } from './lib/shortcuts'
 import { Sidebar } from './components/Sidebar/Sidebar'
 import { Editor } from './components/Editor/Editor'
 import { QuickSwitcher } from './components/QuickSwitcher/QuickSwitcher'
@@ -45,6 +49,10 @@ function App(): React.JSX.Element {
   const setExportPickerOpen = useStore((s) => s.setExportPickerOpen)
   const printJob = useStore((s) => s.printJob)
   const setPrintJob = useStore((s) => s.setPrintJob)
+  const readingMode = useStore((s) => s.readingMode)
+  const setReadingMode = useStore((s) => s.setReadingMode)
+  const focusMode = useStore((s) => s.focusMode)
+  const setFocusMode = useStore((s) => s.setFocusMode)
 
   const openEquations = (v: boolean): void => {
     setEquationPanel(v)
@@ -85,31 +93,40 @@ function App(): React.JSX.Element {
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent): void => {
-      const mod = e.ctrlKey || e.metaKey
-      if (mod && e.key.toLowerCase() === 'o') {
+      const s = useStore.getState().shortcuts
+      if (matchShortcut(e, s.quickSwitcher)) {
         e.preventDefault()
         setQuickSwitcher(true)
-      } else if (mod && e.key.toLowerCase() === 'n') {
+      } else if (matchShortcut(e, s.newNote)) {
         e.preventDefault()
         newNote(null)
-      } else if (mod && e.key.toLowerCase() === 'e') {
+      } else if (matchShortcut(e, s.equations)) {
         e.preventDefault()
         openEquations(!useStore.getState().equationPanelOpen)
-      } else if (mod && e.shiftKey && e.key.toLowerCase() === 'f') {
+      } else if (matchShortcut(e, s.fileManager)) {
         e.preventDefault()
         openFileManager(!useStore.getState().fileManagerOpen)
-      } else if (mod && e.shiftKey && e.key.toLowerCase() === 's') {
+      } else if (matchShortcut(e, s.study)) {
         e.preventDefault()
         openStudy(!useStore.getState().studyPanelOpen)
-      } else if (mod && e.key === ',') {
+      } else if (matchShortcut(e, s.whiteboard)) {
+        e.preventDefault()
+        setWhiteboardOpen(!useStore.getState().whiteboardOpen)
+      } else if (matchShortcut(e, s.settings)) {
         e.preventDefault()
         setSettingsOpen(true)
+      } else if (matchShortcut(e, s.readingMode)) {
+        e.preventDefault()
+        setReadingMode(!useStore.getState().readingMode)
+      } else if (matchShortcut(e, s.focusMode)) {
+        e.preventDefault()
+        setFocusMode(!useStore.getState().focusMode)
       }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [newNote, setQuickSwitcher, setSettingsOpen])
+  }, [newNote, setQuickSwitcher, setSettingsOpen, setWhiteboardOpen, setReadingMode, setFocusMode])
 
   // While a print/export job is active, replace the whole app with the plain
   // print-layout renderer so printToPDF/print() never capture app chrome.
@@ -121,71 +138,96 @@ function App(): React.JSX.Element {
 
   const panelOpen = equationPanelOpen || fileManagerOpen || citationLibraryOpen || studyPanelOpen
 
+  const appClass = [styles.app, panelOpen && styles.withPanel, focusMode && styles.focusMode]
+    .filter(Boolean)
+    .join(' ')
+
   return (
-    <div className={panelOpen ? `${styles.app} ${styles.withPanel}` : styles.app}>
-      <Sidebar />
+    <div className={appClass}>
+      {!focusMode && <Sidebar />}
       <main className={styles.main}>
-        <div className={styles.topbar}>
-          <div className={styles.actions}>
-            <button
-              className={equationPanelOpen ? `${styles.action} ${styles.on}` : styles.action}
-              onClick={() => openEquations(!equationPanelOpen)}
-              title="Equation library (Ctrl+E)"
-            >
-              <Sigma size={15} /> Equations
-            </button>
-            <button
-              className={fileManagerOpen ? `${styles.action} ${styles.on}` : styles.action}
-              onClick={() => openFileManager(!fileManagerOpen)}
-              title="File manager (Ctrl+Shift+F)"
-            >
-              <FolderSearch2 size={15} /> Files
-            </button>
-            <button
-              className={citationLibraryOpen ? `${styles.action} ${styles.on}` : styles.action}
-              onClick={() => openCitations(!citationLibraryOpen)}
-              title="Citation library"
-            >
-              <BookMarked size={15} /> Citations
-            </button>
-            <button
-              className={studyPanelOpen ? `${styles.action} ${styles.on}` : styles.action}
-              onClick={() => openStudy(!studyPanelOpen)}
-              title="Study — flashcards & formula sheets (Ctrl+Shift+S)"
-            >
-              <GraduationCap size={15} /> Study
-            </button>
-            <button
-              className={styles.action}
-              onClick={() => setWhiteboardOpen(true)}
-              title="Infinite whiteboard"
-            >
-              <InfinityIcon size={15} /> Whiteboard
-            </button>
-            <button
-              className={styles.action}
-              disabled={currentNoteId == null}
-              onClick={() => currentNoteId != null && setPrintJob({ noteIds: [currentNoteId], mode: 'print' })}
-              title="Print current note"
-            >
-              <PrinterCheck size={15} /> Print
-            </button>
-            <button
-              className={styles.action}
-              onClick={() => setExportPickerOpen(true)}
-              title="Export notes to PDF"
-            >
-              <Download size={15} /> Export
-            </button>
-            <button
-              className={styles.action}
-              onClick={() => setSettingsOpen(true)}
-              title="Settings (Ctrl+,)"
-            >
-              <SettingsIcon size={15} />
-            </button>
+        {!focusMode && (
+          <div className={styles.topbar}>
+            <div className={styles.actions}>
+              <button
+                className={equationPanelOpen ? `${styles.action} ${styles.on}` : styles.action}
+                onClick={() => openEquations(!equationPanelOpen)}
+                title="Equation library (Ctrl+E)"
+              >
+                <Sigma size={15} /> Equations
+              </button>
+              <button
+                className={fileManagerOpen ? `${styles.action} ${styles.on}` : styles.action}
+                onClick={() => openFileManager(!fileManagerOpen)}
+                title="File manager (Ctrl+Shift+F)"
+              >
+                <FolderSearch2 size={15} /> Files
+              </button>
+              <button
+                className={citationLibraryOpen ? `${styles.action} ${styles.on}` : styles.action}
+                onClick={() => openCitations(!citationLibraryOpen)}
+                title="Citation library"
+              >
+                <BookMarked size={15} /> Citations
+              </button>
+              <button
+                className={studyPanelOpen ? `${styles.action} ${styles.on}` : styles.action}
+                onClick={() => openStudy(!studyPanelOpen)}
+                title="Study — flashcards & formula sheets (Ctrl+Shift+S)"
+              >
+                <GraduationCap size={15} /> Study
+              </button>
+              <button
+                className={styles.action}
+                onClick={() => setWhiteboardOpen(true)}
+                title="Infinite whiteboard (Ctrl+Shift+W)"
+              >
+                <InfinityIcon size={15} /> Whiteboard
+              </button>
+              <button
+                className={readingMode ? `${styles.action} ${styles.on}` : styles.action}
+                onClick={() => setReadingMode(!readingMode)}
+                title="Reading mode — wider column, read-only (Ctrl+Shift+R)"
+              >
+                <BookOpenText size={15} /> Read
+              </button>
+              <button
+                className={styles.action}
+                onClick={() => setFocusMode(true)}
+                title="Focus mode — hide all chrome (Ctrl+Shift+D)"
+              >
+                <Maximize2 size={15} /> Focus
+              </button>
+              <button
+                className={styles.action}
+                disabled={currentNoteId == null}
+                onClick={() => currentNoteId != null && setPrintJob({ noteIds: [currentNoteId], mode: 'print' })}
+                title="Print current note"
+              >
+                <PrinterCheck size={15} /> Print
+              </button>
+              <button
+                className={styles.action}
+                onClick={() => setExportPickerOpen(true)}
+                title="Export notes to PDF"
+              >
+                <Download size={15} /> Export
+              </button>
+              <button className={styles.action} onClick={() => setSettingsOpen(true)} title="Settings (Ctrl+,)">
+                <SettingsIcon size={15} />
+              </button>
+            </div>
           </div>
-        </div>
+        )}
+        {focusMode && (
+          <button
+            className={styles.focusExit}
+            onClick={() => setFocusMode(false)}
+            title="Exit focus mode (Ctrl+Shift+D)"
+          >
+            <Minimize2 size={14} />
+          </button>
+        )}
         <div className={styles.editorArea}>
           {currentNote ? (
             <Editor key={currentNote.id} note={currentNote} />

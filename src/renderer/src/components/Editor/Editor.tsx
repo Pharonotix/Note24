@@ -42,6 +42,7 @@ export function Editor({ note }: { note: Note }): React.JSX.Element {
   const saveContent = useStore((s) => s.saveContent)
   const renameNote = useStore((s) => s.renameNote)
   const setEditor = useStore((s) => s.setEditor)
+  const readingMode = useStore((s) => s.readingMode)
   const [title, setTitle] = useState(note.title)
 
   const { debounced: saveBody, flush: flushBody } = useDebouncedCallback(
@@ -61,6 +62,7 @@ export function Editor({ note }: { note: Note }): React.JSX.Element {
       Placeholder.configure({ placeholder: 'Start writing…  (type / for commands)' })
     ],
     content: parseContent(note.content),
+    editable: !readingMode,
     onUpdate: ({ editor }) => saveBody(JSON.stringify(editor.getJSON())),
     editorProps: {
       handlePaste: (_view, event) => {
@@ -100,20 +102,21 @@ export function Editor({ note }: { note: Note }): React.JSX.Element {
 
   return (
     <div className={styles.editor}>
-      {editor && <Toolbar editor={editor} noteId={note.id} />}
-      <div className={styles.scroll}>
+      {editor && !readingMode && <Toolbar editor={editor} noteId={note.id} />}
+      <div className={readingMode ? `${styles.scroll} ${styles.reading}` : styles.scroll}>
         <input
           className={styles.title}
           value={title}
           placeholder="Untitled"
+          readOnly={readingMode}
           onChange={(e) => {
             setTitle(e.target.value)
             saveTitle(e.target.value)
           }}
         />
         <EditorContent editor={editor} className={styles.body} />
-        <NoteAttachments noteId={note.id} />
-        <Backlinks noteId={note.id} />
+        {!readingMode && <NoteAttachments noteId={note.id} />}
+        {!readingMode && <Backlinks noteId={note.id} />}
       </div>
     </div>
   )

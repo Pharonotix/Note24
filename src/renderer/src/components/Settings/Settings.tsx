@@ -1,21 +1,37 @@
 import { useEffect, useState } from 'react'
-import { X } from 'lucide-react'
+import { RotateCcw, X } from 'lucide-react'
 import type { LocationsRegistry } from '@shared/types'
 import { useStore } from '../../store/store'
 import { ADVANCED_TOKENS, PRESETS, contrastOn, lighten, readToken, rgbToHex } from '../../lib/theme'
 import { DEMO_API_KEY } from '../../lib/desmos'
+import { FONT_OPTIONS } from '../../lib/editorPrefs'
+import { ACTION_LABELS, comboFromEvent, DEFAULT_SHORTCUTS, type ShortcutAction } from '../../lib/shortcuts'
 import styles from './Settings.module.css'
+
+function formatCombo(combo: string): string {
+  if (!combo) return '—'
+  return combo
+    .split('+')
+    .map((p) => (p.length === 1 ? p.toUpperCase() : p[0].toUpperCase() + p.slice(1)))
+    .join('+')
+}
 
 export function Settings(): React.JSX.Element | null {
   const open = useStore((s) => s.settingsOpen)
   const setOpen = useStore((s) => s.setSettingsOpen)
   const theme = useStore((s) => s.theme)
   const setTheme = useStore((s) => s.setTheme)
+  const editorPrefs = useStore((s) => s.editorPrefs)
+  const setEditorPrefs = useStore((s) => s.setEditorPrefs)
+  const shortcuts = useStore((s) => s.shortcuts)
+  const setShortcut = useStore((s) => s.setShortcut)
+  const resetShortcuts = useStore((s) => s.resetShortcuts)
   const [apiKey, setApiKey] = useState('')
   const [advanced, setAdvanced] = useState(false)
   const [registry, setRegistry] = useState<LocationsRegistry | null>(null)
   const [renamingLocId, setRenamingLocId] = useState<string | null>(null)
   const [switching, setSwitching] = useState(false)
+  const [recordingAction, setRecordingAction] = useState<ShortcutAction | null>(null)
 
   useEffect(() => {
     if (open) {
@@ -161,6 +177,34 @@ export function Settings(): React.JSX.Element | null {
           </section>
 
           <section className={styles.section}>
+            <h3 className={styles.h3}>Editor typography</h3>
+            <div className={styles.colorRow}>
+              <select
+                className={styles.keyInput}
+                value={editorPrefs.fontFamily}
+                onChange={(e) => setEditorPrefs({ ...editorPrefs, fontFamily: e.target.value })}
+              >
+                {FONT_OPTIONS.map((f) => (
+                  <option key={f.id} value={f.id}>
+                    {f.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className={styles.fontSizeRow}>
+              <input
+                type="range"
+                min={80}
+                max={200}
+                step={5}
+                value={editorPrefs.fontSize}
+                onChange={(e) => setEditorPrefs({ ...editorPrefs, fontSize: Number(e.target.value) })}
+              />
+              <span className={styles.fontSizeValue}>{editorPrefs.fontSize}%</span>
+            </div>
+          </section>
+
+          <section className={styles.section}>
             <h3 className={styles.h3}>Desmos graphing</h3>
             <p className={styles.hint}>
               Your personal Desmos API key. Leave blank to use the public demo key. Loading graphs
@@ -229,6 +273,44 @@ export function Settings(): React.JSX.Element | null {
             <button className={styles.reset} onClick={addDataFolder}>
               + Add data folder…
             </button>
+          </section>
+
+          <section className={styles.section}>
+            <div className={styles.shortcutsHead}>
+              <h3 className={styles.h3}>Keyboard shortcuts</h3>
+              <button className={styles.reset} onClick={resetShortcuts}>
+                <RotateCcw size={12} /> Reset
+              </button>
+            </div>
+            <div className={styles.shortcutList}>
+              {(Object.keys(ACTION_LABELS) as ShortcutAction[]).map((action) => (
+                <div key={action} className={styles.shortcutRow}>
+                  <span className={styles.shortcutLabel}>{ACTION_LABELS[action]}</span>
+                  <button
+                    className={
+                      recordingAction === action ? `${styles.shortcutKey} ${styles.shortcutKeyRecording}` : styles.shortcutKey
+                    }
+                    onClick={() => setRecordingAction(action)}
+                    onBlur={() => setRecordingAction((a) => (a === action ? null : a))}
+                    onKeyDown={(e) => {
+                      if (recordingAction !== action) return
+                      e.preventDefault()
+                      if (e.key === 'Escape') {
+                        setRecordingAction(null)
+                        return
+                      }
+                      const combo = comboFromEvent(e)
+                      if (combo) {
+                        setShortcut(action, combo)
+                        setRecordingAction(null)
+                      }
+                    }}
+                  >
+                    {recordingAction === action ? 'Press keys…' : formatCombo(shortcuts[action] || DEFAULT_SHORTCUTS[action])}
+                  </button>
+                </div>
+              ))}
+            </div>
           </section>
         </div>
       </div>
