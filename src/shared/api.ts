@@ -39,6 +39,7 @@ export interface Note24Api {
     setTags(id: number, tags: string[]): Promise<void>
     backlinks(id: number): Promise<Backlink[]>
     reorder(folderId: number | null, orderedIds: number[]): Promise<void>
+    setPinned(id: number, pinned: boolean): Promise<void>
   }
   folders: {
     list(): Promise<Folder[]>

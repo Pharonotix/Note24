@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { FolderPlus, LayoutTemplate } from 'lucide-react'
+import { FolderPlus, LayoutTemplate, Pin } from 'lucide-react'
 import type { Folder, NoteSummary } from '@shared/types'
 import { useStore } from '../../store/store'
 import { positionFromEvent, type DropTarget } from './dragTypes'
@@ -23,6 +23,7 @@ export function Sidebar(): React.JSX.Element {
   const newNote = useStore((s) => s.newNote)
   const removeNote = useStore((s) => s.removeNote)
   const renameNote = useStore((s) => s.renameNote)
+  const togglePinned = useStore((s) => s.togglePinned)
   const moveNote = useStore((s) => s.moveNote)
   const reorderNotes = useStore((s) => s.reorderNotes)
   const newFolder = useStore((s) => s.newFolder)
@@ -49,6 +50,8 @@ export function Sidebar(): React.JSX.Element {
     () => (activeTag ? notes.filter((n) => n.tags.includes(activeTag)) : notes),
     [notes, activeTag]
   )
+
+  const pinnedNotes = useMemo(() => visibleNotes.filter((n) => n.pinned), [visibleNotes])
 
   const notesByFolder = useMemo(() => {
     const map = new Map<number | null, NoteSummary[]>()
@@ -172,6 +175,7 @@ export function Sidebar(): React.JSX.Element {
     currentNoteId,
     selectNote,
     requestDeleteNote,
+    togglePinned,
     newNote,
     newSubfolder: (parentId) => newFolder('New Folder', parentId),
     editingFolderId,
@@ -243,6 +247,35 @@ export function Sidebar(): React.JSX.Element {
         </div>
       )}
 
+      {pinnedNotes.length > 0 && (
+        <div className={styles.pinnedSection}>
+          <div className={styles.pinnedHead}>
+            <Pin size={11} /> Pinned
+          </div>
+          <ul>
+            {pinnedNotes.map((n) => (
+              <li
+                key={n.id}
+                className={n.id === currentNoteId ? `${styles.noteRow} ${styles.active}` : styles.noteRow}
+                onClick={() => selectNote(n.id)}
+              >
+                <span className={styles.noteTitle}>{n.title || 'Untitled'}</span>
+                <button
+                  className={`${styles.iconBtn} ${styles.pinned}`}
+                  title="Unpin note"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    togglePinned(n.id)
+                  }}
+                >
+                  <Pin size={13} fill="currentColor" />
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       <div
         className={rootIsDropTarget ? `${styles.list} ${styles.dropOver}` : styles.list}
         onDragOver={(e) => {
@@ -282,6 +315,7 @@ export function Sidebar(): React.JSX.Element {
                 }}
                 onCancelRename={() => setEditingNoteId(null)}
                 onRequestDelete={() => requestDeleteNote(n.id, n.title)}
+                onTogglePin={() => togglePinned(n.id)}
                 onDragStart={() => setDragItem({ kind: 'note', id: n.id })}
                 onDragEnd={() => {
                   setDragItem(null)

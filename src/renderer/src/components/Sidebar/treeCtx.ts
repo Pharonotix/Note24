@@ -10,6 +10,7 @@ export interface TreeCtx {
   currentNoteId: number | null
   selectNote(id: number): void
   requestDeleteNote(id: number, title: string): void
+  togglePinned(id: number): void
   newNote(folderId: number | null): void
   newSubfolder(parentId: number): void
   editingFolderId: number | null

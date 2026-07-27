@@ -2,6 +2,40 @@
 
 Log of autonomous scheduled-task runs on Note24. Newest first.
 
+## 2026-07-26 — v0.15.0 Productivity Workspace
+
+**Completed:** v0.15.0 in full, sixth version of this session's v0.10–v0.20 sweep.
+
+**Built:** Pinned notes (new `notes.pinned` DB column, migration 8, pin toggle on every
+note row, dedicated sidebar section), recent notes (settings-tracked list of the last
+12 opened, no new table), workspace tabs (a lightweight tab strip layered over the
+existing single-active-note editor — opening a note adds/activates a tab, closing one
+falls back to the previous tab), layout presets (Study/Homework/Research/Lab quick-
+action tiles that jump into the relevant panel), a new Dashboard view (stats, quick
+actions, presets, pinned, recent, vault summary), and global search (extended the
+existing Ctrl+O quick-switcher to search equations/citations/attachments alongside
+notes, with categorized results) — plus fixed a real indexing gap where calculator
+block content wasn't part of note full-text search (only plain text/LaTeX/wiki-link
+titles were).
+
+**No new bugs found in the newly-written code this round** (the calculator-block
+indexing fix was a gap in pre-existing code, not something this version introduced).
+
+**Verified:** `npm run typecheck` and `npm run build` pass. Real workflow testing via
+the `run-note24` driver: pinned a note and confirmed it appeared in both the sidebar's
+Pinned section and the Dashboard; opened the Dashboard and confirmed correct live stats
+(37 notes, 104 equations, 1 citation, 0 files) plus working quick-actions; ran a global
+search for "Newton" and confirmed 4 correctly-categorized equation results; clicked the
+"Research" layout preset and confirmed it opened the Citation Library; opened a second
+note and confirmed the tab bar appeared with both tabs, second one active.
+
+**Left over / notes for next run:**
+- The calculator-block search-indexing fix only takes effect for notes saved after this
+  update — no backfill for existing notes' search index (documented in CHANGELOG.md).
+- Same deferred items as before (equation graph, equation→calculator, attachment
+  audio/video players, PDF24 launcher, formula-sheet print export).
+- Next version: v0.16.0 Data Protection — continuing in this same session.
+
 ## 2026-07-26 — v0.14.0 User Experience
 
 **Completed:** v0.14.0 in full, fifth version of this session's v0.10–v0.20 sweep.

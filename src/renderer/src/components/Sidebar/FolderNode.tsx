@@ -154,6 +154,7 @@ export function FolderNode({
                   }}
                   onCancelRename={() => ctx.setEditingNoteId(null)}
                   onRequestDelete={() => ctx.requestDeleteNote(n.id, n.title)}
+                  onTogglePin={() => ctx.togglePinned(n.id)}
                   onDragStart={() => ctx.startDragNote(n.id)}
                   onDragEnd={() => ctx.endDrag()}
                   onDragOver={(e) => {

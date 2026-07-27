@@ -43,6 +43,7 @@ export function registerIpcHandlers(): void {
   ipcMain.handle(IPC.notesReorder, (_e, folderId: number | null, orderedIds: number[]) =>
     notes.reorderNotes(folderId, orderedIds)
   )
+  ipcMain.handle(IPC.notesSetPinned, (_e, id: number, pinned: boolean) => notes.setNotePinned(id, pinned))
 
   // Folders
   ipcMain.handle(IPC.foldersList, () => folders.listFolders())

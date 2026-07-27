@@ -38,6 +38,7 @@ interface SummaryRow {
   folder_id: number | null
   updated_at: number
   sort_order: number
+  pinned: number
 }
 
 /** All note tags in one query (avoids a per-note query on every list/search refresh). */
@@ -64,15 +65,22 @@ function summarizeAll(rows: SummaryRow[]): NoteSummary[] {
     folderId: r.folder_id,
     updatedAt: r.updated_at,
     tags: tags.get(r.id) ?? [],
-    sortOrder: r.sort_order
+    sortOrder: r.sort_order,
+    pinned: r.pinned === 1
   }))
 }
 
 export function listNotes(): NoteSummary[] {
   const rows = getDb()
-    .prepare(`SELECT id, title, folder_id, updated_at, sort_order FROM notes ORDER BY sort_order, updated_at DESC`)
+    .prepare(
+      `SELECT id, title, folder_id, updated_at, sort_order, pinned FROM notes ORDER BY sort_order, updated_at DESC`
+    )
     .all() as SummaryRow[]
   return summarizeAll(rows)
+}
+
+export function setNotePinned(id: number, pinned: boolean): void {
+  getDb().prepare(`UPDATE notes SET pinned = ? WHERE id = ?`).run(pinned ? 1 : 0, id)
 }
 
 function nextNoteSortOrder(folderId: number | null): number {
@@ -161,7 +169,7 @@ export function searchNotes(query: string): NoteSummary[] {
   try {
     const rows = getDb()
       .prepare(
-        `SELECT n.id, n.title, n.folder_id, n.updated_at, n.sort_order
+        `SELECT n.id, n.title, n.folder_id, n.updated_at, n.sort_order, n.pinned
          FROM notes_fts f JOIN notes n ON n.id = f.rowid
          WHERE notes_fts MATCH ?
          ORDER BY rank`

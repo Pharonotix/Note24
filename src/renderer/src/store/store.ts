@@ -10,6 +10,7 @@ import {
   type EditorPrefs
 } from '../lib/editorPrefs'
 import { DEFAULT_SHORTCUTS, loadShortcuts, saveShortcuts, type ShortcutAction } from '../lib/shortcuts'
+import { loadOpenTabs, loadRecentNoteIds, pushRecent, saveOpenTabs, saveRecentNoteIds } from '../lib/workspace'
 
 const LAST_NOTE_KEY = 'lastNoteId'
 
@@ -50,6 +51,9 @@ interface AppState {
   shortcuts: Record<ShortcutAction, string>
   readingMode: boolean
   focusMode: boolean
+  recentNoteIds: number[]
+  openTabs: number[]
+  dashboardOpen: boolean
 
   init: () => Promise<void>
   refreshNotes: () => Promise<void>
@@ -66,6 +70,9 @@ interface AppState {
   renameNote: (id: number, title: string) => Promise<void>
   moveNote: (noteId: number, folderId: number | null) => Promise<void>
   reorderNotes: (folderId: number | null, orderedIds: number[]) => Promise<void>
+  togglePinned: (id: number) => Promise<void>
+  closeTab: (id: number) => Promise<void>
+  setDashboardOpen: (open: boolean) => void
   setCurrentNoteTags: (tags: string[]) => Promise<void>
   newFolder: (name: string, parentId?: number | null) => Promise<void>
   renameFolder: (id: number, name: string) => Promise<void>
@@ -137,6 +144,9 @@ export const useStore = create<AppState>((set, get) => ({
   shortcuts: DEFAULT_SHORTCUTS,
   readingMode: false,
   focusMode: false,
+  recentNoteIds: [],
+  openTabs: [],
+  dashboardOpen: false,
 
   init: async () => {
     const theme = await loadTheme()
@@ -146,6 +156,7 @@ export const useStore = create<AppState>((set, get) => ({
     applyEditorPrefs(editorPrefs)
     set({ editorPrefs })
     set({ shortcuts: await loadShortcuts() })
+    set({ recentNoteIds: await loadRecentNoteIds(), openTabs: await loadOpenTabs() })
     await Promise.all([
       get().refreshNotes(),
       get().refreshFolders(),
@@ -179,6 +190,14 @@ export const useStore = create<AppState>((set, get) => ({
     const note = await window.api.notes.get(id)
     set({ currentNoteId: id, currentNote: note })
     await window.api.settings.set(LAST_NOTE_KEY, String(id))
+    const recent = pushRecent(get().recentNoteIds, id)
+    set({ recentNoteIds: recent })
+    void saveRecentNoteIds(recent)
+    if (!get().openTabs.includes(id)) {
+      const tabs = [...get().openTabs, id]
+      set({ openTabs: tabs })
+      void saveOpenTabs(tabs)
+    }
   },
 
   openByTitle: async (title) => {
@@ -206,8 +225,13 @@ export const useStore = create<AppState>((set, get) => ({
   removeNote: async (id) => {
     await window.api.notes.delete(id)
     await get().refreshNotes()
+    const tabs = get().openTabs.filter((t) => t !== id)
+    const recent = get().recentNoteIds.filter((t) => t !== id)
+    set({ openTabs: tabs, recentNoteIds: recent })
+    void saveOpenTabs(tabs)
+    void saveRecentNoteIds(recent)
     if (get().currentNoteId === id) {
-      const next = get().notes[0]?.id ?? null
+      const next = tabs[tabs.length - 1] ?? get().notes[0]?.id ?? null
       if (next != null) await get().selectNote(next)
       else set({ currentNoteId: null, currentNote: null })
     }
@@ -240,6 +264,25 @@ export const useStore = create<AppState>((set, get) => ({
     await window.api.notes.reorder(folderId, orderedIds)
     await get().refreshNotes()
   },
+
+  togglePinned: async (id) => {
+    const note = get().notes.find((n) => n.id === id)
+    if (!note) return
+    await window.api.notes.setPinned(id, !note.pinned)
+    await get().refreshNotes()
+  },
+
+  closeTab: async (id) => {
+    const tabs = get().openTabs.filter((t) => t !== id)
+    set({ openTabs: tabs })
+    void saveOpenTabs(tabs)
+    if (get().currentNoteId === id) {
+      const next = tabs[tabs.length - 1]
+      if (next != null) await get().selectNote(next)
+      else set({ currentNoteId: null, currentNote: null })
+    }
+  },
+  setDashboardOpen: (open) => set({ dashboardOpen: open }),
 
   setCurrentNoteTags: async (tags) => {
     const id = get().currentNoteId

@@ -1,3 +1,4 @@
+import { Pin } from 'lucide-react'
 import { X } from 'lucide-react'
 import type { NoteSummary } from '@shared/types'
 import styles from './Sidebar.module.css'
@@ -13,6 +14,7 @@ export function NoteRow({
   onRename,
   onCancelRename,
   onRequestDelete,
+  onTogglePin,
   onDragStart,
   onDragEnd,
   onDragOver,
@@ -29,6 +31,7 @@ export function NoteRow({
   onRename: (title: string) => void
   onCancelRename: () => void
   onRequestDelete: () => void
+  onTogglePin: () => void
   onDragStart: () => void
   onDragEnd: () => void
   onDragOver: (e: React.DragEvent) => void
@@ -84,6 +87,16 @@ export function NoteRow({
           {note.title || 'Untitled'}
         </span>
       )}
+      <button
+        className={note.pinned ? `${styles.iconBtn} ${styles.pinned}` : styles.iconBtn}
+        title={note.pinned ? 'Unpin note' : 'Pin note'}
+        onClick={(e) => {
+          e.stopPropagation()
+          onTogglePin()
+        }}
+      >
+        <Pin size={13} fill={note.pinned ? 'currentColor' : 'none'} />
+      </button>
       <button
         className={styles.iconBtn}
         title="Delete note"

@@ -24,6 +24,7 @@ export interface NoteSummary {
   updatedAt: number
   tags: string[]
   sortOrder: number
+  pinned: boolean
 }
 
 export interface Folder {

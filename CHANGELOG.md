@@ -2,6 +2,37 @@
 
 All notable changes to Note24. Newest first.
 
+## 0.15.0 — Productivity Workspace
+
+### Added
+- **Pinned notes** — a pin toggle on every note row; pinned notes get their own section
+  at the top of the sidebar and on the new Dashboard.
+- **Recent notes** — the last 12 notes you opened, tracked automatically, shown on the
+  Dashboard.
+- **Workspace tabs** — a tab strip appears once you have 2+ notes open; click a sidebar
+  note to add/activate its tab, click a tab to switch, close with the × — a lightweight
+  layer over the existing single-active-note editor, not a full multi-pane rewrite.
+- **Layout presets** — Study / Homework / Research / Lab quick-action tiles on the
+  Dashboard that jump straight into the relevant panel (flashcards, equations,
+  citations, or files) for that workflow.
+- **Dashboard** (new topbar button) — vault stats (notes/equations/citations/files),
+  quick actions, layout presets, pinned notes, recent notes, all in one overview.
+- **Global search** (Ctrl+O, the existing quick-switcher) — now searches equations,
+  citations, and attachments/PDFs alongside notes, with categorized results. Calculator
+  block content is also now indexed into note full-text search (previously only plain
+  text, LaTeX, and wiki-link titles were indexed), so it's findable through the same
+  note search without a separate UI.
+
+### Notes
+- New `notes.pinned` column (migration 8); `NoteSummary` gained a `pinned: boolean`
+  field.
+- Recent-notes and open-tabs lists are plain settings-table JSON blobs
+  (`src/renderer/src/lib/workspace.ts`), not new DB tables — pure navigation history,
+  not note content.
+- The calculator-block indexing fix only applies going forward (a note's search index
+  updates when its content is next saved) — no backfill migration for existing notes,
+  to keep this a light-touch schema change matching the roadmap's own scope guidance.
+
 ## 0.14.0 — User Experience
 
 ### Added

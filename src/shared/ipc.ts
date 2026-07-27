@@ -9,6 +9,7 @@ export const IPC = {
   notesSetTags: 'notes:setTags',
   notesBacklinks: 'notes:backlinks',
   notesReorder: 'notes:reorder',
+  notesSetPinned: 'notes:setPinned',
 
   foldersList: 'folders:list',
   foldersCreate: 'folders:create',

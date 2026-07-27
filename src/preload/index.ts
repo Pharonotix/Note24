@@ -13,7 +13,8 @@ const api: Note24Api = {
     search: (query) => ipcRenderer.invoke(IPC.notesSearch, query),
     setTags: (id, tags) => ipcRenderer.invoke(IPC.notesSetTags, id, tags),
     backlinks: (id) => ipcRenderer.invoke(IPC.notesBacklinks, id),
-    reorder: (folderId, orderedIds) => ipcRenderer.invoke(IPC.notesReorder, folderId, orderedIds)
+    reorder: (folderId, orderedIds) => ipcRenderer.invoke(IPC.notesReorder, folderId, orderedIds),
+    setPinned: (id, pinned) => ipcRenderer.invoke(IPC.notesSetPinned, id, pinned)
   },
   folders: {
     list: () => ipcRenderer.invoke(IPC.foldersList),

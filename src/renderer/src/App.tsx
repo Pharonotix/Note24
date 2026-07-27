@@ -6,6 +6,7 @@ import {
   FolderSearch2,
   GraduationCap,
   Infinity as InfinityIcon,
+  LayoutDashboard,
   Maximize2,
   Minimize2,
   PrinterCheck,
@@ -16,6 +17,8 @@ import { useStore } from './store/store'
 import { matchShortcut } from './lib/shortcuts'
 import { Sidebar } from './components/Sidebar/Sidebar'
 import { Editor } from './components/Editor/Editor'
+import { Dashboard } from './components/Dashboard/Dashboard'
+import { TabBar } from './components/TabBar/TabBar'
 import { QuickSwitcher } from './components/QuickSwitcher/QuickSwitcher'
 import { EquationLibrary } from './components/EquationLibrary/EquationLibrary'
 import { CitationLibrary } from './components/CitationLibrary/CitationLibrary'
@@ -53,6 +56,8 @@ function App(): React.JSX.Element {
   const setReadingMode = useStore((s) => s.setReadingMode)
   const focusMode = useStore((s) => s.focusMode)
   const setFocusMode = useStore((s) => s.setFocusMode)
+  const dashboardOpen = useStore((s) => s.dashboardOpen)
+  const setDashboardOpen = useStore((s) => s.setDashboardOpen)
 
   const openEquations = (v: boolean): void => {
     setEquationPanel(v)
@@ -216,6 +221,13 @@ function App(): React.JSX.Element {
               <button className={styles.action} onClick={() => setSettingsOpen(true)} title="Settings (Ctrl+,)">
                 <SettingsIcon size={15} />
               </button>
+              <button
+                className={dashboardOpen ? `${styles.action} ${styles.on}` : styles.action}
+                onClick={() => setDashboardOpen(!dashboardOpen)}
+                title="Dashboard"
+              >
+                <LayoutDashboard size={15} />
+              </button>
             </div>
           </div>
         )}
@@ -228,8 +240,11 @@ function App(): React.JSX.Element {
             <Minimize2 size={14} />
           </button>
         )}
+        {!focusMode && !dashboardOpen && <TabBar />}
         <div className={styles.editorArea}>
-          {currentNote ? (
+          {dashboardOpen ? (
+            <Dashboard />
+          ) : currentNote ? (
             <Editor key={currentNote.id} note={currentNote} />
           ) : (
             <div className={styles.empty}>

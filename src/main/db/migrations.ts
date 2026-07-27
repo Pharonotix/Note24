@@ -192,5 +192,11 @@ export const migrations: string[] = [
   );
   CREATE INDEX idx_flashcards_due ON flashcards(due_at);
   CREATE UNIQUE INDEX idx_flashcards_source ON flashcards(source_slug) WHERE source_slug IS NOT NULL;
+  `,
+
+  /* --- 8: productivity workspace (pinned notes) --- */
+  `
+  ALTER TABLE notes ADD COLUMN pinned INTEGER NOT NULL DEFAULT 0;
+  CREATE INDEX idx_notes_pinned ON notes(pinned);
   `
 ]
